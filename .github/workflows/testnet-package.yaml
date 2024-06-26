@@ -1,7 +1,7 @@
 name: build and package
 on:
   push:
-    branches: ['dev']
+    branches: ['dev','feature/1.0.0']
 env:
   DOTNET_INSTALL_DIR: "./.dotnet"
 jobs:
