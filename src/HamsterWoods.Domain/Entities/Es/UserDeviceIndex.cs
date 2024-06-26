@@ -4,7 +4,7 @@ using Nest;
 
 namespace HamsterWoods.Entities.Es;
 
-public class UserDeviceIndex : MessagePushEsEntity<string>, IIndexBuild
+public class UserDeviceIndex : HamsterWoodsEsEntity<string>, IIndexBuild
 {
     [Keyword] public override string Id { get; set; }
     [Keyword] public string AppId { get; set; }

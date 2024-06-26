@@ -45,6 +45,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HamsterWoods.Orleans.TestBa
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HamsterWoods.Grain.Tests", "test\HamsterWoods.Grain.Tests\HamsterWoods.Grain.Tests.csproj", "{A19D89D5-6A78-4AF6-8388-C2679D459BA3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HamsterWoods.Monitor", "src\HamsterWoods.Monitor\HamsterWoods.Monitor.csproj", "{753C3694-23AB-4B19-8A48-723D8283DDF2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -127,6 +129,10 @@ Global
 		{A19D89D5-6A78-4AF6-8388-C2679D459BA3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A19D89D5-6A78-4AF6-8388-C2679D459BA3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A19D89D5-6A78-4AF6-8388-C2679D459BA3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{753C3694-23AB-4B19-8A48-723D8283DDF2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{753C3694-23AB-4B19-8A48-723D8283DDF2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{753C3694-23AB-4B19-8A48-723D8283DDF2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{753C3694-23AB-4B19-8A48-723D8283DDF2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -151,6 +157,7 @@ Global
 		{D1C7244B-0BCF-466E-A9DB-37744BBF6927} = {CA9AC87F-097E-4F15-8393-4BC07735A5B0}
 		{EB1B1C54-CA78-4457-BC6C-B927B92FE2C3} = {04DBDB01-70F4-4E06-B468-8F87850B22BE}
 		{A19D89D5-6A78-4AF6-8388-C2679D459BA3} = {04DBDB01-70F4-4E06-B468-8F87850B22BE}
+		{753C3694-23AB-4B19-8A48-723D8283DDF2} = {CA9AC87F-097E-4F15-8393-4BC07735A5B0}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {28315BFD-90E7-4E14-A2EA-F3D23AF4126F}

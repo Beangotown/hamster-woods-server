@@ -1,31 +1,28 @@
 ﻿using System;
 using System.Threading.Tasks;
-using HamsterWoods.Common;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 using Serilog.Events;
 
+
 namespace HamsterWoods;
 
-public abstract class Program
+public class Program
 {
-    public async static Task<int> Main(string[] args)
+    public static async Task<int> Main(string[] args)
     {
         Log.Logger = LogHelper.CreateLogger(LogEventLevel.Debug);
-
         try
         {
-            Log.Information("Starting HamsterWoods.HttpApi.Host.");
+            Log.Information("Starting web host.");
             var builder = WebApplication.CreateBuilder(args);
             builder.Host.AddAppSettingsSecretsJson()
                 .UseApolloForConfigureHostBuilder()
                 .UseAutofac()
                 .UseSerilog();
-            
-            builder.Services.AddSignalR();
-
             await builder.AddApplicationAsync<HamsterWoodsHttpApiHostModule>();
             var app = builder.Build();
             await app.InitializeApplicationAsync();
@@ -34,6 +31,8 @@ public abstract class Program
         }
         catch (Exception ex)
         {
+            if (ex is HostAbortedException) throw;
+
             Log.Fatal(ex, "Host terminated unexpectedly!");
             return 1;
         }

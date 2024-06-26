@@ -12,6 +12,7 @@
     <ProjectReference Include="..\HamsterWoods.Application.Contracts\HamsterWoods.Application.Contracts.csproj" />
     <ProjectReference Include="..\HamsterWoods.Grains\HamsterWoods.Grains.csproj" />
     <ProjectReference Include="..\HamsterWoods.HttpApi\HamsterWoods.HttpApi.csproj" />
+    <ProjectReference Include="..\HamsterWoods.Monitor\HamsterWoods.Monitor.csproj" />
   </ItemGroup>
 
   <ItemGroup>
