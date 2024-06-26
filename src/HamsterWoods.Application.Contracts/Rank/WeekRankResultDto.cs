@@ -17,8 +17,6 @@ public class WeekRankRecordDto
 
 public class WeekRankResultDto
 {
-    public int Status { get; set; }
-    public DateTime? RefreshTime { get; set; }
     [CanBeNull] public List<RankDto> RankingList { get; set; }
     [CanBeNull] public RankDto SelfRank { get; set; }
 }

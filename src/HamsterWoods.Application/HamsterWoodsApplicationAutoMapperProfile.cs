@@ -20,6 +20,6 @@ public class HamsterWoodsApplicationAutoMapperProfile : Profile
         CreateMap<WeekRankDto, UserWeekRankIndex>().ForMember(dest => dest.SumScore,
             opts => opts.MapFrom(src => src.Score)).ReverseMap();
         CreateMap<GetUserActionDto, UserActionIndex>();
-        CreateMap<BeanPassInfoDto, BeanPassResultDto>().ReverseMap();
+        CreateMap<HamsterPassInfoDto, HamsterPassResultDto>().ReverseMap();
     }
 }

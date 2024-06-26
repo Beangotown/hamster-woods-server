@@ -7,45 +7,52 @@ using Volo.Abp;
 namespace HamsterWoods.Controllers;
 
 [RemoteService]
+[Area("app")]
+[ControllerName("HamsterPass")]
 [Route("api/app/hamster-pass/")]
 public class HamsterPassController : HamsterWoodsBaseController
 {
     private readonly INFTService _nftService;
 
+    public HamsterPassController(INFTService nftService)
+    {
+        _nftService = nftService;
+    }
+
     [HttpGet]
     [Route("claimable")]
-    public async Task<HamsterPassDto> IsBeanPassClaimableAsync(HamsterPassInput input)
+    public async Task<HamsterPassClaimableDto> IsHamsterPassClaimableAsync(HamsterPassInput input)
     {
-        return await _nftService.IsBeanPassClaimableAsync(input);
+        return await _nftService.IsHamsterPassClaimableAsync(input);
     }
 
     [HttpPost]
     [Route("claim")]
-    public async Task<HamsterPassDto> ClaimBeanPassAsync(HamsterPassInput input)
+    public async Task<HamsterPassDto> ClaimHamsterPassAsync(HamsterPassInput input)
     {
-        return await _nftService.ClaimBeanPassAsync(input);
+        return await _nftService.ClaimHamsterPassAsync(input);
     }
 
     /// <summary>
-    /// beanoass list
+    /// hamster pass list
     /// </summary>
     /// <param name="input"></param>
     /// <returns></returns>
     [HttpGet]
     [Route("nft-list")]
-    public async Task<List<BeanPassResultDto>> GetNftListAsync(HamsterPassInput input)
+    public async Task<List<HamsterPassResultDto>> GetNftListAsync(HamsterPassInput input)
     {
         return await _nftService.GetNftListAsync(input);
     }
 
     /// <summary>
-    /// mutil beanpass
+    /// multiple pass change
     /// </summary>
     /// <param name="input"></param>
     /// <returns></returns>
     [HttpPost]
     [Route("using")]
-    public async Task<BeanPassResultDto> UsingBeanPassAsync(GetHamsterPassInput input)
+    public async Task<HamsterPassResultDto> UsingBeanPassAsync(GetHamsterPassInput input)
     {
         return await _nftService.UsingBeanPassAsync(input);
     }
@@ -62,10 +69,15 @@ public class HamsterPassController : HamsterWoodsBaseController
         return await _nftService.PopupBeanPassAsync(input);
     }
 
+    /// <summary>
+    /// check whether address has hamster pass
+    /// </summary>
+    /// <param name="input"></param>
+    /// <returns></returns>
     [HttpGet]
     [Route("check")]
-    public async Task<bool> CheckBeanPassAsync(HamsterPassInput input)
+    public async Task<bool> CheckHamsterPassAsync(HamsterPassInput input)
     {
-        return await _nftService.CheckBeanPassAsync(input);
+        return await _nftService.CheckHamsterPassAsync(input);
     }
 }
