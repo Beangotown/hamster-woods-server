@@ -1,11 +1,11 @@
 namespace HamsterWoods.NFT;
 
-public class BeanPassInput
+public class HamsterPassInput
 {
     public string CaAddress { get; set; }
 }
 
-public class GetBeanPassInput : BeanPassInput
+public class GetHamsterPassInput : HamsterPassInput
 {
     public string Symbol { get; set; }
 }

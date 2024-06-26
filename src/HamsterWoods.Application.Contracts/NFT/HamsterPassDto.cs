@@ -1,6 +1,6 @@
 namespace HamsterWoods.NFT;
 
-public class BeanPassDto
+public class HamsterPassDto
 {
     public bool Claimable { get; set; }
     public string Reason { get; set; }

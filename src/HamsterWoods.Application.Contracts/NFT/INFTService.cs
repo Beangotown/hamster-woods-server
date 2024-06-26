@@ -5,16 +5,16 @@ namespace HamsterWoods.NFT;
 
 public interface INFTService
 {
-    public Task<BeanPassDto> ClaimBeanPassAsync(BeanPassInput input);
+    public Task<HamsterPassDto> ClaimBeanPassAsync(HamsterPassInput input);
 
 
-    public Task<BeanPassDto> IsBeanPassClaimableAsync(BeanPassInput input);
+    public Task<HamsterPassDto> IsBeanPassClaimableAsync(HamsterPassInput input);
 
-    public Task<List<BeanPassResultDto>> GetNftListAsync(BeanPassInput input);
+    public Task<List<BeanPassResultDto>> GetNftListAsync(HamsterPassInput input);
     
-    public Task<BeanPassResultDto> UsingBeanPassAsync(GetBeanPassInput input);
+    public Task<BeanPassResultDto> UsingBeanPassAsync(GetHamsterPassInput input);
     
-    Task<bool> PopupBeanPassAsync(BeanPassInput input);
+    Task<bool> PopupBeanPassAsync(HamsterPassInput input);
 
-    Task<bool> CheckBeanPassAsync(BeanPassInput input);
+    Task<bool> CheckBeanPassAsync(HamsterPassInput input);
 }

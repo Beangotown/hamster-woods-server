@@ -5,6 +5,6 @@ namespace HamsterWoods.Portkey;
 
 public interface IPortkeyProvider
 {
-    public Task<long> GetCaHolderCreateTimeAsync(BeanPassInput beanPassInput);
-    public Task<long> GetTokenBalanceAsync(BeanPassInput beanPassInput);
+    public Task<long> GetCaHolderCreateTimeAsync(HamsterPassInput hamsterPassInput);
+    public Task<long> GetTokenBalanceAsync(HamsterPassInput hamsterPassInput);
 }

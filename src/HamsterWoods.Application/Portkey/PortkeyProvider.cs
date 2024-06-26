@@ -29,12 +29,12 @@ public class PortkeyProvider : IPortkeyProvider, ISingletonDependency
         _portkeyOptions = portkeyOptions.Value;
     }
 
-    public async Task<long> GetCaHolderCreateTimeAsync(BeanPassInput beanPassInput)
+    public async Task<long> GetCaHolderCreateTimeAsync(HamsterPassInput hamsterPassInput)
     {
         long timeStamp = 0;
         var paramStr = BuildParamStr(new Dictionary<string, string>
         {
-            { "caAddress", beanPassInput.CaAddress }
+            { "caAddress", hamsterPassInput.CaAddress }
         });
         var url = string.Concat(_portkeyOptions.BaseUrl, _getCaHolderCreateTimeUrl, "?", paramStr);
         try
@@ -44,19 +44,19 @@ public class PortkeyProvider : IPortkeyProvider, ISingletonDependency
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "GetCaHolderCreateTimeAsync error {CaAddress}", beanPassInput.CaAddress);
+            _logger.LogError(e, "GetCaHolderCreateTimeAsync error {CaAddress}", hamsterPassInput.CaAddress);
             throw new UserFriendlyException(BeangoTownConstants.SyncingMessage, BeangoTownConstants.SyncingCode);
         }
 
         return timeStamp;
     }
 
-    public async Task<long> GetTokenBalanceAsync(BeanPassInput beanPassInput)
+    public async Task<long> GetTokenBalanceAsync(HamsterPassInput hamsterPassInput)
     {
         long balance = 0;
         var paramStr = BuildParamStr(new Dictionary<string, string>
         {
-            { "caAddress", beanPassInput.CaAddress },
+            { "caAddress", hamsterPassInput.CaAddress },
             { "symbol", _elf }
         });
         var url = string.Concat(_portkeyOptions.BaseUrl, _tokenBalanceUrl, "?", paramStr);
@@ -68,7 +68,7 @@ public class PortkeyProvider : IPortkeyProvider, ISingletonDependency
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "GetCaHolderCreateTimeAsync error {CaAddress}", beanPassInput.CaAddress);
+            _logger.LogError(e, "GetCaHolderCreateTimeAsync error {CaAddress}", hamsterPassInput.CaAddress);
         }
 
         return (long)ToPrice(balance, 8);

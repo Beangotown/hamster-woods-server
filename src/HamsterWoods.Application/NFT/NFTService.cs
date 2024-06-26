@@ -62,7 +62,7 @@ public class NFTService : HamsterWoodsBaseService, INFTService
         _logger = logger;
     }
 
-    public async Task<BeanPassDto> ClaimBeanPassAsync(BeanPassInput input)
+    public async Task<HamsterPassDto> ClaimBeanPassAsync(HamsterPassInput input)
     {
         _logger.LogInformation("ClaimBeanPassAsync {CaAddress}", input.CaAddress);
         var beanPass = await IsBeanPassClaimableAsync(input);
@@ -72,7 +72,7 @@ public class NFTService : HamsterWoodsBaseService, INFTService
             var value = await _cacheProvider.IncreaseAsync(_beanPassLimitCacheKeyPrefix + DateTime.UtcNow.Day, 1,
                 TimeSpan.FromDays(2));
             if (value > _userActivityOptions.ClaimCountPerDay)
-                return new BeanPassDto
+                return new HamsterPassDto
                 {
                     Claimable = false,
                     Reason = ClaimBeanPassStatus.Claimed.ToString()
@@ -91,7 +91,7 @@ public class NFTService : HamsterWoodsBaseService, INFTService
             null);
         _logger.LogInformation("ClaimBeanPassAsync success {TransactionId}", sendTransactionOutput.TransactionId);
         var info = await GetBeanPassInfoAsync(symbol);
-        return new BeanPassDto
+        return new HamsterPassDto
         {
             Claimable = true,
             TransactionId = sendTransactionOutput.TransactionId,
@@ -99,18 +99,18 @@ public class NFTService : HamsterWoodsBaseService, INFTService
         };
     }
 
-    public async Task<BeanPassDto> IsBeanPassClaimableAsync(BeanPassInput input)
+    public async Task<HamsterPassDto> IsBeanPassClaimableAsync(HamsterPassInput input)
     {
         var beanPassValue = await _cacheProvider.GetAsync(_beanPassCacheKeyPrefix + input.CaAddress);
         if (!beanPassValue.IsNull)
-            return new BeanPassDto
+            return new HamsterPassDto
             {
                 Claimable = false,
                 Reason = ClaimBeanPassStatus.DoubleClaim.ToString()
             };
         var balance = await _portkeyProvider.GetTokenBalanceAsync(input);
         if (balance >= _userActivityOptions.NeedElfAmount)
-            return new BeanPassDto
+            return new HamsterPassDto
             {
                 Claimable = true,
                 Reason = ClaimBeanPassStatus.ElfAmountEnough.ToString()
@@ -125,26 +125,26 @@ public class NFTService : HamsterWoodsBaseService, INFTService
         {
             var value = await _cacheProvider.GetAsync(_beanPassLimitCacheKeyPrefix + DateTime.UtcNow.Day);
             if (int.TryParse(value, out var count) && count > _userActivityOptions.ClaimCountPerDay)
-                return new BeanPassDto
+                return new HamsterPassDto
                 {
                     Claimable = false,
                     Reason = ClaimBeanPassStatus.Claimed.ToString()
                 };
-            return new BeanPassDto
+            return new HamsterPassDto
             {
                 Claimable = true,
                 Reason = ClaimBeanPassStatus.NewUser.ToString()
             };
         }
 
-        return new BeanPassDto
+        return new HamsterPassDto
         {
             Claimable = false,
             Reason = ClaimBeanPassStatus.InsufficientElfAmount.ToString()
         };
     }
 
-    public async Task<List<BeanPassResultDto>> GetNftListAsync(BeanPassInput input)
+    public async Task<List<BeanPassResultDto>> GetNftListAsync(HamsterPassInput input)
     {
         var result = new List<BeanPassResultDto>();
 
@@ -188,7 +188,7 @@ public class NFTService : HamsterWoodsBaseService, INFTService
         return result;
     }
 
-    public async Task<BeanPassResultDto> UsingBeanPassAsync(GetBeanPassInput input)
+    public async Task<BeanPassResultDto> UsingBeanPassAsync(GetHamsterPassInput input)
     {
         if (!_halloweenActivityOptions.BeanPass.Contains(input.Symbol))
         {
@@ -210,7 +210,7 @@ public class NFTService : HamsterWoodsBaseService, INFTService
         return dto;
     }
 
-    public async Task<bool> CheckBeanPassAsync(BeanPassInput input)
+    public async Task<bool> CheckBeanPassAsync(HamsterPassInput input)
     {
         var balanceDto = new GetUserBalanceDto()
         {
@@ -254,7 +254,7 @@ public class NFTService : HamsterWoodsBaseService, INFTService
         return SerializeHelper.Deserialize<BeanPassInfoDto>(beanPassValue);
     }
 
-    public async Task<bool> PopupBeanPassAsync(BeanPassInput input)
+    public async Task<bool> PopupBeanPassAsync(HamsterPassInput input)
     {
         var beginTime = _halloweenActivityOptions.BeginTime;
         var endTime = _halloweenActivityOptions.EndTime;
