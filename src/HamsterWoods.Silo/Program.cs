@@ -46,12 +46,10 @@ public class Program
 
     internal static IHostBuilder CreateHostBuilder(string[] args) =>
         Host.CreateDefaultBuilder(args)
-            .ConfigureServices((hostcontext, services) =>
-            {
-                services.AddApplication<HamsterWoodsOrleansSiloModule>();
-            })
+            .UseApolloForConfigureHostBuilder()
+            .UseApolloForHostBuilder()
+            .ConfigureServices((hostcontext, services) => { services.AddApplication<HamsterWoodsOrleansSiloModule>(); })
             .UseOrleansSnapshot()
             .UseAutofac()
             .UseSerilog();
-    
 }
