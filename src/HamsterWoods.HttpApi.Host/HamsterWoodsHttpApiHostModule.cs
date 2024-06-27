@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using AutoResponseWrapper;
 using HamsterWoods.Common;
+using HamsterWoods.Grains;
 using HamsterWoods.MongoDb;
 using Medallion.Threading;
 using Medallion.Threading.Redis;
@@ -13,7 +14,11 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using Orleans;
+using Orleans.Configuration;
+using Orleans.Providers.MongoDB.Configuration;
 using StackExchange.Redis;
 using Volo.Abp;
 using Volo.Abp.AspNetCore.Mvc;
@@ -27,6 +32,7 @@ using Volo.Abp.Localization;
 using Volo.Abp.Modularity;
 using Volo.Abp.OpenIddict.Tokens;
 using Volo.Abp.Swashbuckle;
+using Volo.Abp.Threading;
 
 namespace HamsterWoods;
 
@@ -56,11 +62,36 @@ public class HamsterWoodsHttpApiHostModule : AbpModule
         ConfigureDistributedLocking(context, configuration);
         ConfigureCors(context, configuration);
         ConfigureSwaggerServices(context, configuration);
+        ConfigureOrleans(context, configuration);
         ConfigureTokenCleanupService();
         context.Services.AddAutoResponseWrapper();
         context.Services.AddHttpContextAccessor();
     }
 
+    private static void ConfigureOrleans(ServiceConfigurationContext context, IConfiguration configuration)
+    {
+        context.Services.AddSingleton<IClusterClient>(o =>
+        {
+            return new ClientBuilder()
+                .ConfigureDefaults()
+                .UseMongoDBClient(configuration["Orleans:MongoDBClient"])
+                .UseMongoDBClustering(options =>
+                {
+                    options.DatabaseName = configuration["Orleans:DataBase"];
+                    options.Strategy = MongoDBMembershipStrategy.SingleDocument;
+                })
+                .Configure<ClusterOptions>(options =>
+                {
+                    options.ClusterId = configuration["Orleans:ClusterId"];
+                    options.ServiceId = configuration["Orleans:ServiceId"];
+                })
+                .ConfigureApplicationParts(parts =>
+                    parts.AddApplicationPart(typeof(HamsterWoodsGrainsModule).Assembly).WithReferences())
+                .ConfigureLogging(builder => builder.AddProvider(o.GetService<ILoggerProvider>()))
+                .Build();
+        });
+    }
+    
     private void ConfigureCache(IConfiguration configuration)
     {
         Configure<AbpDistributedCacheOptions>(options => { options.KeyPrefix = "HamsterWoods:"; });
@@ -174,7 +205,7 @@ public class HamsterWoodsHttpApiHostModule : AbpModule
     {
         var app = context.GetApplicationBuilder();
         var env = context.GetEnvironment();
-        if (env.IsDevelopment())
+        //if (env.IsDevelopment())
         {
             app.UseDeveloperExceptionPage();
         }
@@ -193,11 +224,30 @@ public class HamsterWoodsHttpApiHostModule : AbpModule
         }
         
         app.UseConfiguredEndpoints();
+        
+        StartOrleans(context.ServiceProvider);
         ConfigurationProvidersHelper.DisplayConfigurationProviders(context);
     }
 
     private void ConfigureTokenCleanupService()
     {
         Configure<TokenCleanupOptions>(x => x.IsCleanupEnabled = false);
+    }
+    
+    public override void OnApplicationShutdown(ApplicationShutdownContext context)
+    {
+        StopOrleans(context.ServiceProvider);
+    }
+
+    private static void StartOrleans(IServiceProvider serviceProvider)
+    {
+        var client = serviceProvider.GetRequiredService<IClusterClient>();
+        AsyncHelper.RunSync(async () => await client.Connect());
+    }
+
+    private static void StopOrleans(IServiceProvider serviceProvider)
+    {
+        var client = serviceProvider.GetRequiredService<IClusterClient>();
+        AsyncHelper.RunSync(client.Close);
     }
 }

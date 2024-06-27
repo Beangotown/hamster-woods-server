@@ -111,8 +111,4 @@
       <Orleans_CodeGenInputs Remove="Grain\Chat\IChatMetaGrain.cs" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="State" />
-    </ItemGroup>
-
 </Project>
