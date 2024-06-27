@@ -93,8 +93,7 @@ public class HamsterWoodsEntityEventHandlerModule : AbpModule
             };
         });
     }
-
-    //Create the ElasticSearch Index based on Domain Entity
+    
     private void ConfigureEsIndexCreation()
     {
         Configure<IndexCreateOption>(x => { x.AddModule(typeof(HamsterWoodsDomainModule)); });
