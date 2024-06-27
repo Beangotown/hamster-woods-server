@@ -6,6 +6,7 @@ using Serilog;
 using Serilog.Events;
 
 namespace HamsterWoods.Silo;
+
 public class Program
 {
     public async static Task<int> Main(string[] args)
@@ -24,11 +25,16 @@ public class Program
             .WriteTo.Async(c => c.File("Logs/logs.txt"))
             .WriteTo.Async(c => c.Console())
             .CreateLogger();
-        
+
         try
         {
             Log.Information("Starting HamsterWoods.Silo.");
-
+            var podIp = Environment.GetEnvironmentVariable("POD_IP");
+            var orleansClusterId = Environment.GetEnvironmentVariable("ORLEANS_CLUSTER_ID");
+            var orleansServiceId = Environment.GetEnvironmentVariable("ORLEANS_SERVICE_ID");
+            Log.Information("podIp: {podIp}, orleansClusterId:{orleansClusterId}, orleansServiceId:{orleansServiceId}",
+                podIp ?? "-", orleansClusterId ?? "-", orleansServiceId ?? "-");
+            
             await CreateHostBuilder(args).RunConsoleAsync();
 
             return 0;
