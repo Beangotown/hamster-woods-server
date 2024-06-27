@@ -15,15 +15,9 @@ public static class OrleansHostExtensions
 {
      public static IHostBuilder UseOrleansSnapshot(this IHostBuilder hostBuilder)
     {
-        var configuration = new ConfigurationBuilder()
-            .AddJsonFile("appsettings.json")
-            .Build();
-        if (configuration == null) throw new ArgumentNullException(nameof(configuration));
-        var configSection = configuration.GetSection("Orleans");
-        if (configSection == null)
-            throw new ArgumentNullException(nameof(configSection), "The OrleansServer node is missing");
-        return hostBuilder.UseOrleans(siloBuilder =>
+        return hostBuilder.UseOrleans((context, siloBuilder) =>
         {
+            var configSection = context.Configuration.GetSection("Orleans");
             var IsRunningInKubernetes = configSection.GetValue<bool>("IsRunningInKubernetes");
             //get advertisedIP，clusterId、serviceId from env
             var advertisedIP = IsRunningInKubernetes ?  Environment.GetEnvironmentVariable("POD_IP") :configSection.GetValue<string>("AdvertisedIP");
