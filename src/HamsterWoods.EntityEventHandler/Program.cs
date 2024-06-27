@@ -50,6 +50,8 @@ namespace HamsterWoods.EntityEventHandler
         
         internal static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
+                .InitAppConfiguration(true)
+                .UseApolloForHostBuilder()
                 .ConfigureAppConfiguration(build =>
                 {
                     build.AddJsonFile("appsettings.secrets.json", optional: true);

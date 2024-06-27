@@ -8,25 +8,46 @@ namespace HamsterWoods;
 
 public static class HamsterWoodsHostBuilderExtensions
 {
+        public static IHostBuilder InitAppConfiguration(this IHostBuilder hostBuilder, bool configureService)
+    {
+        return hostBuilder.AddAppSettingsApolloJson()
+            .InitConfigurationHelper(configureService);
+    }
+
     public static IHostBuilder UseApolloForConfigureHostBuilder(this IHostBuilder hostBuilder)
     {
-        return hostBuilder
-            .ConfigureAppConfiguration((_, builder) => { builder.AddJsonFile("appsettings.apollo.json"); })
-            .ConfigureAppConfiguration((context, builder) =>
-            {
-                if (!context.Configuration.GetValue<bool>("IsApolloEnabled", false))
-                {
-                    return;
-                }
+        if (!Commons.ConfigurationHelper.IsApolloEnabled())
+        {
+            return hostBuilder.ConfigureGloballySharedLog(false);
+        }
 
-                //To display the Apollo console logs 
+        //To display the Apollo console logs 
 #if DEBUG
-                LogManager.UseConsoleLogging(Com.Ctrip.Framework.Apollo.Logging.LogLevel.Trace);
+        LogManager.UseConsoleLogging(Com.Ctrip.Framework.Apollo.Logging.LogLevel.Trace);
 #endif
 
-                builder.AddApollo(builder.Build().GetSection("apollo"));
-            })
+        return hostBuilder
+            .ConfigureAppConfiguration((_, builder) => { builder.AddApollo(builder.Build().GetSection("apollo")); })
             .ConfigureGloballySharedLog(false);
+    }
+
+    private static IHostBuilder AddAppSettingsApolloJson(this IHostBuilder hostBuilder)
+    {
+        return hostBuilder.ConfigureAppConfiguration(
+            (_, builder) => { builder.AddJsonFile("appsettings.apollo.json"); });
+    }
+
+    private static IHostBuilder InitConfigurationHelper(this IHostBuilder hostBuilder, bool configureService)
+    {
+        return configureService
+            ? hostBuilder.ConfigureServices((context, _) =>
+            {
+                Commons.ConfigurationHelper.Initialize(context.Configuration);
+            })
+            : hostBuilder.ConfigureAppConfiguration((context, _) =>
+            {
+                Commons.ConfigurationHelper.Initialize(context.Configuration);
+            });
     }
 
     private static IHostBuilder ConfigureGloballySharedLog(this IHostBuilder hostBuilder, bool configureService)
@@ -98,8 +119,7 @@ public static class HamsterWoodsHostBuilderExtensions
 
     public static IHostBuilder UseApolloForHostBuilder(this IHostBuilder hostBuilder)
     {
-        return hostBuilder
-            .ConfigureAppConfiguration((_, builder) => { builder.AddJsonFile("appsettings.apollo.json"); })
+        hostBuilder = hostBuilder
             .ConfigureAppConfiguration((_, builder) =>
             {
                 if (!builder.Build().GetValue<bool>("IsApolloEnabled", false))
@@ -113,5 +133,6 @@ public static class HamsterWoodsHostBuilderExtensions
                 builder.AddApollo(builder.Build().GetSection("apollo"));
             })
             .ConfigureGloballySharedLog(true);
+        return hostBuilder;
     }
 }

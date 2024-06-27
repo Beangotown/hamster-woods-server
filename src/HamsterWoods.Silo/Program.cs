@@ -46,7 +46,7 @@ public class Program
 
     internal static IHostBuilder CreateHostBuilder(string[] args) =>
         Host.CreateDefaultBuilder(args)
-            .UseApolloForConfigureHostBuilder()
+            .InitAppConfiguration(true)
             .UseApolloForHostBuilder()
             .ConfigureServices((hostcontext, services) => { services.AddApplication<HamsterWoodsOrleansSiloModule>(); })
             .UseOrleansSnapshot()

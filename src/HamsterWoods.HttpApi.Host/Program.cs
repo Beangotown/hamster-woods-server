@@ -20,6 +20,7 @@ public class Program
             Log.Information("Starting web host.");
             var builder = WebApplication.CreateBuilder(args);
             builder.Host.AddAppSettingsSecretsJson()
+                .InitAppConfiguration(true)
                 .UseApolloForConfigureHostBuilder()
                 .UseAutofac()
                 .UseSerilog();
