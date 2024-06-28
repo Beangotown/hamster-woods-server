@@ -3,7 +3,7 @@ using Volo.Abp.Modularity;
 
 namespace HamsterWoods.Monitor;
 
-public class BeangoTownServerMonitorModule : AbpModule
+public class HamsterWoodsServerMonitorModule : AbpModule
 {
     public override void ConfigureServices(ServiceConfigurationContext context)
     {

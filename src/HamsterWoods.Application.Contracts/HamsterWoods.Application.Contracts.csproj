@@ -9,6 +9,7 @@
 
     <ItemGroup>
         <ProjectReference Include="..\HamsterWoods.Domain.Shared\HamsterWoods.Domain.Shared.csproj" />
+        <ProjectReference Include="..\HamsterWoods.Monitor\HamsterWoods.Monitor.csproj" />
     </ItemGroup>
 
     <ItemGroup>

@@ -40,7 +40,9 @@ public class NFTService : HamsterWoodsBaseService, INFTService
     private const string BeanPassNoHave = "You don't have any HamsterPass NFTs in your account.";
 
 
-    public NFTService(IPortkeyProvider portkeyProvider, ICacheProvider cacheProvider,
+    public NFTService(
+        IPortkeyProvider portkeyProvider,
+        ICacheProvider cacheProvider,
         IContractProvider contractProvider,
         IContractService contractService,
         IRankProvider rankProvider,
@@ -53,10 +55,10 @@ public class NFTService : HamsterWoodsBaseService, INFTService
         _cacheProvider = cacheProvider;
         _contractProvider = contractProvider;
         _rankProvider = rankProvider;
+        _contractService = contractService;
         _userActivityOptions = userActivityOptions.Value;
         _halloweenActivityOptions = halloweenActivityOptions.Value;
         _chainOptions = chainOptions.Value;
-        _contractService = contractService;
         _objectMapper = objectMapper;
         _logger = logger;
     }
@@ -89,7 +91,8 @@ public class NFTService : HamsterWoodsBaseService, INFTService
         {
             Claimable = true,
             TransactionId = sendTransactionOutput.TransactionId,
-            HamsterPassInfo = _objectMapper.Map<HamsterPassInfoDto, HamsterPassResultDto>(info) ?? new HamsterPassResultDto()
+            HamsterPassInfo = _objectMapper.Map<HamsterPassInfoDto, HamsterPassResultDto>(info) ??
+                              new HamsterPassResultDto()
         };
     }
 

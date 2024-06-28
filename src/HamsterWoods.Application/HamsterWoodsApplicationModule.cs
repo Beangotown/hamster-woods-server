@@ -1,4 +1,6 @@
-﻿using HamsterWoods.Options;
+﻿using HamsterWoods.Cache;
+using HamsterWoods.Common;
+using HamsterWoods.Options;
 using HamsterWoods.Grains;
 using Microsoft.Extensions.DependencyInjection;
 using Volo.Abp.Account;
@@ -31,6 +33,7 @@ public class HamsterWoodsApplicationModule : AbpModule
     {
         Configure<AbpAutoMapperOptions>(options => { options.AddMaps<HamsterWoodsApplicationModule>(); });
         context.Services.AddHttpClient();
+        context.Services.AddSingleton<ICacheProvider, RedisCacheProvider>();
 
         var configuration = context.Services.GetConfiguration();
         Configure<ScheduledTasksOptions>(configuration.GetSection("ScheduledTasks"));

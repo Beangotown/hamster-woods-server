@@ -1,6 +1,9 @@
 using System;
 using System.Linq;
 using AutoResponseWrapper;
+using GraphQL.Client.Abstractions;
+using GraphQL.Client.Http;
+using GraphQL.Client.Serializer.Newtonsoft;
 using HamsterWoods.Common;
 using HamsterWoods.Grains;
 using HamsterWoods.MongoDb;
@@ -24,6 +27,7 @@ using Volo.Abp;
 using Volo.Abp.AspNetCore.Mvc;
 using Volo.Abp.AspNetCore.Mvc.UI.MultiTenancy;
 using Volo.Abp.AspNetCore.Serilog;
+using Volo.Abp.Auditing;
 using Volo.Abp.Autofac;
 using Volo.Abp.Caching;
 using Volo.Abp.Caching.StackExchangeRedis;
@@ -57,15 +61,30 @@ public class HamsterWoodsHttpApiHostModule : AbpModule
         ConfigureConventionalControllers();
         //ConfigureAuthentication(context, configuration);
         ConfigureLocalization();
-        ConfigureCache(configuration);
+        ConfigureCache(context, configuration);
         ConfigureDataProtection(context, configuration, hostingEnvironment);
         ConfigureDistributedLocking(context, configuration);
         ConfigureCors(context, configuration);
         ConfigureSwaggerServices(context, configuration);
         ConfigureOrleans(context, configuration);
+        ConfigureGraphQl(context, configuration);
         ConfigureTokenCleanupService();
+        ConfigureAuditing();
         context.Services.AddAutoResponseWrapper();
         context.Services.AddHttpContextAccessor();
+    }
+    
+    private void ConfigureGraphQl(ServiceConfigurationContext context,
+        IConfiguration configuration)
+    {
+        context.Services.AddSingleton(new GraphQLHttpClient(configuration["GraphQL:Configuration"],
+            new NewtonsoftJsonSerializer()));
+        context.Services.AddScoped<IGraphQLClient>(sp => sp.GetRequiredService<GraphQLHttpClient>());
+    }
+
+    private void ConfigureAuditing()
+    {
+        Configure<AbpAuditingOptions>(options => { options.IsEnabled = false; });
     }
 
     private static void ConfigureOrleans(ServiceConfigurationContext context, IConfiguration configuration)
@@ -91,9 +110,12 @@ public class HamsterWoodsHttpApiHostModule : AbpModule
                 .Build();
         });
     }
-    
-    private void ConfigureCache(IConfiguration configuration)
+
+    private void ConfigureCache(ServiceConfigurationContext context, IConfiguration configuration)
     {
+        var multiplexer = ConnectionMultiplexer
+            .Connect(configuration["Redis:Configuration"]);
+        context.Services.AddSingleton<IConnectionMultiplexer>(multiplexer);
         Configure<AbpDistributedCacheOptions>(options => { options.KeyPrefix = "HamsterWoods:"; });
     }
 
@@ -205,7 +227,7 @@ public class HamsterWoodsHttpApiHostModule : AbpModule
     {
         var app = context.GetApplicationBuilder();
         var env = context.GetEnvironment();
-        //if (env.IsDevelopment())
+        if (env.IsDevelopment())
         {
             app.UseDeveloperExceptionPage();
         }
@@ -217,14 +239,17 @@ public class HamsterWoodsHttpApiHostModule : AbpModule
         app.UseAuthentication();
 
         app.UseAuthorization();
-        if (env.IsDevelopment())
+        //if (env.IsDevelopment())
         {
             app.UseSwagger();
-            app.UseAbpSwaggerUI(options => { options.SwaggerEndpoint("/swagger/v1/swagger.json", "HamsterWoods API"); });
+            app.UseAbpSwaggerUI(options =>
+            {
+                options.SwaggerEndpoint("/swagger/v1/swagger.json", "HamsterWoods API");
+            });
         }
-        
+
         app.UseConfiguredEndpoints();
-        
+
         StartOrleans(context.ServiceProvider);
         ConfigurationProvidersHelper.DisplayConfigurationProviders(context);
     }
@@ -233,7 +258,7 @@ public class HamsterWoodsHttpApiHostModule : AbpModule
     {
         Configure<TokenCleanupOptions>(x => x.IsCleanupEnabled = false);
     }
-    
+
     public override void OnApplicationShutdown(ApplicationShutdownContext context)
     {
         StopOrleans(context.ServiceProvider);
