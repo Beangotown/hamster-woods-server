@@ -1,5 +1,6 @@
 ﻿using HamsterWoods.Cache;
 using HamsterWoods.Common;
+using HamsterWoods.Contract;
 using HamsterWoods.Options;
 using HamsterWoods.Grains;
 using Microsoft.Extensions.DependencyInjection;
@@ -37,5 +38,6 @@ public class HamsterWoodsApplicationModule : AbpModule
 
         var configuration = context.Services.GetConfiguration();
         Configure<ScheduledTasksOptions>(configuration.GetSection("ScheduledTasks"));
+        Configure<ChainOptions>(configuration.GetSection("Chains"));
     }
 }
