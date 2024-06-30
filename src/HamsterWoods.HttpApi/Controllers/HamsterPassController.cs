@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using HamsterWoods.Config;
 using HamsterWoods.NFT;
 using Microsoft.AspNetCore.Mvc;
 using Volo.Abp;
@@ -79,5 +80,19 @@ public class HamsterPassController : HamsterWoodsBaseController
     public async Task<bool> CheckHamsterPassAsync(HamsterPassInput input)
     {
         return await _nftService.CheckHamsterPassAsync(input);
+    }
+
+    [HttpGet]
+    [Route("config")]
+    public Task<ConfigDto> GetConfigAsync()
+    {
+        return Task.FromResult(new ConfigDto() { DailyPlayCountResetTime = 0, ChancePrice = 20 });
+    }
+    
+    [HttpGet]
+    [Route("asset")]
+    public async Task<List<TokenBalanceDto>> GetAssetAsync(HamsterPassInput input)
+    {
+        return await _nftService.GetAssetAsync(input);
     }
 }

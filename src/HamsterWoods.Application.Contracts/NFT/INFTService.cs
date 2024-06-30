@@ -16,4 +16,5 @@ public interface INFTService
     Task<bool> PopupBeanPassAsync(HamsterPassInput input);
 
     Task<bool> CheckHamsterPassAsync(HamsterPassInput input);
+    Task<List<TokenBalanceDto>> GetAssetAsync(HamsterPassInput input);
 }

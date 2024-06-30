@@ -51,13 +51,13 @@ public class PortkeyProvider : IPortkeyProvider, ISingletonDependency
         return timeStamp;
     }
 
-    public async Task<long> GetTokenBalanceAsync(HamsterPassInput hamsterPassInput)
+    public async Task<long> GetTokenBalanceAsync(string caAddress, string symbol)
     {
         long balance = 0;
         var paramStr = BuildParamStr(new Dictionary<string, string>
         {
-            { "caAddress", hamsterPassInput.CaAddress },
-            { "symbol", _elf }
+            { "caAddress", caAddress },
+            { "symbol", symbol }
         });
         var url = string.Concat(_portkeyOptions.BaseUrl, _tokenBalanceUrl, "?", paramStr);
 
@@ -68,7 +68,7 @@ public class PortkeyProvider : IPortkeyProvider, ISingletonDependency
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "GetCaHolderCreateTimeAsync error {CaAddress}", hamsterPassInput.CaAddress);
+            _logger.LogError(e, "GetCaHolderCreateTimeAsync error {CaAddress}", caAddress);
         }
 
         return (long)ToPrice(balance, 8);

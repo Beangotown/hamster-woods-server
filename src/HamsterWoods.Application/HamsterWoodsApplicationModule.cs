@@ -3,6 +3,7 @@ using HamsterWoods.Common;
 using HamsterWoods.Contract;
 using HamsterWoods.Options;
 using HamsterWoods.Grains;
+using HamsterWoods.Portkey;
 using Microsoft.Extensions.DependencyInjection;
 using Volo.Abp.Account;
 using Volo.Abp.AutoMapper;
@@ -39,5 +40,6 @@ public class HamsterWoodsApplicationModule : AbpModule
         var configuration = context.Services.GetConfiguration();
         Configure<ScheduledTasksOptions>(configuration.GetSection("ScheduledTasks"));
         Configure<ChainOptions>(configuration.GetSection("Chains"));
+        Configure<PortkeyOptions>(configuration.GetSection("Portkey"));
     }
 }

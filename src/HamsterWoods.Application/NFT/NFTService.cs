@@ -23,8 +23,8 @@ public class NFTService : HamsterWoodsBaseService, INFTService
 {
     // for test
     private const string _hamsterPassCacheKeyPrefix = "TestPass_";
-    
-    
+
+
     //private const string _hamsterPassCacheKeyPrefix = "HamsterPass_";
     private readonly string _hamsterPassUsingCacheKeyPrefix = "HamsterPassUsing:";
     private readonly string _imageUrlKey = "__nft_image_url";
@@ -81,10 +81,10 @@ public class NFTService : HamsterWoodsBaseService, INFTService
         }
 
         //var symbol = "HAMSTERPASS-1";
-        
+
         // for test
         var symbol = "TTZZ-1";
-        
+
         var sendTransactionOutput = await _contractProvider.SendTransferAsync(symbol, "1",
             input.CaAddress,
             GetDefaultChainId()
@@ -125,11 +125,7 @@ public class NFTService : HamsterWoodsBaseService, INFTService
     {
         var result = new List<HamsterPassResultDto>();
 
-        // now  before
-        var begin = DateTimeHelper.ParseDateTimeByStr(_halloweenActivityOptions.BeginTime);
-        var beanPassList = begin.CompareTo(DateTime.UtcNow) > 0
-            ? new List<string> { _userActivityOptions.BeanPass }
-            : _halloweenActivityOptions.BeanPass;
+        var beanPassList = new List<string> { "TTZZ-1" };
         var balanceDto = new GetUserBalanceDto()
         {
             ChainId = GetDefaultChainId(),
@@ -137,30 +133,13 @@ public class NFTService : HamsterWoodsBaseService, INFTService
             Symbols = new List<string>()
         };
         var balanceList = (await _rankProvider.GetUserBalanceAsync(balanceDto))?.FindAll(b => b.Amount > 0);
-        var beanPassValue = await _cacheProvider.GetAsync($"{_hamsterPassUsingCacheKeyPrefix}{input.CaAddress}");
-        var symbol = string.Empty;
-        if (!balanceList.IsNullOrEmpty() && balanceList.Count > 0)
-        {
-            symbol = balanceList.Count == 1 ? balanceList[0].Symbol : beanPassValue;
-            if (symbol.IsNullOrEmpty())
-            {
-                symbol = _halloweenActivityOptions.BeanPass[0];
-            }
-        }
 
         foreach (var beanPass in beanPassList)
         {
             var info = await GetHamsterPassInfoAsync(beanPass);
             var dto = _objectMapper.Map<HamsterPassInfoDto, HamsterPassResultDto>(info);
-
             var amount = balanceList?.FirstOrDefault(b => b.Symbol == beanPass)?.Amount ?? 0L;
             dto.Owned = amount > 0;
-            dto.UsingBeanPass = dto.Owned && beanPass == symbol;
-            if (dto.UsingBeanPass)
-            {
-                await _cacheProvider.SetAsync($"{_hamsterPassUsingCacheKeyPrefix}{input.CaAddress}", beanPass, null);
-            }
-
             result.Add(dto);
         }
 
@@ -199,6 +178,27 @@ public class NFTService : HamsterWoodsBaseService, INFTService
         };
         var balanceList = (await _rankProvider.GetUserBalanceAsync(balanceDto))?.FindAll(b => b.Amount > 0);
         return !balanceList.IsNullOrEmpty();
+    }
+
+    public async Task<List<TokenBalanceDto>> GetAssetAsync(HamsterPassInput input)
+    {
+        var tokenInfos = new List<TokenBalanceDto>();
+
+        var elfBalance = await _portkeyProvider.GetTokenBalanceAsync(input.CaAddress, "ELF");
+        tokenInfos.Add(new TokenBalanceDto()
+        {
+            Symbol = "ELF",
+            Balance = elfBalance
+        });
+       // var balance = await _portkeyProvider.GetTokenBalanceAsync(input.CaAddress, "ACORNS");
+       
+       tokenInfos.Add(new TokenBalanceDto()
+       {
+           Symbol = "ACORNS",
+           Balance = 0
+       });
+
+       return tokenInfos;
     }
 
     private async Task<long> GetAmountAsync(string caAddress, string symbol)
