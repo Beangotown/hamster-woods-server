@@ -21,7 +21,11 @@ namespace HamsterWoods.NFT;
 [RemoteService(false), DisableAuditing]
 public class NFTService : HamsterWoodsBaseService, INFTService
 {
-    private const string _hamsterPassCacheKeyPrefix = "HamsterPass_";
+    // for test
+    private const string _hamsterPassCacheKeyPrefix = "TestPass_";
+    
+    
+    //private const string _hamsterPassCacheKeyPrefix = "HamsterPass_";
     private readonly string _hamsterPassUsingCacheKeyPrefix = "HamsterPassUsing:";
     private readonly string _imageUrlKey = "__nft_image_url";
     private readonly ICacheProvider _cacheProvider;
@@ -76,7 +80,11 @@ public class NFTService : HamsterWoodsBaseService, INFTService
             };
         }
 
-        var symbol = "HAMSTERPASS-1";
+        //var symbol = "HAMSTERPASS-1";
+        
+        // for test
+        var symbol = "TTZZ-1";
+        
         var sendTransactionOutput = await _contractProvider.SendTransferAsync(symbol, "1",
             input.CaAddress,
             GetDefaultChainId()
@@ -98,8 +106,8 @@ public class NFTService : HamsterWoodsBaseService, INFTService
 
     public async Task<HamsterPassClaimableDto> IsHamsterPassClaimableAsync(HamsterPassInput input)
     {
-        var beanPassValue = await _cacheProvider.GetAsync(_hamsterPassCacheKeyPrefix + input.CaAddress);
-        if (!beanPassValue.IsNull)
+        var passValue = await _cacheProvider.GetAsync(_hamsterPassCacheKeyPrefix + input.CaAddress);
+        if (!passValue.IsNull)
             return new HamsterPassClaimableDto
             {
                 Claimable = false,
