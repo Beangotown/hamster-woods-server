@@ -86,16 +86,17 @@ public class HamsterPassController : HamsterWoodsBaseController
     [Route("config")]
     public Task<ConfigDto> GetConfigAsync()
     {
-        return Task.FromResult(new ConfigDto() { DailyPlayCountResetTime = 0, ChancePrice = 20 });
+        return Task.FromResult(new ConfigDto()
+            { DailyPlayCountResetTime = 0, ChancePrice = 20, BuyChanceTransactionFee = 0.0035m });
     }
-    
+
     [HttpGet]
     [Route("asset")]
     public async Task<List<TokenBalanceDto>> GetAssetAsync(HamsterPassInput input)
     {
         return await _nftService.GetAssetAsync(input);
     }
-    
+
     [HttpGet]
     [Route("price")]
     public async Task<PriceDto> GetPriceAsync()
