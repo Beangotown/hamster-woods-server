@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using HamsterWoods.Rank;
 using Microsoft.AspNetCore.Mvc;
@@ -34,7 +35,7 @@ public class RankController: HamsterWoodsBaseController
     
     [HttpGet]
     [Route("history")]
-    public async Task<GetHistoryDto> GetHistoryAsync(GetRankDto input)
+    public async Task<List<GetHistoryDto>> GetHistoryAsync(GetRankDto input)
     {
         return await _rankService.GetHistoryAsync(input);
     }

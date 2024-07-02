@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace HamsterWoods.Rank;
@@ -13,5 +14,5 @@ public interface IRankService
 
     public Task SyncRankDataAsync();
     public Task SyncGameDataAsync();
-    Task<GetHistoryDto> GetHistoryAsync(GetRankDto input);
+    Task<List<GetHistoryDto>> GetHistoryAsync(GetRankDto input);
 }

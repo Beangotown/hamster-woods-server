@@ -54,7 +54,6 @@ public class RankService : HamsterWoodsBaseService, IRankService
 
     public async Task<WeekRankResultDto> GetWeekRankAsync(GetRankDto getRankDto)
     {
-        
         // return await _rankProvider.GetWeekRankAsync(getRankDto.CaAddress, getRankDto.SkipCount,
         //     getRankDto.MaxResultCount);
         var dayOfWeek = DateTime.UtcNow.DayOfWeek;
@@ -66,7 +65,7 @@ public class RankService : HamsterWoodsBaseService, IRankService
                 {
                     new SettleDayRank()
                     {
-                        FromRank=4,
+                        FromRank = 4,
                         ToRank = 6,
                         CaAddress = getRankDto.CaAddress,
                         FromScore = 567,
@@ -101,7 +100,7 @@ public class RankService : HamsterWoodsBaseService, IRankService
                 }
             };
         }
-        
+
         return new WeekRankResultDto()
         {
             RankingList = new List<RankDto>()
@@ -119,7 +118,7 @@ public class RankService : HamsterWoodsBaseService, IRankService
                 Rank = 5,
                 Score = 787
             }
-        }; 
+        };
     }
 
     public async Task<SeasonResultDto> GetSeasonConfigAsync()
@@ -391,36 +390,39 @@ public class RankService : HamsterWoodsBaseService, IRankService
         } while (historyRecords.GameList.Count >= QueryOnceLimit);
     }
 
-    public Task<GetHistoryDto> GetHistoryAsync(GetRankDto input)
+    public Task<List<GetHistoryDto>> GetHistoryAsync(GetRankDto input)
     {
         var dayOfWeek = DateTime.UtcNow.DayOfWeek;
-        if (_raceOptions.SettleDayOfWeek == (int)dayOfWeek)
+        //if (_raceOptions.SettleDayOfWeek == (int)dayOfWeek)
         {
-            return Task.FromResult(new GetHistoryDto()
+            return Task.FromResult(new List<GetHistoryDto>()
             {
-                Time = "2024-06-28",
-                CaAddress = input.CaAddress,
-                Score = 200,
-                Rank = 3,
-                RewardNftInfo = new NftInfo()
+                new GetHistoryDto()
                 {
-                    Balance = 5,
-                    ChainId = "tDVW",
-                    ImageUrl =
-                        "https://forest-testnet.s3.ap-northeast-1.amazonaws.com/1008xAUTO/1718204324416-Activity%20Icon.png",
-                    Symbol = "KINGPASS-1",
-                    TokenName = "KINGPASS"
+                    Time = "2024-06-28",
+                    CaAddress = input.CaAddress,
+                    Score = 200,
+                    Rank = 3,
+                    RewardNftInfo = new NftInfo()
+                    {
+                        Balance = 5,
+                        ChainId = "tDVW",
+                        ImageUrl =
+                            "https://forest-testnet.s3.ap-northeast-1.amazonaws.com/1008xAUTO/1718204324416-Activity%20Icon.png",
+                        Symbol = "KINGPASS-1",
+                        TokenName = "KINGPASS"
+                    }
+                },
+                new GetHistoryDto()
+                {
+                    Time = "2024-06-21",
+                    CaAddress = input.CaAddress,
+                    Score = 2300,
+                    Rank = 2
                 }
             });
         }
-
-        return Task.FromResult(new GetHistoryDto()
-        {
-            Time = "2024-06-28",
-            CaAddress = input.CaAddress,
-            Score = 200,
-            Rank = 3
-        });
+        
     }
 
     private RankDto ConvertSeasonRankDto(string caAddress,
