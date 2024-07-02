@@ -17,4 +17,5 @@ public interface INFTService
 
     Task<bool> CheckHamsterPassAsync(HamsterPassInput input);
     Task<List<TokenBalanceDto>> GetAssetAsync(HamsterPassInput input);
+    Task<PriceDto> GetPriceAsync();
 }

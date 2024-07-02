@@ -188,17 +188,28 @@ public class NFTService : HamsterWoodsBaseService, INFTService
         tokenInfos.Add(new TokenBalanceDto()
         {
             Symbol = "ELF",
+            Decimals = 8,
             Balance = elfBalance
         });
-       // var balance = await _portkeyProvider.GetTokenBalanceAsync(input.CaAddress, "ACORNS");
-       
-       tokenInfos.Add(new TokenBalanceDto()
-       {
-           Symbol = "ACORNS",
-           Balance = 0
-       });
+        // var balance = await _portkeyProvider.GetTokenBalanceAsync(input.CaAddress, "ACORNS");
 
-       return tokenInfos;
+        tokenInfos.Add(new TokenBalanceDto()
+        {
+            Symbol = "ACORNS",
+            Decimals = 8,
+            Balance = 0
+        });
+
+        return tokenInfos;
+    }
+
+    public Task<PriceDto> GetPriceAsync()
+    {
+        return Task.FromResult(new PriceDto()
+        {
+            AcornsInElf = 0.1m,
+            ElfInUsd = 0.35m
+        });
     }
 
     private async Task<long> GetAmountAsync(string caAddress, string symbol)
@@ -224,7 +235,8 @@ public class NFTService : HamsterWoodsBaseService, INFTService
             {
                 Symbol = symbol,
                 TokenName = tokenInfo.TokenName,
-                NftImageUrl = tokenInfo.ExternalInfo.Value.TryGetValue(_imageUrlKey, out var url) ? url : null
+                NftImageUrl = tokenInfo.ExternalInfo.Value.TryGetValue(_imageUrlKey, out var url) ? url : null,
+                TokenId = 1
             };
             await _cacheProvider.SetAsync(key, SerializeHelper.Serialize(info), null);
             return info;

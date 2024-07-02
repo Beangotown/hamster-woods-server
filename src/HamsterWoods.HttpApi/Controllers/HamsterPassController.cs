@@ -95,4 +95,11 @@ public class HamsterPassController : HamsterWoodsBaseController
     {
         return await _nftService.GetAssetAsync(input);
     }
+    
+    [HttpGet]
+    [Route("price")]
+    public async Task<PriceDto> GetPriceAsync()
+    {
+        return await _nftService.GetPriceAsync();
+    }
 }
