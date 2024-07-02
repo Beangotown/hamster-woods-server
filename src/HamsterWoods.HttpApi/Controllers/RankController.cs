@@ -31,4 +31,11 @@ public class RankController: HamsterWoodsBaseController
     {
         return await _rankService.GetRankingHistoryAsync(input);
     }
+    
+    [HttpGet]
+    [Route("history")]
+    public async Task<GetHistoryDto> GetHistoryAsync(GetRankDto input)
+    {
+        return await _rankService.GetHistoryAsync(input);
+    }
 }

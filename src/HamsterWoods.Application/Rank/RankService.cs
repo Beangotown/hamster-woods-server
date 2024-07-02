@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using AElf.Indexing.Elasticsearch;
 using HamsterWoods.Commons;
 using HamsterWoods.Contract;
+using HamsterWoods.NFT;
+using HamsterWoods.Options;
 using HamsterWoods.Trace;
 using Microsoft.Extensions.Options;
 using Nest;
@@ -24,7 +26,8 @@ public class RankService : HamsterWoodsBaseService, IRankService
     private readonly IRankProvider _rankProvider;
     private readonly IObjectMapper _objectMapper;
     private readonly ChainOptions _chainOptions;
-    
+    private readonly RaceOptions _raceOptions;
+
     private const int QueryOnceLimit = 1000;
     private const string DateFormat = "yyyy-MM-dd";
     private const string StartTime = "00:00:00";
@@ -35,7 +38,8 @@ public class RankService : HamsterWoodsBaseService, IRankService
         INESTRepository<UserActionIndex, string> userActionRepository,
         IRankProvider rankProvider,
         IObjectMapper objectMapper,
-        IOptionsSnapshot<ChainOptions> chainOptions)
+        IOptionsSnapshot<ChainOptions> chainOptions,
+        IOptionsSnapshot<RaceOptions> raceOptions)
     {
         _userRankWeekRepository = userRankWeekRepository;
         _userSeasonWeekRepository = userSeasonWeekRepository;
@@ -44,13 +48,78 @@ public class RankService : HamsterWoodsBaseService, IRankService
         _objectMapper = objectMapper;
         _rankProvider = rankProvider;
         _chainOptions = chainOptions.Value;
+        _raceOptions = raceOptions.Value;
     }
 
 
     public async Task<WeekRankResultDto> GetWeekRankAsync(GetRankDto getRankDto)
     {
-        return await _rankProvider.GetWeekRankAsync(getRankDto.CaAddress, getRankDto.SkipCount,
-            getRankDto.MaxResultCount);
+        
+        // return await _rankProvider.GetWeekRankAsync(getRankDto.CaAddress, getRankDto.SkipCount,
+        //     getRankDto.MaxResultCount);
+        var dayOfWeek = DateTime.UtcNow.DayOfWeek;
+        if (_raceOptions.SettleDayOfWeek == (int)dayOfWeek)
+        {
+            return new WeekRankResultDto()
+            {
+                SettleDayRankingList = new List<SettleDayRank>()
+                {
+                    new SettleDayRank()
+                    {
+                        FromRank=4,
+                        ToRank = 6,
+                        CaAddress = getRankDto.CaAddress,
+                        FromScore = 567,
+                        ToScore = 899,
+                        Rank = 5,
+                        Score = 787,
+                        RewardNftInfo = new NftInfo()
+                        {
+                            Balance = 5,
+                            ChainId = "tDVW",
+                            ImageUrl =
+                                "https://forest-testnet.s3.ap-northeast-1.amazonaws.com/1008xAUTO/1718204324416-Activity%20Icon.png",
+                            Symbol = "KINGPASS-1",
+                            TokenName = "KINGPASS"
+                        }
+                    }
+                },
+                SettleDaySelfRank = new SettleDaySelfRank()
+                {
+                    CaAddress = getRankDto.CaAddress,
+                    Rank = 5,
+                    Score = 787,
+                    RewardNftInfo = new NftInfo()
+                    {
+                        Balance = 5,
+                        ChainId = "tDVW",
+                        ImageUrl =
+                            "https://forest-testnet.s3.ap-northeast-1.amazonaws.com/1008xAUTO/1718204324416-Activity%20Icon.png",
+                        Symbol = "KINGPASS-1",
+                        TokenName = "KINGPASS"
+                    }
+                }
+            };
+        }
+        
+        return new WeekRankResultDto()
+        {
+            RankingList = new List<RankDto>()
+            {
+                new RankDto()
+                {
+                    CaAddress = getRankDto.CaAddress,
+                    Rank = 5,
+                    Score = 787,
+                }
+            },
+            SelfRank = new RankDto()
+            {
+                CaAddress = getRankDto.CaAddress,
+                Rank = 5,
+                Score = 787
+            }
+        }; 
     }
 
     public async Task<SeasonResultDto> GetSeasonConfigAsync()
@@ -118,7 +187,6 @@ public class RankService : HamsterWoodsBaseService, IRankService
 
     public async Task<RankingHisResultDto> GetRankingHistoryAsync(GetRankingHisDto getRankingHisDto)
     {
-       
         if (string.IsNullOrEmpty(getRankingHisDto.CaAddress) || string.IsNullOrEmpty(getRankingHisDto.SeasonId))
             return new RankingHisResultDto();
         var seasonIndex = await _rankSeasonRepository.GetAsync(getRankingHisDto.SeasonId);
@@ -135,7 +203,7 @@ public class RankService : HamsterWoodsBaseService, IRankService
             foreach (var weekRankDto in rankingHisResultDto.Weeks)
             {
                 var weekRankExists = weekRankDtos.Exists(weekRank =>
-                    weekRankDto.Week == weekRank.Week );
+                    weekRankDto.Week == weekRank.Week);
                 if (!weekRankExists) weekRankDtos.Add(weekRankDto);
             }
 
@@ -190,7 +258,8 @@ public class RankService : HamsterWoodsBaseService, IRankService
     public async Task SyncRankDataAsync()
     {
         var configList = await _rankProvider.GetSeasonConfigAsync();
-        if (configList == null || configList.GetRankingSeasonList == null || configList.GetRankingSeasonList.Season == null) return;
+        if (configList == null || configList.GetRankingSeasonList == null ||
+            configList.GetRankingSeasonList.Season == null) return;
         foreach (var config in configList.GetRankingSeasonList.Season)
         {
             var seasonId = config.Id;
@@ -198,18 +267,23 @@ public class RankService : HamsterWoodsBaseService, IRankService
             var skipCount = 0;
             while (true)
             {
-                var seasonRankRecords = await _rankProvider.GetSeasonRankRecordsAsync(seasonId, skipCount, QueryOnceLimit);
-                if(seasonRankRecords == null || seasonRankRecords.GetSeasonRankRecords == null || seasonRankRecords.GetSeasonRankRecords.RankingList == null) break;
+                var seasonRankRecords =
+                    await _rankProvider.GetSeasonRankRecordsAsync(seasonId, skipCount, QueryOnceLimit);
+                if (seasonRankRecords == null || seasonRankRecords.GetSeasonRankRecords == null ||
+                    seasonRankRecords.GetSeasonRankRecords.RankingList == null) break;
                 var rankCount = seasonRankRecords.GetSeasonRankRecords.RankingList?.Count ?? 0;
                 if (rankCount == 0) break;
                 skipCount += QueryOnceLimit;
-                
-                var seasonList = _objectMapper.Map<List<RankDto>, List<UserSeasonRankIndex>>(seasonRankRecords.GetSeasonRankRecords.RankingList);
+
+                var seasonList =
+                    _objectMapper.Map<List<RankDto>, List<UserSeasonRankIndex>>(seasonRankRecords.GetSeasonRankRecords
+                        .RankingList);
                 foreach (var item in seasonList)
                 {
                     item.Id = IdGenerateHelper.GenerateId(seasonId, AddressHelper.ToShortAddress(item.CaAddress));
                     item.SeasonId = seasonId;
                 }
+
                 await _userSeasonWeekRepository.BulkAddOrUpdateAsync(seasonList);
             }
 
@@ -264,7 +338,8 @@ public class RankService : HamsterWoodsBaseService, IRankService
             userActionIndex.CaAddress = AddressHelper.ToShortAddress(record.CaAddress);
             userActionIndex.ChainId = chainId;
             userActionIndex.Timestamp = record.TriggerTime;
-            userActionIndex.Id = $"{userActionIndex.CaAddress}_{userActionIndex.ChainId}_{DateTimeHelper.ToUnixTimeMilliseconds(userActionIndex.Timestamp)}";
+            userActionIndex.Id =
+                $"{userActionIndex.CaAddress}_{userActionIndex.ChainId}_{DateTimeHelper.ToUnixTimeMilliseconds(userActionIndex.Timestamp)}";
             userActionIndex.ActionType = UserActionType.Register;
             userActionList.Add(userActionIndex);
             if (userActionList.Count == QueryOnceLimit)
@@ -280,8 +355,10 @@ public class RankService : HamsterWoodsBaseService, IRankService
             userActionList.Clear();
         }
 
-        var startDate = DateTimeHelper.DatetimeToString(DateTime.UtcNow.AddDays(-Convert.ToInt32(DateTime.UtcNow.DayOfWeek) - 6), DateFormat);
-        
+        var startDate =
+            DateTimeHelper.DatetimeToString(DateTime.UtcNow.AddDays(-Convert.ToInt32(DateTime.UtcNow.DayOfWeek) - 6),
+                DateFormat);
+
         var dto = new GetGameHistoryDto();
         dto.BeginTime = DateTimeHelper.ParseDateTimeByStr($"{startDate} {StartTime}").AddHours(-8);
         dto.EndTime = DateTime.UtcNow.AddHours(1);
@@ -292,22 +369,58 @@ public class RankService : HamsterWoodsBaseService, IRankService
         {
             historyRecords = await _rankProvider.GetGameHistoryListAsync(dto);
             if (historyRecords == null || historyRecords.GameList.IsNullOrEmpty()) break;
-            
+
             foreach (var gameDto in historyRecords.GameList)
             {
-                if(gameDto.BingoTransactionInfo == null || goRecords.Exists(r => r.CaAddress == gameDto.CaAddress && r.TriggerTime == gameDto.BingoTransactionInfo.TriggerTime)) continue;
+                if (gameDto.BingoTransactionInfo == null || goRecords.Exists(r =>
+                        r.CaAddress == gameDto.CaAddress && r.TriggerTime == gameDto.BingoTransactionInfo.TriggerTime))
+                    continue;
                 var userActionIndex = new UserActionIndex();
                 userActionIndex.CaAddress = AddressHelper.ToShortAddress(gameDto.CaAddress);
                 userActionIndex.ChainId = chainId;
                 userActionIndex.Timestamp = gameDto.BingoTransactionInfo.TriggerTime;
-                userActionIndex.Id = $"{userActionIndex.CaAddress}_{userActionIndex.ChainId}_{DateTimeHelper.ToUnixTimeMilliseconds(userActionIndex.Timestamp)}";
+                userActionIndex.Id =
+                    $"{userActionIndex.CaAddress}_{userActionIndex.ChainId}_{DateTimeHelper.ToUnixTimeMilliseconds(userActionIndex.Timestamp)}";
                 userActionIndex.ActionType = UserActionType.Login;
                 userActionList.Add(userActionIndex);
             }
+
             await _userActionRepository.BulkAddOrUpdateAsync(userActionList);
             userActionList.Clear();
             dto.SkipCount += QueryOnceLimit;
         } while (historyRecords.GameList.Count >= QueryOnceLimit);
+    }
+
+    public Task<GetHistoryDto> GetHistoryAsync(GetRankDto input)
+    {
+        var dayOfWeek = DateTime.UtcNow.DayOfWeek;
+        if (_raceOptions.SettleDayOfWeek == (int)dayOfWeek)
+        {
+            return Task.FromResult(new GetHistoryDto()
+            {
+                Time = "2024-06-28",
+                CaAddress = input.CaAddress,
+                Score = 200,
+                Rank = 3,
+                RewardNftInfo = new NftInfo()
+                {
+                    Balance = 5,
+                    ChainId = "tDVW",
+                    ImageUrl =
+                        "https://forest-testnet.s3.ap-northeast-1.amazonaws.com/1008xAUTO/1718204324416-Activity%20Icon.png",
+                    Symbol = "KINGPASS-1",
+                    TokenName = "KINGPASS"
+                }
+            });
+        }
+
+        return Task.FromResult(new GetHistoryDto()
+        {
+            Time = "2024-06-28",
+            CaAddress = input.CaAddress,
+            Score = 200,
+            Rank = 3
+        });
     }
 
     private RankDto ConvertSeasonRankDto(string caAddress,
@@ -345,7 +458,7 @@ public class RankService : HamsterWoodsBaseService, IRankService
 
         return rankSeason.Item2[0];
     }
-    
+
     private string GetDefaultChainId()
     {
         return _chainOptions.ChainInfos.Keys.First();
