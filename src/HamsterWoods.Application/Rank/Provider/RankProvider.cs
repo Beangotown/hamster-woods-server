@@ -17,25 +17,29 @@ public class RankProvider : IRankProvider, ISingletonDependency
         _graphQlHelper = graphQlHelper;
     }
 
-    public async Task<WeekRankResultDto> GetWeekRankAsync(string caAddress, int skipCount, int maxResultCount)
+    public async Task<WeekRankResultDto> GetWeekRankAsync(int weekNum,string caAddress, int skipCount, int maxResultCount)
     {
         var graphQLResponse = await _graphQlHelper.QueryAsync<WeekRankResultGraphDto>(new GraphQLRequest
         {
             Query = @"
-			    query($skipCount:Int!,$maxResultCount:Int!,$caAddress:String!) {
-                    getWeekRank(getRankDto:{skipCount: $skipCount,maxResultCount:$maxResultCount,caAddress:$caAddress})
+			    query($skipCount:Int!,$maxResultCount:Int!,$caAddress:String!,$weekNum:Int!) {
+                    getWeekRank(getRankDto:{skipCount: $skipCount,maxResultCount:$maxResultCount,caAddress:$caAddress,weekNum:$weekNum})
                         {
                               status
                               refreshTime
                               rankingList{
                                 rank
                                 score
-                              caAddress
+                                caAddress
+                                symbol
+                                decimals
                               }
                               selfRank{
                                 rank
                                 score
                                 caAddress
+                                symbol
+                                decimals
                               }
                         }
                 }",
@@ -43,7 +47,8 @@ public class RankProvider : IRankProvider, ISingletonDependency
             {
                 skipCount,
                 maxResultCount,
-                caAddress
+                caAddress,
+                weekNum
             }
         });
         return graphQLResponse.GetWeekRank;

@@ -6,7 +6,7 @@ namespace HamsterWoods.Rank;
 
 public interface IRankProvider
 {
-    public Task<WeekRankResultDto> GetWeekRankAsync(string caAddress, int skipCount, int maxResultCount);
+    public Task<WeekRankResultDto> GetWeekRankAsync(int weekNum,string caAddress, int skipCount, int maxResultCount);
 
     public Task<SeasonRecordDto> GetSeasonConfigAsync();
 

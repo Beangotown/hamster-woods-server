@@ -54,8 +54,9 @@ public class RankService : HamsterWoodsBaseService, IRankService
 
     public async Task<WeekRankResultDto> GetWeekRankAsync(GetRankDto getRankDto)
     {
-        // return await _rankProvider.GetWeekRankAsync(getRankDto.CaAddress, getRankDto.SkipCount,
-        //     getRankDto.MaxResultCount);
+        var weekNum = 1; // should calculate
+        var rankInfos = await _rankProvider.GetWeekRankAsync(weekNum, getRankDto.CaAddress, getRankDto.SkipCount,
+            getRankDto.MaxResultCount);
         var dayOfWeek = DateTime.UtcNow.DayOfWeek;
         if (_raceOptions.SettleDayOfWeek == (int)dayOfWeek)
         {
@@ -103,26 +104,7 @@ public class RankService : HamsterWoodsBaseService, IRankService
             };
         }
 
-        return new WeekRankResultDto()
-        {
-            RankingList = new List<RankDto>()
-            {
-                new RankDto()
-                {
-                    CaAddress = getRankDto.CaAddress,
-                    Rank = 5,
-                    Decimals = 8,
-                    Score = 78700000000,
-                }
-            },
-            SelfRank = new RankDto()
-            {
-                CaAddress = getRankDto.CaAddress,
-                Rank = 5,
-                Decimals = 8,
-                Score = 78700000000
-            }
-        };
+        return rankInfos;
     }
 
     public async Task<SeasonResultDto> GetSeasonConfigAsync()
@@ -428,7 +410,6 @@ public class RankService : HamsterWoodsBaseService, IRankService
                 }
             });
         }
-        
     }
 
     private RankDto ConvertSeasonRankDto(string caAddress,
