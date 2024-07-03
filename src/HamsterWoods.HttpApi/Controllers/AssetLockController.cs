@@ -22,7 +22,7 @@ public class AssetLockController : HamsterWoodsBaseController
 
     [HttpGet]
     [Route("locked-infos")]
-    public async Task<List<AssetLockedInfoDto>> GetLockedInfosAsync(GetAssetLockInfoDto input)
+    public async Task<AssetLockedInfoResultDto> GetLockedInfosAsync(GetAssetLockInfoDto input)
     {
         return await _assetLockAppService.GetLockedInfosAsync(input);
     }

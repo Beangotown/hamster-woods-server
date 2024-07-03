@@ -17,19 +17,25 @@ public class AssetLockAppService : HamsterWoodsBaseService, IAssetLockAppService
         _logger = logger;
     }
 
-    public Task<List<AssetLockedInfoDto>> GetLockedInfosAsync(GetAssetLockInfoDto input)
+    public Task<AssetLockedInfoResultDto> GetLockedInfosAsync(GetAssetLockInfoDto input)
     {
-        return Task.FromResult(new List<AssetLockedInfoDto>()
+        var result = new AssetLockedInfoResultDto
         {
-            new AssetLockedInfoDto()
+            LockedInfoList = new List<AssetLockedInfoDto>()
             {
-                LockedTime = "2024-06-28",
-                UnLockTime = "2024-07-24",
-                Symbol = "ACORNS",
-                Decimals = 8,
-                Amount = 100
-            }
-        });
+                new AssetLockedInfoDto()
+                {
+                    LockedTime = "2024-06-28",
+                    UnLockTime = "2024-07-24",
+                    Symbol = "ACORNS",
+                    Decimals = 8,
+                    Amount = 100000000
+                }
+            },
+            TotalLockedAmount = 20000000000,
+            Decimals = 8
+        };
+        return Task.FromResult(result);
     }
 
     public Task<List<GetUnlockRecordDto>> GetUnlockRecordsAsync(GetAssetLockInfoDto input)
@@ -40,7 +46,7 @@ public class AssetLockAppService : HamsterWoodsBaseService, IAssetLockAppService
                 UnLockTime = "2024-07-24",
                 Symbol = "ACORNS",
                 Decimals = 8,
-                Amount = 100,
+                Amount = 10000000000,
                 TransactionId="685fa94f58d5176438b678ebf317fc23fb6539adc66127c6221b7a18a4a20364"
             }
         });
