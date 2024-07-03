@@ -68,10 +68,11 @@ public class RankService : HamsterWoodsBaseService, IRankService
                         FromRank = 4,
                         ToRank = 6,
                         CaAddress = getRankDto.CaAddress,
-                        FromScore = 567,
-                        ToScore = 899,
+                        FromScore = 56700000000,
+                        ToScore = 89900000000,
                         Rank = 5,
-                        Score = 787,
+                        Score = 78700000000,
+                        Decimals = 8,
                         RewardNftInfo = new NftInfo()
                         {
                             Balance = 5,
@@ -87,7 +88,8 @@ public class RankService : HamsterWoodsBaseService, IRankService
                 {
                     CaAddress = getRankDto.CaAddress,
                     Rank = 5,
-                    Score = 787,
+                    Score = 78700000000,
+                    Decimals = 8,
                     RewardNftInfo = new NftInfo()
                     {
                         Balance = 5,
@@ -109,14 +111,16 @@ public class RankService : HamsterWoodsBaseService, IRankService
                 {
                     CaAddress = getRankDto.CaAddress,
                     Rank = 5,
-                    Score = 787,
+                    Decimals = 8,
+                    Score = 78700000000,
                 }
             },
             SelfRank = new RankDto()
             {
                 CaAddress = getRankDto.CaAddress,
                 Rank = 5,
-                Score = 787
+                Decimals = 8,
+                Score = 78700000000
             }
         };
     }
@@ -401,7 +405,8 @@ public class RankService : HamsterWoodsBaseService, IRankService
                 {
                     Time = "2024-06-28",
                     CaAddress = input.CaAddress,
-                    Score = 200,
+                    Score = 20000000000,
+                    Decimals = 8,
                     Rank = 3,
                     RewardNftInfo = new NftInfo()
                     {
@@ -417,7 +422,7 @@ public class RankService : HamsterWoodsBaseService, IRankService
                 {
                     Time = "2024-06-21",
                     CaAddress = input.CaAddress,
-                    Score = 2300,
+                    Score = 230000000000,
                     Rank = 2
                 }
             });
