@@ -423,6 +423,7 @@ public class RankService : HamsterWoodsBaseService, IRankService
                     Time = "2024-06-21",
                     CaAddress = input.CaAddress,
                     Score = 230000000000,
+                    Decimals = 8,
                     Rank = 2
                 }
             });
