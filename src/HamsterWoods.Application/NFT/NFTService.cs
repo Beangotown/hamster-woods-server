@@ -117,7 +117,7 @@ public class NFTService : HamsterWoodsBaseService, INFTService
     {
         var result = new List<HamsterPassResultDto>();
 
-        var beanPassList = new List<string> { "HAMSTERPASS-1" };
+        var hamsterPasses = new List<string> { "HAMSTERPASS-1" };
         var balanceDto = new GetUserBalanceDto()
         {
             ChainId = GetDefaultChainId(),
@@ -126,11 +126,11 @@ public class NFTService : HamsterWoodsBaseService, INFTService
         };
         var balanceList = (await _rankProvider.GetUserBalanceAsync(balanceDto))?.FindAll(b => b.Amount > 0);
 
-        foreach (var beanPass in beanPassList)
+        foreach (var hamsterPass in hamsterPasses)
         {
-            var info = await GetHamsterPassInfoAsync(beanPass);
+            var info = await GetHamsterPassInfoAsync(hamsterPass);
             var dto = _objectMapper.Map<HamsterPassInfoDto, HamsterPassResultDto>(info);
-            var amount = balanceList?.FirstOrDefault(b => b.Symbol == beanPass)?.Amount ?? 0L;
+            var amount = balanceList?.FirstOrDefault(b => b.Symbol == hamsterPass)?.Amount ?? 0L;
             dto.Owned = amount > 0;
             result.Add(dto);
         }
