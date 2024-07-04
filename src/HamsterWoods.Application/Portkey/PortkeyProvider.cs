@@ -68,7 +68,7 @@ public class PortkeyProvider : IPortkeyProvider, ISingletonDependency
         catch (Exception e)
         {
             _logger.LogError(e, "GetHolderTokenInfoAsync error {CaAddress}", caAddress);
-            throw new UserFriendlyException($"Get holder token error, {e.Message}");
+            return new TokenInfoDto();
         }
     }
 
