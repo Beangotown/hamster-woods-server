@@ -420,7 +420,7 @@ public class RankService : HamsterWoodsBaseService, IRankService
             {
                 CaAddress = caAddress,
                 SumScore = 0,
-                Rank = BeangoTownConstants.UserDefaultRank
+                Rank = HamsterWoodsConstants.UserDefaultRank
             };
         if (!weekRankDtos.IsNullOrEmpty()) userSeasonRankIndex.SumScore = weekRankDtos.Select(item => item.Score).Max();
 

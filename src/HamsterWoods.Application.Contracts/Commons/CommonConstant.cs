@@ -11,4 +11,7 @@ public static class CommonConstant
 
     public const string DefaultTitle = "title";
     public const string DefaultContent = "content";
+    public const string ElfSymbol = "ELF";
+    public const string AcornsSymbol = "ACORNS";
+    public const int UsedTokenDecimals = 8;
 }

@@ -1,6 +1,6 @@
 namespace HamsterWoods.Commons;
 
-public static class BeangoTownConstants
+public static class HamsterWoodsConstants
 {
     public const int UserDefaultRank = -1;
     public const string SyncingCode = "20002";

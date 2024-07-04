@@ -45,15 +45,14 @@ public class PortkeyProvider : IPortkeyProvider, ISingletonDependency
         catch (Exception e)
         {
             _logger.LogError(e, "GetCaHolderCreateTimeAsync error {CaAddress}", hamsterPassInput.CaAddress);
-            throw new UserFriendlyException(BeangoTownConstants.SyncingMessage, BeangoTownConstants.SyncingCode);
+            throw new UserFriendlyException(HamsterWoodsConstants.SyncingMessage, HamsterWoodsConstants.SyncingCode);
         }
 
         return timeStamp;
     }
 
-    public async Task<long> GetTokenBalanceAsync(string caAddress, string symbol)
+    public async Task<TokenInfoDto> GetHolderTokenInfoAsync(string caAddress, string symbol)
     {
-        long balance = 0;
         var paramStr = BuildParamStr(new Dictionary<string, string>
         {
             { "caAddress", caAddress },
@@ -64,14 +63,13 @@ public class PortkeyProvider : IPortkeyProvider, ISingletonDependency
         try
         {
             var res = await _httpClientProvider.GetAsync(null, url);
-            long.TryParse(JsonConvert.DeserializeObject<TokenInfoDto>(res).Balance, out balance);
+            return JsonConvert.DeserializeObject<TokenInfoDto>(res);
         }
         catch (Exception e)
         {
-            _logger.LogError(e, "GetCaHolderCreateTimeAsync error {CaAddress}", caAddress);
+            _logger.LogError(e, "GetHolderTokenInfoAsync error {CaAddress}", caAddress);
+            throw new UserFriendlyException($"Get holder token error, {e.Message}");
         }
-
-        return (long)ToPrice(balance, 8);
     }
 
     private static string BuildParamStr(Dictionary<string, string> paramDict)
