@@ -20,8 +20,6 @@ namespace HamsterWoods.Rank;
 public class RankService : HamsterWoodsBaseService, IRankService
 {
     private readonly INESTRepository<UserWeekRankIndex, string> _userRankWeekRepository;
-    private readonly INESTRepository<UserSeasonRankIndex, string> _userSeasonWeekRepository;
-    private readonly INESTRepository<RankSeasonConfigIndex, string> _rankSeasonRepository;
     private readonly INESTRepository<UserActionIndex, string> _userActionRepository;
     private readonly IRankProvider _rankProvider;
     private readonly IObjectMapper _objectMapper;
@@ -33,8 +31,6 @@ public class RankService : HamsterWoodsBaseService, IRankService
     private const string StartTime = "00:00:00";
 
     public RankService(INESTRepository<UserWeekRankIndex, string> userRankWeekRepository,
-        INESTRepository<UserSeasonRankIndex, string> userSeasonWeekRepository,
-        INESTRepository<RankSeasonConfigIndex, string> rankSeasonRepository,
         INESTRepository<UserActionIndex, string> userActionRepository,
         IRankProvider rankProvider,
         IObjectMapper objectMapper,
@@ -42,8 +38,6 @@ public class RankService : HamsterWoodsBaseService, IRankService
         IOptionsSnapshot<RaceOptions> raceOptions)
     {
         _userRankWeekRepository = userRankWeekRepository;
-        _userSeasonWeekRepository = userSeasonWeekRepository;
-        _rankSeasonRepository = rankSeasonRepository;
         _userActionRepository = userActionRepository;
         _objectMapper = objectMapper;
         _rankProvider = rankProvider;
@@ -107,115 +101,6 @@ public class RankService : HamsterWoodsBaseService, IRankService
         return rankInfos;
     }
 
-    public async Task<SeasonResultDto> GetSeasonConfigAsync()
-    {
-        var result = await _rankSeasonRepository.GetSortListAsync(
-            sortFunc: s => s.Descending(a => Convert.ToInt64(a.Id))
-        );
-
-        return new SeasonResultDto
-        {
-            Season = _objectMapper.Map<List<RankSeasonConfigIndex>, List<SeasonDto>>(result.Item2)
-        };
-    }
-
-    public async Task<SeasonRankResultDto> GetSeasonRankAsync(GetRankDto getRankDt)
-    {
-        var rankResultDto = new SeasonRankResultDto();
-        var seasonIndex = await GetRankSeasonConfigIndexAsync();
-        SeasonWeekHelper.GetSeasonStatusAndRefreshTime(seasonIndex, DateTime.Now, out var status, out var refreshTime);
-        rankResultDto.SeasonName = seasonIndex?.Name;
-        rankResultDto.Status = status;
-        rankResultDto.RefreshTime = refreshTime;
-        if (seasonIndex == null || getRankDt.SkipCount >= seasonIndex.PlayerSeasonShowCount) return rankResultDto;
-
-        var mustQuery = new List<Func<QueryContainerDescriptor<UserSeasonRankIndex>, QueryContainer>>();
-        mustQuery.Add(q => q.Term(i => i.Field(f => f.SeasonId).Value(seasonIndex.Id)));
-
-        QueryContainer Filter(QueryContainerDescriptor<UserSeasonRankIndex> f)
-        {
-            return f.Bool(b => b.Must(mustQuery));
-        }
-
-        var result = await _userSeasonWeekRepository.GetSortListAsync(Filter, null,
-            s => s.Descending(a => a.SumScore)
-            , Math.Min(getRankDt.MaxResultCount, seasonIndex.PlayerSeasonShowCount - getRankDt.SkipCount),
-            getRankDt.SkipCount);
-        var rank = getRankDt.SkipCount;
-        var rankDtos = new List<RankDto>();
-        foreach (var item in result.Item2)
-        {
-            var rankDto = _objectMapper.Map<UserSeasonRankIndex, RankDto>(item);
-            rankDto.Rank = ++rank;
-            rankDtos.Add(rankDto);
-            if (rankDto.CaAddress.Equals(getRankDt.CaAddress)) rankResultDto.SelfRank = rankDto;
-        }
-
-        rankResultDto.RankingList = rankDtos;
-
-        var id = IdGenerateHelper.GenerateId(seasonIndex.Id, AddressHelper.ToShortAddress(getRankDt.CaAddress));
-        if (rankResultDto.SelfRank == null)
-        {
-            var userSeasonRankIndex = await _userSeasonWeekRepository.GetAsync(id);
-            var getRankingHisDto = new GetRankingHisDto
-            {
-                SeasonId = seasonIndex.Id,
-                CaAddress = getRankDt.CaAddress
-            };
-            var weekRankDtos = await GetWeekRankDtoListAsync(getRankingHisDto);
-            rankResultDto.SelfRank = ConvertSeasonRankDto(getRankDt.CaAddress, userSeasonRankIndex, weekRankDtos);
-        }
-
-        return rankResultDto;
-    }
-
-
-    public async Task<RankingHisResultDto> GetRankingHistoryAsync(GetRankingHisDto getRankingHisDto)
-    {
-        if (string.IsNullOrEmpty(getRankingHisDto.CaAddress) || string.IsNullOrEmpty(getRankingHisDto.SeasonId))
-            return new RankingHisResultDto();
-        var seasonIndex = await _rankSeasonRepository.GetAsync(getRankingHisDto.SeasonId);
-        if (seasonIndex == null) return new RankingHisResultDto();
-
-        var id = IdGenerateHelper.GenerateId(getRankingHisDto.SeasonId,
-            AddressHelper.ToShortAddress(getRankingHisDto.CaAddress));
-        var userSeasonRankIndex = await _userSeasonWeekRepository.GetAsync(id);
-        var weekRankDtos = await GetWeekRankDtoListAsync(getRankingHisDto);
-        var seasonRankDto = ConvertSeasonRankDto(getRankingHisDto.CaAddress, userSeasonRankIndex, weekRankDtos);
-        // Add real-time data
-        var rankingHisResultDto = await _rankProvider.GetRankingHistoryAsync(getRankingHisDto);
-        if (!rankingHisResultDto.Weeks.IsNullOrEmpty())
-            foreach (var weekRankDto in rankingHisResultDto.Weeks)
-            {
-                var weekRankExists = weekRankDtos.Exists(weekRank =>
-                    weekRankDto.Week == weekRank.Week);
-                if (!weekRankExists) weekRankDtos.Add(weekRankDto);
-            }
-
-        // Add default data
-        for (var i = 0; i < seasonIndex.WeekInfos.Count; i++)
-        {
-            if (seasonIndex.WeekInfos[i].RankBeginTime.CompareTo(DateTime.UtcNow) == 1) break;
-            var weekRankExists = weekRankDtos.Exists(weekRank =>
-                weekRank.Week == i + 1);
-            if (!weekRankExists)
-                weekRankDtos.Add(new WeekRankDto
-                {
-                    Week = i + 1,
-                    CaAddress = getRankingHisDto.CaAddress,
-                    Score = 0,
-                    Rank = -1
-                });
-        }
-
-        weekRankDtos.Sort((p1, p2) => p1.Week.CompareTo(p2.Week));
-        return new RankingHisResultDto
-        {
-            Weeks = weekRankDtos,
-            Season = seasonRankDto
-        };
-    }
-
     private async Task<List<WeekRankDto>> GetWeekRankDtoListAsync(GetRankingHisDto getRankingHisDto)
     {
         var mustQuery = new List<Func<QueryContainerDescriptor<UserWeekRankIndex>, QueryContainer>>();
@@ -238,78 +123,6 @@ public class RankService : HamsterWoodsBaseService, IRankService
         }
 
         return weekRankDtos;
-    }
-
-    public async Task SyncRankDataAsync()
-    {
-        var configList = await _rankProvider.GetSeasonConfigAsync();
-        if (configList == null || configList.GetRankingSeasonList == null ||
-            configList.GetRankingSeasonList.Season == null) return;
-        foreach (var config in configList.GetRankingSeasonList.Season)
-        {
-            var seasonId = config.Id;
-
-            var skipCount = 0;
-            while (true)
-            {
-                var seasonRankRecords =
-                    await _rankProvider.GetSeasonRankRecordsAsync(seasonId, skipCount, QueryOnceLimit);
-                if (seasonRankRecords == null || seasonRankRecords.GetSeasonRankRecords == null ||
-                    seasonRankRecords.GetSeasonRankRecords.RankingList == null) break;
-                var rankCount = seasonRankRecords.GetSeasonRankRecords.RankingList?.Count ?? 0;
-                if (rankCount == 0) break;
-                skipCount += QueryOnceLimit;
-
-                var seasonList =
-                    _objectMapper.Map<List<RankDto>, List<UserSeasonRankIndex>>(seasonRankRecords.GetSeasonRankRecords
-                        .RankingList);
-                foreach (var item in seasonList)
-                {
-                    item.Id = IdGenerateHelper.GenerateId(seasonId, AddressHelper.ToShortAddress(item.CaAddress));
-                    item.SeasonId = seasonId;
-                }
-
-                await _userSeasonWeekRepository.BulkAddOrUpdateAsync(seasonList);
-            }
-
-            var week = config.WeekInfos?.Count ?? 0;
-            if (week == 0) continue;
-
-            for (var i = 1; i <= week; i++)
-            {
-                skipCount = 0;
-                var rank = 0;
-                while (true)
-                {
-                    var weekRankRecords =
-                        await _rankProvider.GetWeekRankRecordsAsync(seasonId, i, skipCount, QueryOnceLimit);
-                    if (weekRankRecords == null || weekRankRecords.GetWeekRankRecords == null ||
-                        weekRankRecords.GetWeekRankRecords.RankingList == null) break;
-                    var rankCount = weekRankRecords.GetWeekRankRecords.RankingList?.Count ?? 0;
-                    if (rankCount == 0) break;
-                    skipCount += QueryOnceLimit;
-                    var weekList =
-                        _objectMapper.Map<List<RankDto>, List<UserWeekRankIndex>>(weekRankRecords.GetWeekRankRecords
-                            .RankingList);
-                    foreach (var item in weekList)
-                    {
-                        rank++;
-                        if (rank <= config.PlayerWeekRankCount) item.Rank = rank;
-                        item.Id = IdGenerateHelper.GenerateId(seasonId, i,
-                            AddressHelper.ToShortAddress(item.CaAddress));
-                        item.SeasonId = seasonId;
-                        item.Week = i;
-                        item.UpdateTime = DateTime.UtcNow;
-                    }
-
-                    await _userRankWeekRepository.BulkAddOrUpdateAsync(weekList);
-                }
-            }
-        }
-
-        var seasonConfigList =
-            _objectMapper.Map<List<SeasonDto>, List<RankSeasonConfigIndex>>(configList.GetRankingSeasonList.Season);
-        await _rankSeasonRepository.BulkAddOrUpdateAsync(seasonConfigList);
     }
 
     public async Task SyncGameDataAsync()
@@ -411,42 +224,7 @@ public class RankService : HamsterWoodsBaseService, IRankService
             });
         }
     }
-
-    private RankDto ConvertSeasonRankDto(string caAddress,
-        UserSeasonRankIndex userSeasonRankIndex, List<WeekRankDto> weekRankDtos)
-    {
-        if (userSeasonRankIndex == null)
-            userSeasonRankIndex = new UserSeasonRankIndex
-            {
-                CaAddress = caAddress,
-                SumScore = 0,
-                Rank = HamsterWoodsConstants.UserDefaultRank
-            };
-        if (!weekRankDtos.IsNullOrEmpty()) userSeasonRankIndex.SumScore = weekRankDtos.Select(item => item.Score).Max();
-
-        return _objectMapper.Map<UserSeasonRankIndex, RankDto>(userSeasonRankIndex);
-    }
-
-    private async Task<RankSeasonConfigIndex?> GetRankSeasonConfigIndexAsync()
-    {
-        var now = DateTime.UtcNow;
-        var mustQuery = new List<Func<QueryContainerDescriptor<RankSeasonConfigIndex>, QueryContainer>>();
-        mustQuery.Add(q => q.DateRange(i => i.Field(f => f.RankBeginTime).LessThanOrEquals(now)));
-        mustQuery.Add(q => q.DateRange(i => i.Field(f => f.ShowEndTime).GreaterThanOrEquals(now)));
-
-        QueryContainer Filter(QueryContainerDescriptor<RankSeasonConfigIndex> f)
-        {
-            return f.Bool(b => b.Must(mustQuery));
-        }
-
-        var rankSeason = await _rankSeasonRepository.GetSortListAsync(Filter, null,
-            s => s.Descending(a => Convert.ToInt64(a.Id))
-            , 1
-        );
-        if (rankSeason.Item2.Count == 0) return null;
-
-        return rankSeason.Item2[0];
-    }
+    
 
     private string GetDefaultChainId()
     {

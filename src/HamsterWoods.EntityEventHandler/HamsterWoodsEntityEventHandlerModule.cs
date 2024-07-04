@@ -1,9 +1,13 @@
 using System;
 using AElf.Indexing.Elasticsearch.Options;
+using GraphQL.Client.Abstractions;
+using GraphQL.Client.Http;
+using GraphQL.Client.Serializer.Newtonsoft;
 using HamsterWoods.Commons;
 using Medallion.Threading;
 using Medallion.Threading.Redis;
 using HamsterWoods.EntityEventHandler.Core;
+using HamsterWoods.EntityEventHandler.Core.Worker;
 using HamsterWoods.Grains;
 using HamsterWoods.MongoDb;
 using Microsoft.Extensions.Caching.Distributed;
@@ -17,6 +21,7 @@ using StackExchange.Redis;
 using Volo.Abp;
 using Volo.Abp.AspNetCore.Serilog;
 using Volo.Abp.Autofac;
+using Volo.Abp.BackgroundWorkers;
 using Volo.Abp.Caching;
 using Volo.Abp.Caching.StackExchangeRedis;
 using Volo.Abp.EventBus.RabbitMq;
@@ -32,6 +37,7 @@ namespace HamsterWoods.EntityEventHandler;
     typeof(HamsterWoodsEntityEventHandlerCoreModule),
     typeof(AbpAspNetCoreSerilogModule),
     typeof(AbpCachingStackExchangeRedisModule),
+    typeof(AbpBackgroundWorkersModule),
     typeof(AbpEventBusRabbitMqModule))]
 public class HamsterWoodsEntityEventHandlerModule : AbpModule
 {
@@ -43,9 +49,16 @@ public class HamsterWoodsEntityEventHandlerModule : AbpModule
         ConfigureCache(configuration);
         ConfigureEsIndexCreation();
         ConfigureDistributedLocking(context, configuration);
+        ConfigureGraphQl(context, configuration);
         ConfigureOrleans(context, configuration);
     }
-
+    private void ConfigureGraphQl(ServiceConfigurationContext context,
+        IConfiguration configuration)
+    {
+        context.Services.AddSingleton(new GraphQLHttpClient(configuration["GraphQL:Configuration"],
+            new NewtonsoftJsonSerializer()));
+        context.Services.AddScoped<IGraphQLClient>(sp => sp.GetRequiredService<GraphQLHttpClient>());
+    }
     private static void ConfigureOrleans(ServiceConfigurationContext context, IConfiguration configuration)
     {
         context.Services.AddSingleton<IClusterClient>(o =>
@@ -104,14 +117,21 @@ public class HamsterWoodsEntityEventHandlerModule : AbpModule
         Configure<TokenCleanupOptions>(x => x.IsCleanupEnabled = false);
     }
 
+    public override void OnApplicationInitialization(ApplicationInitializationContext context)
+    {
+        context.AddBackgroundWorkerAsync<SyncRankRecordWorker>();
+
+        ConfigurationProvidersHelper.DisplayConfigurationProviders(context);
+    }
+    
     public override void OnPreApplicationInitialization(ApplicationInitializationContext context)
     {
-        StartOrleans(context.ServiceProvider);
+        //StartOrleans(context.ServiceProvider);
     }
 
     public override void OnApplicationShutdown(ApplicationShutdownContext context)
     {
-        StopOrleans(context.ServiceProvider);
+        //StopOrleans(context.ServiceProvider);
     }
 
     private static void StartOrleans(IServiceProvider serviceProvider)

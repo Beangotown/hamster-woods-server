@@ -25,14 +25,7 @@ public class RankController: HamsterWoodsBaseController
     {
         return await _rankService.GetWeekRankAsync(input);
     }
-    
-    [HttpGet]
-    [Route("ranking-history")]
-    public async Task<RankingHisResultDto> GetRankingHistoryAsync(GetRankingHisDto input)
-    {
-        return await _rankService.GetRankingHistoryAsync(input);
-    }
-    
+
     [HttpGet]
     [Route("history")]
     public async Task<List<GetHistoryDto>> GetHistoryAsync(GetRankDto input)
