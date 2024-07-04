@@ -175,9 +175,10 @@ public class NFTService : HamsterWoodsBaseService, INFTService
 
     public async Task<List<TokenBalanceDto>> GetAssetAsync(HamsterPassInput input)
     {
+        var caAddress = AddressHelper.ToShortAddress(input.CaAddress);
         var tokenInfos = new List<TokenBalanceDto>();
 
-        var elfInfo = await _portkeyProvider.GetHolderTokenInfoAsync(input.CaAddress, CommonConstant.ElfSymbol);
+        var elfInfo = await _portkeyProvider.GetHolderTokenInfoAsync(caAddress, CommonConstant.ElfSymbol);
         tokenInfos.Add(new TokenBalanceDto()
         {
             Symbol = CommonConstant.ElfSymbol,
@@ -186,7 +187,7 @@ public class NFTService : HamsterWoodsBaseService, INFTService
         });
         
         var acornsInfo =
-            await _portkeyProvider.GetHolderTokenInfoAsync(input.CaAddress, CommonConstant.AcornsSymbol);
+            await _portkeyProvider.GetHolderTokenInfoAsync(caAddress, CommonConstant.AcornsSymbol);
         tokenInfos.Add(new TokenBalanceDto()
         {
             Symbol = CommonConstant.AcornsSymbol,
