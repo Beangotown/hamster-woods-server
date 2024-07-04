@@ -182,19 +182,24 @@ public class NFTService : HamsterWoodsBaseService, INFTService
         {
             Symbol = CommonConstant.ElfSymbol,
             Decimals = CommonConstant.UsedTokenDecimals,
-            Balance = elfInfo?.Balance ?? 0
+            Balance = GetBalance(elfInfo.Balance)
         });
-        var acornsBalance =
+        
+        var acornsInfo =
             await _portkeyProvider.GetHolderTokenInfoAsync(input.CaAddress, CommonConstant.AcornsSymbol);
-
         tokenInfos.Add(new TokenBalanceDto()
         {
             Symbol = CommonConstant.AcornsSymbol,
             Decimals = CommonConstant.UsedTokenDecimals,
-            Balance = acornsBalance?.Balance ?? 0
+            Balance = GetBalance(acornsInfo.Balance)
         });
 
         return tokenInfos;
+    }
+
+    private long GetBalance(string balanceStr)
+    {
+        return !long.TryParse(balanceStr, out var balance) ? 0 : balance;
     }
 
     public Task<PriceDto> GetPriceAsync()
