@@ -1,7 +1,15 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using AElf.Indexing.Elasticsearch;
 using HamsterWoods.AssetLock.Dtos;
+using HamsterWoods.Options;
+using HamsterWoods.Rank;
+using JetBrains.Annotations;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Nest;
 using Volo.Abp;
 using Volo.Abp.Auditing;
 
@@ -11,44 +19,74 @@ namespace HamsterWoods.AssetLock;
 public class AssetLockAppService : HamsterWoodsBaseService, IAssetLockAppService
 {
     private readonly ILogger<AssetLockAppService> _logger;
+    private readonly RaceOptions _raceOptions;
+    private readonly INESTRepository<UserWeekRankRecordIndex, string> _userRecordRepository;
 
-    public AssetLockAppService(ILogger<AssetLockAppService> logger)
+    public AssetLockAppService(ILogger<AssetLockAppService> logger, IOptionsMonitor<RaceOptions> raceOptions,
+        INESTRepository<UserWeekRankRecordIndex, string> userRecordRepository)
     {
         _logger = logger;
+        _userRecordRepository = userRecordRepository;
+        _raceOptions = raceOptions.CurrentValue;
     }
 
-    public Task<AssetLockedInfoResultDto> GetLockedInfosAsync(GetAssetLockInfoDto input)
+    public async Task<AssetLockedInfoResultDto> GetLockedInfosAsync(GetAssetLockInfoDto input)
     {
+        var weekNum = 1;
+        var weekNums = new List<int>() { 1, 2, 3, 4 };
+        var records = await GetRecordsAsync(weekNums, input.CaAddress);
+        var totalLockedAmount = records.Sum(t => t.SumScore);
+        int lockedDays = 30;
+
+        var lockedInfoList = new List<AssetLockedInfoDto>();
+        foreach (var record in records)
+        {
+            // next day as begin
+            var date = _raceOptions.CalibrationTime.AddHours(_raceOptions.RaceHours * weekNum).AddHours(10);
+            lockedInfoList.Add(new AssetLockedInfoDto()
+            {
+                Amount = record.SumScore,
+                Decimals = 8,
+                Symbol = "ACORNS",
+                LockedTime = date.ToString("yyyy-MM-dd"),
+                UnLockTime = date.AddDays(lockedDays).ToString("yyyy-MM-dd")
+            });
+        }
+
         var result = new AssetLockedInfoResultDto
         {
-            LockedInfoList = new List<AssetLockedInfoDto>()
-            {
-                new AssetLockedInfoDto()
-                {
-                    LockedTime = "2024-06-28",
-                    UnLockTime = "2024-07-24",
-                    Symbol = "ACORNS",
-                    Decimals = 8,
-                    Amount = 100000000
-                }
-            },
-            TotalLockedAmount = 20000000000,
+            LockedInfoList = lockedInfoList,
+            TotalLockedAmount = totalLockedAmount,
             Decimals = 8
         };
-        return Task.FromResult(result);
+        return result;
+    }
+
+    private async Task<List<UserWeekRankRecordIndex>> GetRecordsAsync(List<int> weekNums, string caAddress)
+    {
+        var mustQuery = new List<Func<QueryContainerDescriptor<UserWeekRankRecordIndex>, QueryContainer>>();
+        mustQuery.Add(q => q.Term(i => i.Field(f => f.CaAddress).Value(caAddress)));
+        mustQuery.Add(q => q.Terms(i => i.Field(f => f.WeekNum).Terms(weekNums)));
+        QueryContainer Filter(QueryContainerDescriptor<UserWeekRankRecordIndex> f) => f.Bool(b => b.Must(mustQuery));
+
+        var result = await _userRecordRepository.GetSortListAsync(Filter, null,
+            sortFunc: s => s.Descending(a => a.WeekNum));
+
+        return result.Item2;
     }
 
     public Task<List<GetUnlockRecordDto>> GetUnlockRecordsAsync(GetAssetLockInfoDto input)
     {
-        return Task.FromResult(new List<GetUnlockRecordDto>() {
-            new GetUnlockRecordDto()
-            {
-                UnLockTime = "2024-07-24",
-                Symbol = "ACORNS",
-                Decimals = 8,
-                Amount = 10000000000,
-                TransactionId="685fa94f58d5176438b678ebf317fc23fb6539adc66127c6221b7a18a4a20364"
-            }
+        return Task.FromResult(new List<GetUnlockRecordDto>()
+        {
+            // new GetUnlockRecordDto()
+            // {
+            //     UnLockTime = "2024-07-24",
+            //     Symbol = "ACORNS",
+            //     Decimals = 8,
+            //     Amount = 10000000000,
+            //     TransactionId = "685fa94f58d5176438b678ebf317fc23fb6539adc66127c6221b7a18a4a20364"
+            // }
         });
     }
 }

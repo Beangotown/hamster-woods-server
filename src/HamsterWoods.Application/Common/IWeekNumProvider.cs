@@ -7,7 +7,7 @@ namespace HamsterWoods.Common;
 
 public interface IWeekNumProvider
 {
-    int GetWeekNum();
+    int GetWeekNum(DateTime time);
 }
 
 public class WeekNumProvider : IWeekNumProvider, ISingletonDependency
@@ -19,12 +19,11 @@ public class WeekNumProvider : IWeekNumProvider, ISingletonDependency
         _raceOptions = raceOptions.CurrentValue;
     }
 
-    public int GetWeekNum()
+    public int GetWeekNum(DateTime time)
     {
-        var now = DateTime.UtcNow;
         var raceTime = _raceOptions.CalibrationTime.AddHours(_raceOptions.RaceHours);
         var weekNum = 1;
-        while (now > raceTime)
+        while (time > raceTime)
         {
             raceTime = raceTime.AddHours(_raceOptions.RaceHours);
             weekNum++;

@@ -3,6 +3,8 @@ using AElf.Indexing.Elasticsearch.Options;
 using GraphQL.Client.Abstractions;
 using GraphQL.Client.Http;
 using GraphQL.Client.Serializer.Newtonsoft;
+using HamsterWoods.Cache;
+using HamsterWoods.Common;
 using HamsterWoods.Commons;
 using Medallion.Threading;
 using Medallion.Threading.Redis;
@@ -51,6 +53,7 @@ public class HamsterWoodsEntityEventHandlerModule : AbpModule
         ConfigureDistributedLocking(context, configuration);
         ConfigureGraphQl(context, configuration);
         ConfigureOrleans(context, configuration);
+        context.Services.AddSingleton<ICacheProvider, RedisCacheProvider>();
     }
     private void ConfigureGraphQl(ServiceConfigurationContext context,
         IConfiguration configuration)

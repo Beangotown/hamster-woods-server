@@ -54,47 +54,95 @@ public class RankService : HamsterWoodsBaseService, IRankService
         var dayOfWeek = DateTime.UtcNow.DayOfWeek;
         if (_raceOptions.SettleDayOfWeek == (int)dayOfWeek)
         {
-            return new WeekRankResultDto()
+            var settleDayRankingList = new List<SettleDayRank>();
+            var selfBal = 0;
+            var selfR =  new NftInfo();
+            if (rankInfos.SelfRank.Rank <= 10)
             {
-                SettleDayRankingList = new List<SettleDayRank>()
+                if (rankInfos.SelfRank.Rank == 1) selfBal = 3;
+                if (rankInfos.SelfRank.Rank == 2) selfBal = 2;
+                if (rankInfos.SelfRank.Rank == 3) selfBal = 2;
+                if (rankInfos.SelfRank.Rank > 3) selfBal = 1;
+
+                selfR = new NftInfo()
                 {
-                    new SettleDayRank()
+                    Balance = selfBal,
+                    ChainId = "tDVW",
+                    ImageUrl =
+                        "https://forest-testnet.s3.ap-northeast-1.amazonaws.com/1008xAUTO/1718204324416-Activity%20Icon.png",
+                    Symbol = "KINGPASS-1",
+                    TokenName = "KINGPASS"
+                };
+            }
+            var settleDaySelfRank = new SettleDaySelfRank
+            {
+                Score = rankInfos.SelfRank.Score,
+                CaAddress = rankInfos.SelfRank.CaAddress,
+                Decimals = 8,
+                Rank = rankInfos.SelfRank.Rank,
+                RewardNftInfo = selfR
+            };
+            var fromScore = rankInfos.RankingList[3].Score;
+            var toScore = rankInfos.RankingList[9].Score;
+            foreach (var rankDto in rankInfos.RankingList)
+            {
+                if (rankDto.Rank <= 3)
+                {
+                    var balance = 0;
+                    if (rankDto.Rank == 1) balance = 3;
+                    if (rankDto.Rank == 2) balance = 2;
+                    if (rankDto.Rank == 3) balance = 2;
+                    settleDayRankingList.Add(new SettleDayRank()
                     {
-                        FromRank = 4,
-                        ToRank = 6,
+                        FromRank = 0,
+                        ToRank = 0,
                         CaAddress = getRankDto.CaAddress,
-                        FromScore = 56700000000,
-                        ToScore = 89900000000,
-                        Rank = 5,
-                        Score = 78700000000,
+                        FromScore = 0,
+                        ToScore = 0,
+                        Rank = rankDto.Rank,
+                        Score = rankDto.Score,
                         Decimals = 8,
                         RewardNftInfo = new NftInfo()
                         {
-                            Balance = 5,
+                            Balance = balance,
                             ChainId = "tDVW",
                             ImageUrl =
                                 "https://forest-testnet.s3.ap-northeast-1.amazonaws.com/1008xAUTO/1718204324416-Activity%20Icon.png",
                             Symbol = "KINGPASS-1",
                             TokenName = "KINGPASS"
                         }
-                    }
-                },
-                SettleDaySelfRank = new SettleDaySelfRank()
-                {
-                    CaAddress = getRankDto.CaAddress,
-                    Rank = 5,
-                    Score = 78700000000,
-                    Decimals = 8,
-                    RewardNftInfo = new NftInfo()
-                    {
-                        Balance = 5,
-                        ChainId = "tDVW",
-                        ImageUrl =
-                            "https://forest-testnet.s3.ap-northeast-1.amazonaws.com/1008xAUTO/1718204324416-Activity%20Icon.png",
-                        Symbol = "KINGPASS-1",
-                        TokenName = "KINGPASS"
-                    }
+                    });
                 }
+
+                if (rankDto.Rank > 3 && rankDto.Rank <= 10)
+                {
+                    settleDayRankingList.Add(new SettleDayRank()
+                    {
+                        FromRank = 3,
+                        ToRank = 10,
+                        CaAddress = getRankDto.CaAddress,
+                        FromScore = fromScore,
+                        ToScore = toScore,
+                        Rank = rankDto.Rank,
+                        Score = rankDto.Score,
+                        Decimals = 8,
+                        RewardNftInfo = new NftInfo()
+                        {
+                            Balance = 1,
+                            ChainId = "tDVW",
+                            ImageUrl =
+                                "https://forest-testnet.s3.ap-northeast-1.amazonaws.com/1008xAUTO/1718204324416-Activity%20Icon.png",
+                            Symbol = "KINGPASS-1",
+                            TokenName = "KINGPASS"
+                        }
+                    });
+                }
+                
+            }
+            return new WeekRankResultDto()
+            {
+                SettleDayRankingList = settleDayRankingList,
+                SettleDaySelfRank = settleDaySelfRank
             };
         }
 

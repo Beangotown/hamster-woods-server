@@ -1,7 +1,10 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AElf.Indexing.Elasticsearch;
+using Google.Protobuf.WellKnownTypes;
+using HamsterWoods.Cache;
 using HamsterWoods.Common;
 using HamsterWoods.EntityEventHandler.Core.Providers;
 using HamsterWoods.EntityEventHandler.Core.Services.Dtos;
@@ -24,22 +27,30 @@ public class SyncRankRecordService : ISyncRankRecordService, ISingletonDependenc
     private readonly IWeekNumProvider _weekNumProvider;
     private readonly INESTRepository<UserWeekRankRecordIndex, string> _userRecordRepository;
     private readonly IObjectMapper _objectMapper;
+    private readonly ICacheProvider _cacheProvider;
+    private const string SyncRankRecordCachePrefix = "SyncRankRecordCache";
 
     public SyncRankRecordService(ILogger<SyncRankRecordService> logger, ISyncRankRecordProvider syncRankRecordProvider,
         IWeekNumProvider weekNumProvider, INESTRepository<UserWeekRankRecordIndex, string> userRecordRepository,
-        IObjectMapper objectMapper)
+        IObjectMapper objectMapper, ICacheProvider cacheProvider)
     {
         _logger = logger;
         _syncRankRecordProvider = syncRankRecordProvider;
         _weekNumProvider = weekNumProvider;
         _userRecordRepository = userRecordRepository;
         _objectMapper = objectMapper;
+        _cacheProvider = cacheProvider;
     }
 
     public async Task SyncRankRecordAsync()
     {
-        // get data from graphql
-        var weekNum = _weekNumProvider.GetWeekNum();
+        var weekNum = _weekNumProvider.GetWeekNum(DateTime.UtcNow);
+        var passValue = await _cacheProvider.GetAsync(SyncRankRecordCachePrefix + weekNum);
+        if (!passValue.IsNull)
+        {
+            _logger.LogInformation("data already sync, weekNum:{weekNum}", weekNum);
+        }
+
         var skipCount = 0;
         var maxResultCount = 10;
         var result = await _syncRankRecordProvider.GetWeekRankRecordsAsync(weekNum, skipCount, maxResultCount);
@@ -51,6 +62,10 @@ public class SyncRankRecordService : ISyncRankRecordService, ISingletonDependenc
             result = await _syncRankRecordProvider.GetWeekRankRecordsAsync(weekNum, skipCount, maxResultCount);
             await SaveRecordAsync(result?.RankRecordList, skipCount);
         }
+        
+        await _cacheProvider.SetAsync(SyncRankRecordCachePrefix + weekNum,
+            DateTime.UtcNow.ToTimestamp().ToString(),
+            null);
     }
 
     private async Task SaveRecordAsync(List<RankRecordDto> recordList, int rankNum)
@@ -59,7 +74,7 @@ public class SyncRankRecordService : ISyncRankRecordService, ISingletonDependenc
 
         var rank = rankNum;
         var records = _objectMapper.Map<List<RankRecordDto>, List<UserWeekRankRecordIndex>>(recordList);
-        records = records.OrderByDescending(t => t.SumScore).ThenByDescending(f => f.UpdateTime).ToList();
+        records = records.OrderByDescending(t => t.SumScore).ThenBy(f => f.UpdateTime).ToList();
         foreach (var record in records)
         {
             record.Id = $"{record.CaAddress}-{record.WeekNum}";

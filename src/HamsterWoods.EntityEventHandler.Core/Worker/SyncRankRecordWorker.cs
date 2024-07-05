@@ -18,13 +18,13 @@ public class SyncRankRecordWorker : AsyncPeriodicBackgroundWorkerBase
     {
         _syncRankRecordService = syncRankRecordService;
         _logger = logger;
-        Timer.Period = 1000 * 300;
+        Timer.Period = 1000 * 3;
     }
 
     protected override async Task DoWorkAsync(PeriodicBackgroundWorkerContext workerContext)
     {
         _logger.LogInformation("[SyncRankRecord]SyncRankRecordWorker Start.");
-        await _syncRankRecordService.SyncRankRecordAsync();
+        //await _syncRankRecordService.SyncRankRecordAsync();
         _logger.LogInformation("[SyncRankRecord]SyncRankRecordWorker End.");
     }
 }
