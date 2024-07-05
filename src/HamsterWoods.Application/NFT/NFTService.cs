@@ -209,7 +209,8 @@ public class NFTService : HamsterWoodsBaseService, INFTService
         return Task.FromResult(new PriceDto()
         {
             AcornsInElf = 0.1m,
-            ElfInUsd = 0.35m
+            ElfInUsd = 0.35m,
+            AcornsInUsd = 0.01m
         });
     }
 
