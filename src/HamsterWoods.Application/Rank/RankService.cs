@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AElf.Indexing.Elasticsearch;
+using HamsterWoods.Cache;
 using HamsterWoods.Commons;
 using HamsterWoods.Contract;
 using HamsterWoods.NFT;
@@ -29,17 +30,19 @@ public class RankService : HamsterWoodsBaseService, IRankService
     private const int QueryOnceLimit = 1000;
     private const string DateFormat = "yyyy-MM-dd";
     private const string StartTime = "00:00:00";
+    private readonly ICacheProvider _cacheProvider;
 
     public RankService(INESTRepository<UserWeekRankIndex, string> userRankWeekRepository,
         INESTRepository<UserActionIndex, string> userActionRepository,
         IRankProvider rankProvider,
         IObjectMapper objectMapper,
         IOptionsSnapshot<ChainOptions> chainOptions,
-        IOptionsSnapshot<RaceOptions> raceOptions)
+        IOptionsSnapshot<RaceOptions> raceOptions, ICacheProvider cacheProvider)
     {
         _userRankWeekRepository = userRankWeekRepository;
         _userActionRepository = userActionRepository;
         _objectMapper = objectMapper;
+        _cacheProvider = cacheProvider;
         _rankProvider = rankProvider;
         _chainOptions = chainOptions.Value;
         _raceOptions = raceOptions.Value;
@@ -51,12 +54,12 @@ public class RankService : HamsterWoodsBaseService, IRankService
         var weekNum = 1; // should calculate
         var rankInfos = await _rankProvider.GetWeekRankAsync(weekNum, getRankDto.CaAddress, getRankDto.SkipCount,
             getRankDto.MaxResultCount);
-        var dayOfWeek = DateTime.UtcNow.DayOfWeek;
-        if (_raceOptions.SettleDayOfWeek == (int)dayOfWeek)
+        //var dayOfWeek = DateTime.UtcNow.DayOfWeek;
+        if (true)
         {
             var settleDayRankingList = new List<SettleDayRank>();
             var selfBal = 0;
-            var selfR =  new NftInfo();
+            var selfR = new NftInfo();
             if (rankInfos.SelfRank.Rank <= 10)
             {
                 if (rankInfos.SelfRank.Rank == 1) selfBal = 3;
@@ -69,11 +72,12 @@ public class RankService : HamsterWoodsBaseService, IRankService
                     Balance = selfBal,
                     ChainId = "tDVW",
                     ImageUrl =
-                        "https://forest-testnet.s3.ap-northeast-1.amazonaws.com/1008xAUTO/1718204324416-Activity%20Icon.png",
-                    Symbol = "KINGPASS-1",
-                    TokenName = "KINGPASS"
+                        "https://hamster-testnet.s3.ap-northeast-1.amazonaws.com/Acorns/NFT_KingHamster.png",
+                    Symbol = "KINGHAMSTER-1",
+                    TokenName = "King of Hamsters"
                 };
             }
+
             var settleDaySelfRank = new SettleDaySelfRank
             {
                 Score = rankInfos.SelfRank.Score,
@@ -84,7 +88,7 @@ public class RankService : HamsterWoodsBaseService, IRankService
             };
             var fromScore = rankInfos.RankingList[3].Score;
             var toScore = rankInfos.RankingList[9].Score;
-            foreach (var rankDto in rankInfos.RankingList)
+            foreach (var rankDto in rankInfos.RankingList.OrderBy(t => t.Rank).Take(3))
             {
                 if (rankDto.Rank <= 3)
                 {
@@ -107,38 +111,34 @@ public class RankService : HamsterWoodsBaseService, IRankService
                             Balance = balance,
                             ChainId = "tDVW",
                             ImageUrl =
-                                "https://forest-testnet.s3.ap-northeast-1.amazonaws.com/1008xAUTO/1718204324416-Activity%20Icon.png",
-                            Symbol = "KINGPASS-1",
-                            TokenName = "KINGPASS"
+                                "https://hamster-testnet.s3.ap-northeast-1.amazonaws.com/Acorns/NFT_KingHamster.png",
+                            Symbol = "KINGHAMSTER-1",
+                            TokenName = "King of Hamsters"
                         }
                     });
                 }
-
-                if (rankDto.Rank > 3 && rankDto.Rank <= 10)
-                {
-                    settleDayRankingList.Add(new SettleDayRank()
-                    {
-                        FromRank = 3,
-                        ToRank = 10,
-                        CaAddress = getRankDto.CaAddress,
-                        FromScore = fromScore,
-                        ToScore = toScore,
-                        Rank = rankDto.Rank,
-                        Score = rankDto.Score,
-                        Decimals = 8,
-                        RewardNftInfo = new NftInfo()
-                        {
-                            Balance = 1,
-                            ChainId = "tDVW",
-                            ImageUrl =
-                                "https://forest-testnet.s3.ap-northeast-1.amazonaws.com/1008xAUTO/1718204324416-Activity%20Icon.png",
-                            Symbol = "KINGPASS-1",
-                            TokenName = "KINGPASS"
-                        }
-                    });
-                }
-                
             }
+
+            settleDayRankingList.Add(new SettleDayRank()
+            {
+                FromRank = 3,
+                ToRank = 10,
+                CaAddress = getRankDto.CaAddress,
+                FromScore = fromScore,
+                ToScore = toScore,
+                Rank = 0,
+                Score = 0,
+                Decimals = 8,
+                RewardNftInfo = new NftInfo()
+                {
+                    Balance = 1,
+                    ChainId = "tDVW",
+                    ImageUrl =
+                        "https://hamster-testnet.s3.ap-northeast-1.amazonaws.com/Acorns/NFT_KingHamster.png",
+                    Symbol = "KINGHAMSTER-1",
+                    TokenName = "King of Hamsters"
+                }
+            });
             return new WeekRankResultDto()
             {
                 SettleDayRankingList = settleDayRankingList,
@@ -237,42 +237,85 @@ public class RankService : HamsterWoodsBaseService, IRankService
         } while (historyRecords.GameList.Count >= QueryOnceLimit);
     }
 
-    public Task<List<GetHistoryDto>> GetHistoryAsync(GetRankDto input)
+    public async Task<List<GetHistoryDto>> GetHistoryAsync(GetRankDto input)
     {
-        var dayOfWeek = DateTime.UtcNow.DayOfWeek;
-        //if (_raceOptions.SettleDayOfWeek == (int)dayOfWeek)
+        var result = new List<GetHistoryDto>();
+        var weekNum = 1; // should calculate
+        var rankInfos = await GetWeekRankAsync(input);
+        if (rankInfos.SettleDaySelfRank == null || rankInfos.SettleDaySelfRank.Rank > 10 ||
+            rankInfos.SettleDaySelfRank.RewardNftInfo == null)
         {
-            return Task.FromResult(new List<GetHistoryDto>()
-            {
-                new GetHistoryDto()
-                {
-                    Time = "2024-06-28",
-                    CaAddress = input.CaAddress,
-                    Score = 20000000000,
-                    Decimals = 8,
-                    Rank = 3,
-                    RewardNftInfo = new NftInfo()
-                    {
-                        Balance = 5,
-                        ChainId = "tDVW",
-                        ImageUrl =
-                            "https://forest-testnet.s3.ap-northeast-1.amazonaws.com/1008xAUTO/1718204324416-Activity%20Icon.png",
-                        Symbol = "KINGPASS-1",
-                        TokenName = "KINGPASS"
-                    }
-                },
-                new GetHistoryDto()
-                {
-                    Time = "2024-06-21",
-                    CaAddress = input.CaAddress,
-                    Score = 230000000000,
-                    Decimals = 8,
-                    Rank = 2
-                }
-            });
+            return result;
         }
+
+        var dto = new GetHistoryDto()
+        {
+            Time = "2024-1-07040705",
+            CaAddress = input.CaAddress,
+            Score = rankInfos.SettleDaySelfRank.Score,
+            Decimals = 8,
+            Rank = rankInfos.SettleDaySelfRank.Rank,
+            RewardNftInfo = rankInfos.SettleDaySelfRank.RewardNftInfo
+        };
+        if (dto.RewardNftInfo != null)
+        {
+            var check = await CheckClaim(input.CaAddress);
+            if (!check)
+            {
+                dto.RewardNftInfo = null;
+            }
+        }
+        
+        result.Add(dto);
+
+        return result;
+        // var dayOfWeek = DateTime.UtcNow.DayOfWeek;
+        // //if (_raceOptions.SettleDayOfWeek == (int)dayOfWeek)
+
+
+        // {
+        //     return Task.FromResult(new List<GetHistoryDto>()
+        //     {
+        //         new GetHistoryDto()
+        //         {
+        //             Time = "2024-06-28",
+        //             CaAddress = input.CaAddress,
+        //             Score = 20000000000,
+        //             Decimals = 8,
+        //             Rank = 3,
+        //             RewardNftInfo = new NftInfo()
+        //             {
+        //                 Balance = 5,
+        //                 ChainId = "tDVW",
+        //                 ImageUrl =
+        //                     "https://forest-testnet.s3.ap-northeast-1.amazonaws.com/1008xAUTO/1718204324416-Activity%20Icon.png",
+        //                 Symbol = "KINGPASS-1",
+        //                 TokenName = "KINGPASS"
+        //             }
+        //         },
+        //         new GetHistoryDto()
+        //         {
+        //             Time = "2024-06-21",
+        //             CaAddress = input.CaAddress,
+        //             Score = 230000000000,
+        //             Decimals = 8,
+        //             Rank = 2
+        //         }
+        //     });
+        // }
     }
-    
+
+    private const string _hamsterPassCacheKeyPrefix = "HamsterKing_";
+    private int weekNum = 1; // should cal
+
+    public async Task<bool> CheckClaim(string caAddress)
+    {
+        var passValue = await _cacheProvider.GetAsync($"{_hamsterPassCacheKeyPrefix}{caAddress}_{weekNum}");
+        if (!passValue.IsNull)
+            return false;
+
+        return true;
+    }
 
     private string GetDefaultChainId()
     {

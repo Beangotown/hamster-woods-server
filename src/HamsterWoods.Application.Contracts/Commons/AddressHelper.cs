@@ -7,6 +7,8 @@ public static class AddressHelper
 
     public static string ToFullAddress(string address, string chainId)
     {
+        if (address.Contains(FullAddressSeparator)) return address;
+        
         return string.Join(FullAddressSeparator, FullAddressPrefix, address, chainId);
     }
 

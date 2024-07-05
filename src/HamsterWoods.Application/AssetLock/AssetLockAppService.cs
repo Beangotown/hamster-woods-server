@@ -21,37 +21,61 @@ public class AssetLockAppService : HamsterWoodsBaseService, IAssetLockAppService
     private readonly ILogger<AssetLockAppService> _logger;
     private readonly RaceOptions _raceOptions;
     private readonly INESTRepository<UserWeekRankRecordIndex, string> _userRecordRepository;
+    private readonly IRankProvider _rankProvider;
 
     public AssetLockAppService(ILogger<AssetLockAppService> logger, IOptionsMonitor<RaceOptions> raceOptions,
-        INESTRepository<UserWeekRankRecordIndex, string> userRecordRepository)
+        INESTRepository<UserWeekRankRecordIndex, string> userRecordRepository, IRankProvider rankProvider)
     {
         _logger = logger;
         _userRecordRepository = userRecordRepository;
+        _rankProvider = rankProvider;
         _raceOptions = raceOptions.CurrentValue;
     }
 
     public async Task<AssetLockedInfoResultDto> GetLockedInfosAsync(GetAssetLockInfoDto input)
     {
-        var weekNum = 1;
-        var weekNums = new List<int>() { 1, 2, 3, 4 };
-        var records = await GetRecordsAsync(weekNums, input.CaAddress);
-        var totalLockedAmount = records.Sum(t => t.SumScore);
-        int lockedDays = 30;
+        var weekNum = 1; // should calculate
+        var rankInfos = await _rankProvider.GetWeekRankAsync(weekNum, input.CaAddress, 0, 1);
+        if (rankInfos == null || rankInfos.SelfRank == null || rankInfos.SelfRank.Score == 0)
+        {
+            return new AssetLockedInfoResultDto()
+            {
+                Decimals = 8
+            };
+        }
 
         var lockedInfoList = new List<AssetLockedInfoDto>();
-        foreach (var record in records)
+        var info = rankInfos.SelfRank;
+        lockedInfoList.Add(new AssetLockedInfoDto()
         {
-            // next day as begin
-            var date = _raceOptions.CalibrationTime.AddHours(_raceOptions.RaceHours * weekNum).AddHours(10);
-            lockedInfoList.Add(new AssetLockedInfoDto()
-            {
-                Amount = record.SumScore,
-                Decimals = 8,
-                Symbol = "ACORNS",
-                LockedTime = date.ToString("yyyy-MM-dd"),
-                UnLockTime = date.AddDays(lockedDays).ToString("yyyy-MM-dd")
-            });
-        }
+            Amount = info.Score,
+            Decimals = 8,
+            LockedTime = DateTime.UtcNow.ToString("yyyy-MM-dd"),
+            Symbol = "ACORNS",
+            UnLockTime = DateTime.UtcNow.AddDays(1).ToString("yyyy-MM-dd")
+        });
+
+        var totalLockedAmount = info.Score;
+        // var weekNum = 1;
+        // var weekNums = new List<int>() { 1, 2, 3, 4 };
+        // var records = await GetRecordsAsync(weekNums, input.CaAddress);
+        // var totalLockedAmount = records.Sum(t => t.SumScore);
+        // int lockedDays = 30;
+        //
+        // var lockedInfoList = new List<AssetLockedInfoDto>();
+        // foreach (var record in records)
+        // {
+        //     // next day as begin
+        //     var date = _raceOptions.CalibrationTime.AddHours(_raceOptions.RaceHours * weekNum).AddHours(10);
+        //     lockedInfoList.Add(new AssetLockedInfoDto()
+        //     {
+        //         Amount = record.SumScore,
+        //         Decimals = 8,
+        //         Symbol = "ACORNS",
+        //         LockedTime = date.ToString("yyyy-MM-dd"),
+        //         UnLockTime = date.AddDays(lockedDays).ToString("yyyy-MM-dd")
+        //     });
+        // }
 
         var result = new AssetLockedInfoResultDto
         {
