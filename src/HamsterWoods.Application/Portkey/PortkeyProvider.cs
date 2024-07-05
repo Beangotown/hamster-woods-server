@@ -51,12 +51,13 @@ public class PortkeyProvider : IPortkeyProvider, ISingletonDependency
         return timeStamp;
     }
 
-    public async Task<TokenInfoDto> GetHolderTokenInfoAsync(string caAddress, string symbol)
+    public async Task<TokenInfoDto> GetHolderTokenInfoAsync(string chainId, string caAddress, string symbol)
     {
         var paramStr = BuildParamStr(new Dictionary<string, string>
         {
             { "caAddress", caAddress },
-            { "symbol", symbol }
+            { "symbol", symbol },
+            { "chainId", chainId }
         });
         var url = string.Concat(_portkeyOptions.BaseUrl, _tokenBalanceUrl, "?", paramStr);
 
