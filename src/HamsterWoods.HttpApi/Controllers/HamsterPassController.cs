@@ -87,7 +87,9 @@ public class HamsterPassController : HamsterWoodsBaseController
     public Task<ConfigDto> GetConfigAsync()
     {
         return Task.FromResult(new ConfigDto()
-            { DailyPlayCountResetTime = 0, ChancePrice = 25, BuyChanceTransactionFee = 0.0035m });
+        {
+            DailyPlayCountResetTime = 0, WeeklyBuyChanceCount = 15, ChancePrice = 25, BuyChanceTransactionFee = 0.0035m
+        });
     }
 
     [HttpGet]

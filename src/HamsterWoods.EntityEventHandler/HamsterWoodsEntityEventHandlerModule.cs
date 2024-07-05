@@ -12,6 +12,7 @@ using HamsterWoods.EntityEventHandler.Core;
 using HamsterWoods.EntityEventHandler.Core.Worker;
 using HamsterWoods.Grains;
 using HamsterWoods.MongoDb;
+using HamsterWoods.Options;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -54,6 +55,7 @@ public class HamsterWoodsEntityEventHandlerModule : AbpModule
         ConfigureGraphQl(context, configuration);
         ConfigureOrleans(context, configuration);
         context.Services.AddSingleton<ICacheProvider, RedisCacheProvider>();
+        Configure<SyncPriceDataOptions>(configuration.GetSection("SyncPrice"));
     }
     private void ConfigureGraphQl(ServiceConfigurationContext context,
         IConfiguration configuration)
