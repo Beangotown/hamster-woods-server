@@ -9,5 +9,6 @@ public class GetHistoryDto
     public long Score { get; set; }
     public int Decimals { get; set; }
     public int Rank { get; set; }
+    public int WeekNum { get; set; }
     public NftInfo RewardNftInfo { get; set; }
 }

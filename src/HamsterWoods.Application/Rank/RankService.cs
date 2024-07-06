@@ -86,7 +86,7 @@ public class RankService : HamsterWoodsBaseService, IRankService
                 Rank = rankInfos.SelfRank.Rank,
                 RewardNftInfo = selfR
             };
-            
+
             if (settleDaySelfRank.RewardNftInfo != null)
             {
                 var check = await CheckClaim(settleDaySelfRank.CaAddress);
@@ -264,6 +264,7 @@ public class RankService : HamsterWoodsBaseService, IRankService
             Score = rankInfos.SettleDaySelfRank.Score,
             Decimals = 8,
             Rank = rankInfos.SettleDaySelfRank.Rank,
+            WeekNum = 1,
             RewardNftInfo = rankInfos.SettleDaySelfRank.RewardNftInfo
         };
         if (dto.RewardNftInfo != null)
