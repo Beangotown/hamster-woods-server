@@ -25,7 +25,6 @@ public class RewardAppService : IRewardAppService, ISingletonDependency
     private readonly string _imageUrlKey = "__nft_image_url";
     private readonly IContractProvider _contractProvider;
 
-    private int weekNum = 1; // should cal
     private readonly IRankService _rankService;
 
     public RewardAppService(ILogger<RewardAppService> logger,
@@ -43,6 +42,12 @@ public class RewardAppService : IRewardAppService, ISingletonDependency
 
     public async Task<KingHamsterClaimDto> ClaimHamsterKingAsync(HamsterPassInput input)
     {
+        var weekNum = input.WeekNum;
+        if (weekNum == 0)
+        {
+            weekNum = 2; // current weekNum
+        }
+
         var caAddress = AddressHelper.ToFullAddress(input.CaAddress, GetDefaultChainId());
         var week = await _rankService.GetWeekRankAsync(new GetRankDto()
         {
@@ -64,7 +69,7 @@ public class RewardAppService : IRewardAppService, ISingletonDependency
         var amount = week.SettleDaySelfRank.RewardNftInfo.Balance;
 
         _logger.LogInformation("ClaimHamsterKingAsync {CaAddress}", caAddress);
-        var claimableDto = await IsHamsterPassClaimableAsync(caAddress);
+        var claimableDto = await IsHamsterPassClaimableAsync(caAddress, weekNum);
         if (!claimableDto.Claimable)
         {
             return new KingHamsterClaimDto()
@@ -76,7 +81,7 @@ public class RewardAppService : IRewardAppService, ISingletonDependency
 
         var symbol = "KINGHAMSTER-1";
         var sendTransactionOutput = await _contractProvider.SendTransferAsync(symbol, amount.ToString(),
-            AddressHelper.ToShortAddress(caAddress),
+            AddressHelper.ToShortAddress("2f9rumzM1roxHb748W1Dkgx2mB1D7hqTpYQNyctn5A2S2d6yhS"),
             GetDefaultChainId()
         );
 
@@ -115,7 +120,7 @@ public class RewardAppService : IRewardAppService, ISingletonDependency
         return SerializeHelper.Deserialize<HamsterPassInfoDto>(beanPassValue);
     }
 
-    public async Task<HamsterPassClaimableDto> IsHamsterPassClaimableAsync(string caAddress)
+    public async Task<HamsterPassClaimableDto> IsHamsterPassClaimableAsync(string caAddress, int weekNum)
     {
         var passValue = await _cacheProvider.GetAsync($"{_hamsterPassCacheKeyPrefix}{caAddress}_{weekNum}");
         if (!passValue.IsNull)

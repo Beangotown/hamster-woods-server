@@ -34,28 +34,37 @@ public class AssetLockAppService : HamsterWoodsBaseService, IAssetLockAppService
 
     public async Task<AssetLockedInfoResultDto> GetLockedInfosAsync(GetAssetLockInfoDto input)
     {
+        var lockedInfoList = new List<AssetLockedInfoDto>();
         var weekNum = 1; // should calculate
         var rankInfos = await _rankProvider.GetWeekRankAsync(weekNum, input.CaAddress, 0, 1);
-        if (rankInfos == null || rankInfos.SelfRank == null || rankInfos.SelfRank.Score == 0)
+        if (rankInfos != null && rankInfos.SelfRank != null && rankInfos.SelfRank.Score > 0)
         {
-            return new AssetLockedInfoResultDto()
+            var info = rankInfos.SelfRank;
+            lockedInfoList.Add(new AssetLockedInfoDto()
             {
-                Decimals = 8
-            };
+                Amount = info.Score,
+                Decimals = 8,
+                LockedTime = DateTime.UtcNow.AddDays(-1).ToString("yyyy-MM-dd"),
+                Symbol = "ACORNS",
+                UnLockTime = DateTime.UtcNow.AddDays(1).AddDays(-1).ToString("yyyy-MM-dd")
+            });
         }
 
-        var lockedInfoList = new List<AssetLockedInfoDto>();
-        var info = rankInfos.SelfRank;
-        lockedInfoList.Add(new AssetLockedInfoDto()
-        {
-            Amount = info.Score,
-            Decimals = 8,
-            LockedTime = DateTime.UtcNow.ToString("yyyy-MM-dd"),
-            Symbol = "ACORNS",
-            UnLockTime = DateTime.UtcNow.AddDays(1).ToString("yyyy-MM-dd")
-        });
 
-        var totalLockedAmount = info.Score;
+        var rankInfos2 = await _rankProvider.GetWeekRankAsync(2, input.CaAddress, 0, 1);
+        if (rankInfos2 != null && rankInfos2.SelfRank != null && rankInfos2.SelfRank.Score > 0)
+        {
+            lockedInfoList.Add(new AssetLockedInfoDto()
+            {
+                Amount = rankInfos2.SelfRank.Score,
+                Decimals = 8,
+                LockedTime = DateTime.UtcNow.ToString("yyyy-MM-dd"),
+                Symbol = "ACORNS",
+                UnLockTime = DateTime.UtcNow.AddDays(1).ToString("yyyy-MM-dd")
+            });
+        }
+
+        var totalLockedAmount = lockedInfoList.Sum(t=>t.Amount);
         // var weekNum = 1;
         // var weekNums = new List<int>() { 1, 2, 3, 4 };
         // var records = await GetRecordsAsync(weekNums, input.CaAddress);
