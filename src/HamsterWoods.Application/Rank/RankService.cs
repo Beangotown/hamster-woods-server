@@ -103,7 +103,7 @@ public class RankService : HamsterWoodsBaseService, IRankService
                     {
                         FromRank = 0,
                         ToRank = 0,
-                        CaAddress = getRankDto.CaAddress,
+                        CaAddress = rankDto.CaAddress,
                         FromScore = 0,
                         ToScore = 0,
                         Rank = rankDto.Rank,
