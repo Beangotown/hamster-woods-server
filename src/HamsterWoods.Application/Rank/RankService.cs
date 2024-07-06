@@ -121,7 +121,7 @@ public class RankService : HamsterWoodsBaseService, IRankService
 
             settleDayRankingList.Add(new SettleDayRank()
             {
-                FromRank = 3,
+                FromRank = 4,
                 ToRank = 10,
                 CaAddress = getRankDto.CaAddress,
                 FromScore = fromScore,
