@@ -242,8 +242,7 @@ public class RankService : HamsterWoodsBaseService, IRankService
         var result = new List<GetHistoryDto>();
         var weekNum = 1; // should calculate
         var rankInfos = await GetWeekRankAsync(input);
-        if (rankInfos.SettleDaySelfRank == null || rankInfos.SettleDaySelfRank.Rank > 10 ||
-            rankInfos.SettleDaySelfRank.RewardNftInfo == null)
+        if (rankInfos.SettleDaySelfRank == null)
         {
             return result;
         }
