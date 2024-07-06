@@ -55,6 +55,7 @@ public class RankService : HamsterWoodsBaseService, IRankService
         var rankInfos = await _rankProvider.GetWeekRankAsync(weekNum, getRankDto.CaAddress, getRankDto.SkipCount,
             getRankDto.MaxResultCount);
         //var dayOfWeek = DateTime.UtcNow.DayOfWeek;
+        SettleDaySelfRank settleDaySelfRank = null;
         if (true)
         {
             var settleDayRankingList = new List<SettleDayRank>();
@@ -76,16 +77,18 @@ public class RankService : HamsterWoodsBaseService, IRankService
                     Symbol = "KINGHAMSTER-1",
                     TokenName = "King of Hamsters"
                 };
+
+                settleDaySelfRank = new SettleDaySelfRank
+                {
+                    Score = rankInfos.SelfRank.Score,
+                    CaAddress = rankInfos.SelfRank.CaAddress,
+                    Decimals = 8,
+                    Rank = rankInfos.SelfRank.Rank,
+                    RewardNftInfo = selfR
+                };
             }
 
-            var settleDaySelfRank = new SettleDaySelfRank
-            {
-                Score = rankInfos.SelfRank.Score,
-                CaAddress = rankInfos.SelfRank.CaAddress,
-                Decimals = 8,
-                Rank = rankInfos.SelfRank.Rank,
-                RewardNftInfo = selfR
-            };
+
             var fromScore = rankInfos.RankingList[3].Score;
             var toScore = rankInfos.RankingList[9].Score;
             foreach (var rankDto in rankInfos.RankingList.OrderBy(t => t.Rank).Take(3))
@@ -264,7 +267,7 @@ public class RankService : HamsterWoodsBaseService, IRankService
                 dto.RewardNftInfo = null;
             }
         }
-        
+
         result.Add(dto);
 
         return result;
