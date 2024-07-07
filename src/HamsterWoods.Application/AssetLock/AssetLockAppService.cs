@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AElf.Indexing.Elasticsearch;
 using HamsterWoods.AssetLock.Dtos;
+using HamsterWoods.AssetLock.Provider;
 using HamsterWoods.Options;
 using HamsterWoods.Rank;
 using JetBrains.Annotations;
@@ -22,13 +23,16 @@ public class AssetLockAppService : HamsterWoodsBaseService, IAssetLockAppService
     private readonly RaceOptions _raceOptions;
     private readonly INESTRepository<UserWeekRankRecordIndex, string> _userRecordRepository;
     private readonly IRankProvider _rankProvider;
+    private readonly IAssetLockProvider _assetLockProvider;
 
     public AssetLockAppService(ILogger<AssetLockAppService> logger, IOptionsMonitor<RaceOptions> raceOptions,
-        INESTRepository<UserWeekRankRecordIndex, string> userRecordRepository, IRankProvider rankProvider)
+        INESTRepository<UserWeekRankRecordIndex, string> userRecordRepository, IRankProvider rankProvider,
+        IAssetLockProvider assetLockProvider)
     {
         _logger = logger;
         _userRecordRepository = userRecordRepository;
         _rankProvider = rankProvider;
+        _assetLockProvider = assetLockProvider;
         _raceOptions = raceOptions.CurrentValue;
     }
 
@@ -64,7 +68,7 @@ public class AssetLockAppService : HamsterWoodsBaseService, IAssetLockAppService
             });
         }
 
-        var totalLockedAmount = lockedInfoList.Sum(t=>t.Amount);
+        var totalLockedAmount = lockedInfoList.Sum(t => t.Amount);
         // var weekNum = 1;
         // var weekNums = new List<int>() { 1, 2, 3, 4 };
         // var records = await GetRecordsAsync(weekNums, input.CaAddress);
@@ -108,18 +112,24 @@ public class AssetLockAppService : HamsterWoodsBaseService, IAssetLockAppService
         return result.Item2;
     }
 
-    public Task<List<GetUnlockRecordDto>> GetUnlockRecordsAsync(GetAssetLockInfoDto input)
+    public async Task<List<GetUnlockRecordDto>> GetUnlockRecordsAsync(GetAssetLockInfoDto input)
     {
-        return Task.FromResult(new List<GetUnlockRecordDto>()
+        var dto = await _assetLockProvider.GetUnlockRecordsAsync(1, input.CaAddress, input.SkipCount,
+            input.MaxResultCount);
+
+        var result = new List<GetUnlockRecordDto>();
+        foreach (var item in dto.UnLockRecordList)
         {
-            // new GetUnlockRecordDto()
-            // {
-            //     UnLockTime = "2024-07-24",
-            //     Symbol = "ACORNS",
-            //     Decimals = 8,
-            //     Amount = 10000000000,
-            //     TransactionId = "685fa94f58d5176438b678ebf317fc23fb6539adc66127c6221b7a18a4a20364"
-            // }
-        });
+            result.Add(new GetUnlockRecordDto()
+            {
+                UnLockTime = "2024-07-07",
+                Symbol = "ACORNS",
+                Decimals = 8,
+                Amount = item.Amount,
+                TransactionId = item.TransactionInfo?.TransactionId
+            });
+        }
+
+        return result;
     }
 }
