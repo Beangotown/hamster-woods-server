@@ -26,17 +26,19 @@ public class RewardAppService : IRewardAppService, ISingletonDependency
     private readonly IContractProvider _contractProvider;
 
     private readonly IRankService _rankService;
+    private readonly ISendAcornsProvider _sendAcornsProvider;
 
     public RewardAppService(ILogger<RewardAppService> logger,
         ICacheProvider cacheProvider,
         IObjectMapper objectMapper,
-        IOptionsSnapshot<ChainOptions> chainOptions, IContractProvider contractProvider, IRankService rankService)
+        IOptionsSnapshot<ChainOptions> chainOptions, IContractProvider contractProvider, IRankService rankService, ISendAcornsProvider sendAcornsProvider)
     {
         _logger = logger;
         _cacheProvider = cacheProvider;
         _objectMapper = objectMapper;
         _contractProvider = contractProvider;
         _rankService = rankService;
+        _sendAcornsProvider = sendAcornsProvider;
         _chainOptions = chainOptions.Value;
     }
 
@@ -97,6 +99,11 @@ public class RewardAppService : IRewardAppService, ISingletonDependency
             KingHamsterInfo = _objectMapper.Map<HamsterPassInfoDto, HamsterPassResultDto>(info) ??
                               new HamsterPassResultDto()
         };
+    }
+
+    public async Task<KingHamsterClaimDto> SendAsync(HamsterPassInput input)
+    {
+        return await _sendAcornsProvider.SendAsync(input);
     }
 
     private async Task<HamsterPassInfoDto> GetHamsterPassInfoAsync(string symbol)

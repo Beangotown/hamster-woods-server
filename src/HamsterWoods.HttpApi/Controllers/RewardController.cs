@@ -25,17 +25,12 @@ public class RewardController: HamsterWoodsBaseController
     public async Task<KingHamsterClaimDto> ClaimHamsterPassAsync(HamsterPassInput input)
     {
         return await _rewardAppService.ClaimHamsterKingAsync(input);
-        // return new KingHamsterClaimDto
-        // {
-        //     Claimable=true,
-        //     TransactionId="685fa94f58d5176438b678ebf317fc23fb6539adc66127c6221b7a18a4a20364",
-        //     KingHamsterInfo = new HamsterPassInfoDto()
-        //     {
-        //         Symbol = "KingHamster-1",
-        //         TokenName = "KingHamster",
-        //         TokenId = 1,
-        //         NftImageUrl = "https://forest-testnet.s3.ap-northeast-1.amazonaws.com/1008xAUTO/1718204222065-Activity%20Icon.png"
-        //     }
-        // };
+    }
+    
+    [HttpGet]
+    [Route("send")]
+    public async Task<KingHamsterClaimDto> SendAsync(HamsterPassInput input)
+    {
+        return await _rewardAppService.SendAsync(input);
     }
 }
