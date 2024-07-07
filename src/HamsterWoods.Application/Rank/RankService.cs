@@ -56,12 +56,12 @@ public class RankService : HamsterWoodsBaseService, IRankService
             getRankDto.MaxResultCount);
         //var dayOfWeek = DateTime.UtcNow.DayOfWeek;
 
-        if (getRankDto.CaAddress == "ELF_2HyyWJp1rfGq93q5f27aY9XSAK2TJraGPny2hiARtHcghcXMfr_tDVW")
+        if (getRankDto.CaAddress == "ELF_2f9rumzM1roxHb748W1Dkgx2mB1D7hqTpYQNyctn5A2S2d6yhS_tDVW")
         {
-            if (rankInfos.SelfRank.CaAddress == "ELF_2HyyWJp1rfGq93q5f27aY9XSAK2TJraGPny2hiARtHcghcXMfr_tDVW")
+            if (rankInfos.SelfRank.CaAddress == "ELF_2f9rumzM1roxHb748W1Dkgx2mB1D7hqTpYQNyctn5A2S2d6yhS_tDVW")
             {
                 rankInfos.SelfRank.Rank = 1;
-                rankInfos.RankingList[0].CaAddress = "ELF_2HyyWJp1rfGq93q5f27aY9XSAK2TJraGPny2hiARtHcghcXMfr_tDVW";
+                rankInfos.RankingList[0].CaAddress = "ELF_2f9rumzM1roxHb748W1Dkgx2mB1D7hqTpYQNyctn5A2S2d6yhS_tDVW";
             }
         }
 
@@ -179,12 +179,12 @@ public class RankService : HamsterWoodsBaseService, IRankService
         //var dayOfWeek = DateTime.UtcNow.DayOfWeek;
         
         
-        if (getRankDto.CaAddress == "ELF_2HyyWJp1rfGq93q5f27aY9XSAK2TJraGPny2hiARtHcghcXMfr_tDVW")
+        if (getRankDto.CaAddress == "ELF_2f9rumzM1roxHb748W1Dkgx2mB1D7hqTpYQNyctn5A2S2d6yhS_tDVW")
         {
-            if (rankInfos.SelfRank.CaAddress == "ELF_2HyyWJp1rfGq93q5f27aY9XSAK2TJraGPny2hiARtHcghcXMfr_tDVW")
+            if (rankInfos.SelfRank.CaAddress == "ELF_2f9rumzM1roxHb748W1Dkgx2mB1D7hqTpYQNyctn5A2S2d6yhS_tDVW")
             {
                 rankInfos.SelfRank.Rank = 1;
-                rankInfos.RankingList[0].CaAddress = "ELF_2HyyWJp1rfGq93q5f27aY9XSAK2TJraGPny2hiARtHcghcXMfr_tDVW";
+                rankInfos.RankingList[0].CaAddress = "ELF_2f9rumzM1roxHb748W1Dkgx2mB1D7hqTpYQNyctn5A2S2d6yhS_tDVW";
             }
         }
         
