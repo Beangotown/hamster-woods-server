@@ -3,6 +3,7 @@ using AElf;
 using AElf.Client.Dto;
 using AElf.Contracts.MultiToken;
 using AElf.Types;
+using Contracts.HamsterWoods;
 using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
 using HamsterWoods.Commons;
@@ -62,7 +63,7 @@ public class ContractProvider : IContractProvider, ISingletonDependency
     public async Task<long> GetBlockHeightAsync(string chainId)
     {
         var client = _factory.GetClient(chainId);
-        
+
         var interIndicator = _indicatorScope.Begin(MonitorTag.AelfClient,
             MonitorAelfClientType.GetBlockHeightAsync.ToString());
         var blockHeight = await client.GetBlockHeightAsync();
@@ -70,7 +71,7 @@ public class ContractProvider : IContractProvider, ISingletonDependency
 
         return blockHeight;
     }
-    
+
     public async Task<TokenInfo> GetTokenInfo(string symbol, string chainId)
     {
         if (!_chainOptions.ChainInfos.TryGetValue(chainId, out _)) return null;
@@ -106,7 +107,7 @@ public class ContractProvider : IContractProvider, ISingletonDependency
         var key = _chainOptions.ChainInfos[chainId].PrivateKey;
 
         var client = _factory.GetClient(chainId);
-        
+
         var generateIndicator = _indicatorScope.Begin(MonitorTag.AelfClient,
             MonitorAelfClientType.GenerateTransactionAsync.ToString());
         var transaction =
@@ -117,7 +118,7 @@ public class ContractProvider : IContractProvider, ISingletonDependency
         _logger.LogDebug("Call tx methodName is: {methodName} param is: {transaction}", methodName, transaction);
 
         var txWithSign = client.SignTransaction(key, transaction);
-       
+
         var interIndicator = _indicatorScope.Begin(MonitorTag.AelfClient,
             MonitorAelfClientType.ExecuteTransactionAsync.ToString());
         var result = await client.ExecuteTransactionAsync(new ExecuteTransactionDto
@@ -125,7 +126,7 @@ public class ContractProvider : IContractProvider, ISingletonDependency
             RawTransaction = txWithSign.ToByteArray().ToHex()
         });
         _indicatorScope.End(interIndicator);
-        
+
         var value = new T();
         value.MergeFrom(ByteArrayHelper.HexStringToByteArray(result));
 
@@ -140,16 +141,16 @@ public class ContractProvider : IContractProvider, ISingletonDependency
         var client = _factory.GetClient(chainId);
 
         var address = client.GetAddressFromPrivateKey(key);
-        
+
         var generateIndicator = _indicatorScope.Begin(MonitorTag.AelfClient,
             MonitorAelfClientType.GenerateTransactionAsync.ToString());
         var transaction = await client.GenerateTransactionAsync(address, contractAddress, method, param);
         _indicatorScope.End(generateIndicator);
-        
+
         var txWithSign = client.SignTransaction(key, transaction);
 
         var rawTransaction = txWithSign.ToByteArray().ToHex();
-        
+
         var interIndicator = _indicatorScope.Begin(MonitorTag.AelfClient,
             MonitorAelfClientType.SendTransactionAsync.ToString());
         var result = await client.SendTransactionAsync(new SendTransactionInput
@@ -157,7 +158,7 @@ public class ContractProvider : IContractProvider, ISingletonDependency
             RawTransaction = rawTransaction
         });
         _indicatorScope.End(interIndicator);
-        
+
         return result;
     }
 
@@ -165,12 +166,20 @@ public class ContractProvider : IContractProvider, ISingletonDependency
     public async Task<TransactionResultDto> GetTransactionResultAsync(string chainId, string transactionId)
     {
         var client = _factory.GetClient(chainId);
-        
+
         var interIndicator = _indicatorScope.Begin(MonitorTag.AelfClient,
             MonitorAelfClientType.GetTransactionResultAsync.ToString());
         var result = await client.GetTransactionResultAsync(transactionId);
         _indicatorScope.End(interIndicator);
-        
+
         return result;
+    }
+
+    public async Task<CurrentRaceInfo> GetCurrentRaceInfoAsync(string chainId)
+    {
+        if (!_chainOptions.ChainInfos.TryGetValue(chainId, out _)) return null;
+
+        return await CallTransactionAsync<CurrentRaceInfo>(chainId,
+            _chainOptions.ChainInfos[chainId].HamsterWoodsAddress, AElfConstants.GetCurrentRaceInfo, new Empty());
     }
 }

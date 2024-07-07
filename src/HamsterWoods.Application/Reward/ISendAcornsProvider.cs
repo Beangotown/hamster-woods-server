@@ -108,12 +108,13 @@ public class SendAcornsProvider : ISendAcornsProvider, ISingletonDependency
         var res = new List<Address>();
         var itemsParam = new UnlockAcornsInput
         {
-            Value = { }
+            Addresses = {  },
+            WeekNum = 2
         };
 
         foreach (var item in list)
         {
-            itemsParam.Value.Add(Address.FromBase58(item));
+            itemsParam.Addresses.Add(Address.FromBase58(item));
         }
 
         return itemsParam;

@@ -25,7 +25,7 @@ public class AssetLockProvider : IAssetLockProvider, ISingletonDependency
         var graphQLResponse = await _graphQlHelper.QueryAsync<GetUnlockRecordGqlResultDto>(new GraphQLRequest
         {
             Query = @"
-			    query($skipCount:Int!,$maxResultCount:Int!,$caAddress:String!,$weekNum:Int!) {
+			    query($skipCount:Int!,$maxResultCount:Int!,$caAddress:String!,$weekNum:Int) {
                     getUnLockedRecords(getUnLockedRecordsDto:{skipCount: $skipCount,maxResultCount:$maxResultCount,caAddress:$caAddress,weekNum:$weekNum})
                         {
                             unLockRecordList{

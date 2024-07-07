@@ -132,6 +132,7 @@ namespace Contracts.HamsterWoods {
     static readonly aelf::Marshaller<global::Contracts.HamsterWoods.GetBoutInformationInput> __Marshaller_GetBoutInformationInput = aelf::Marshallers.Create((arg) => global::Google.Protobuf.MessageExtensions.ToByteArray(arg), global::Contracts.HamsterWoods.GetBoutInformationInput.Parser.ParseFrom);
     static readonly aelf::Marshaller<global::Contracts.HamsterWoods.BoutInformation> __Marshaller_BoutInformation = aelf::Marshallers.Create((arg) => global::Google.Protobuf.MessageExtensions.ToByteArray(arg), global::Contracts.HamsterWoods.BoutInformation.Parser.ParseFrom);
     static readonly aelf::Marshaller<global::Contracts.HamsterWoods.LockedAcornsInfoList> __Marshaller_LockedAcornsInfoList = aelf::Marshallers.Create((arg) => global::Google.Protobuf.MessageExtensions.ToByteArray(arg), global::Contracts.HamsterWoods.LockedAcornsInfoList.Parser.ParseFrom);
+    static readonly aelf::Marshaller<global::Contracts.HamsterWoods.CurrentRaceInfo> __Marshaller_CurrentRaceInfo = aelf::Marshallers.Create((arg) => global::Google.Protobuf.MessageExtensions.ToByteArray(arg), global::Contracts.HamsterWoods.CurrentRaceInfo.Parser.ParseFrom);
     #endregion
 
     #region Methods
@@ -295,6 +296,13 @@ namespace Contracts.HamsterWoods {
         "GetLockedAcornsInfoList",
         __Marshaller_aelf_Address,
         __Marshaller_LockedAcornsInfoList);
+
+    static readonly aelf::Method<global::Google.Protobuf.WellKnownTypes.Empty, global::Contracts.HamsterWoods.CurrentRaceInfo> __Method_GetCurrentRaceInfo = new aelf::Method<global::Google.Protobuf.WellKnownTypes.Empty, global::Contracts.HamsterWoods.CurrentRaceInfo>(
+        aelf::MethodType.View,
+        __ServiceName,
+        "GetCurrentRaceInfo",
+        __Marshaller_google_protobuf_Empty,
+        __Marshaller_CurrentRaceInfo);
 
     #endregion
 

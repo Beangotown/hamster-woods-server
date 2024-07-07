@@ -1,23 +1,36 @@
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using Google.Protobuf.WellKnownTypes;
 using GraphQL;
+using HamsterWoods.Cache;
 using HamsterWoods.Common;
+using HamsterWoods.Contract;
 using HamsterWoods.Trace;
+using Microsoft.Extensions.Options;
 using Volo.Abp.DependencyInjection;
 
 namespace HamsterWoods.Rank.Provider;
 
-
 public class RankProvider : IRankProvider, ISingletonDependency
 {
     private readonly IGraphQLHelper _graphQlHelper;
+    private readonly ChainOptions _chainOptions;
+    private readonly ICacheProvider _cacheProvider;
+    private readonly IContractProvider _contractProvider;
 
-    public RankProvider(IGraphQLHelper graphQlHelper)
+    public RankProvider(IGraphQLHelper graphQlHelper, IOptionsSnapshot<ChainOptions> chainOptions,
+        ICacheProvider cacheProvider, IContractProvider contractProvider)
     {
         _graphQlHelper = graphQlHelper;
+        _cacheProvider = cacheProvider;
+        _contractProvider = contractProvider;
+        _chainOptions = chainOptions.Value;
     }
 
-    public async Task<WeekRankResultDto> GetWeekRankAsync(int weekNum,string caAddress, int skipCount, int maxResultCount)
+    public async Task<WeekRankResultDto> GetWeekRankAsync(int weekNum, string caAddress, int skipCount,
+        int maxResultCount)
     {
         var graphQLResponse = await _graphQlHelper.QueryAsync<WeekRankResultGraphDto>(new GraphQLRequest
         {
@@ -54,125 +67,6 @@ public class RankProvider : IRankProvider, ISingletonDependency
         return graphQLResponse.GetWeekRank;
     }
 
-
-    public async Task<SeasonRecordDto> GetSeasonConfigAsync()
-    {
-        var graphQLResponse = await _graphQlHelper.QueryAsync<SeasonRecordDto>(new GraphQLRequest
-        {
-            Query = @"
-			    query{
-                    getRankingSeasonList{
-                      season{
-                          id
-                          name
-                          playerWeekRankCount
-                          playerWeekShowCount
-                          playerSeasonRankCount
-                          playerSeasonShowCount
-                          rankBeginTime
-                          rankEndTime
-                          showBeginTime
-                          showEndTime 
-                                weekInfos{
-                                    rankBeginTime
-                                    rankEndTime
-                                    showBeginTime
-                                    showEndTime
-                                }
-                        }
-                    }
-                }"
-        });
-        return graphQLResponse;
-    }
-
-    public async Task<WeekRankRecordDto> GetWeekRankRecordsAsync(string seasonId, int week, int skipCount,
-        int maxResultCount)
-    {
-        var graphQLResponse = await _graphQlHelper.QueryAsync<WeekRankRecordDto>(new GraphQLRequest
-        {
-            Query = @"
-			    query($skipCount:Int!,$maxResultCount:Int!,$seasonId:String!,$week:Int!) {
-                    getWeekRankRecords(getWeekRankDto:{skipCount:$skipCount,maxResultCount:$maxResultCount,seasonId:$seasonId,week:$week})
-                      {
-                        rankingList{
-                          rank
-                          score
-                          caAddress
-                        }
-                      }
-                    }",
-            Variables = new
-            {
-                skipCount,
-                maxResultCount,
-                seasonId = seasonId,
-                week = week
-            }
-        });
-        return graphQLResponse;
-    }
-
-    public async Task<SeasonRankRecordDto> GetSeasonRankRecordsAsync(string seasonId, int skipCount, int maxResultCount)
-    {
-        var graphQLResponse = await _graphQlHelper.QueryAsync<SeasonRankRecordDto>(new GraphQLRequest
-        {
-            Query = @"
-			    query($skipCount:Int!,$maxResultCount:Int!,$seasonId:String!) {
-                    getSeasonRankRecords(getSeasonRankDto:{skipCount:$skipCount,maxResultCount:$maxResultCount,seasonId:$seasonId})
-                      {
-                        rankingList{
-                           rank
-                           score
-                           caAddress
-                        }
-                      }
-                    }",
-            Variables = new
-            {
-                skipCount,
-                maxResultCount,
-                seasonId = seasonId
-            }
-        });
-        return graphQLResponse;
-    }
-
-    public async Task<SeasonDto> GetSeasonAsync(string seasonId)
-    {
-        var graphQLResponse = await _graphQlHelper.QueryAsync<SeasonGraphDto>(new GraphQLRequest
-        {
-            Query = @"
-			    query($seasonId:String!) {
-                   getSeasonConfig(getSeasonDto:{
-                       seasonId:$seasonId
-                    }){
-                        id
-                        name
-                        playerWeekRankCount
-                        playerWeekShowCount
-                        playerSeasonRankCount
-                        playerSeasonShowCount
-                        rankBeginTime
-                        rankEndTime
-                        showBeginTime
-                        showEndTime 
-                        weekInfos{
-                            rankBeginTime
-                            rankEndTime
-                            showBeginTime
-                            showEndTime
-                        }
-                    }
-                    }",
-            Variables = new
-            {
-                seasonId
-            }
-        });
-        return graphQLResponse.GetSeasonConfig;
-    }
-
     public async Task<GameBlockHeightDto> GetLatestGameByBlockHeightAsync(long blockHeight)
     {
         var graphQLResponse = await _graphQlHelper.QueryAsync<GameBlockHeightGraphDto>(new GraphQLRequest
@@ -195,29 +89,6 @@ public class RankProvider : IRankProvider, ISingletonDependency
             }
         });
         return graphQLResponse.GetLatestGameByBlockHeight;
-    }
-
-    public async Task<RankingHisResultDto> GetRankingHistoryAsync(GetRankingHisDto getRankingHisDto)
-    {
-        var graphQLResponse = await _graphQlHelper.QueryAsync<RankingHisResultGraphDto>(new GraphQLRequest
-        {
-            Query = @"
-			    query($seasonId:String!,$caAddress:String!) {
-                   getRankingHistory(getRankingHisDto:{seasonId:$seasonId ,caAddress:$caAddress}){
-                   weeks{
-                        week
-                        caAddress
-                        score
-                        rank
-                      }
-               }
-            }",
-            Variables = new
-            {
-                getRankingHisDto.CaAddress, getRankingHisDto.SeasonId
-            }
-        });
-        return graphQLResponse.GetRankingHistory;
     }
 
     public async Task<List<GameRecordDto>> GetGoRecordsAsync()
@@ -258,7 +129,7 @@ public class RankProvider : IRankProvider, ISingletonDependency
         });
         return graphQLResponse.GetGoCount?.GoCount ?? 0;
     }
-    
+
     public async Task<GameHisResultDto> GetGameHistoryListAsync(GetGameHistoryDto dto)
     {
         var graphQLResponse = await _graphQlHelper.QueryAsync<GameHistoryResultDto>(new GraphQLRequest
@@ -306,5 +177,34 @@ public class RankProvider : IRankProvider, ISingletonDependency
             }
         });
         return graphQLResponse?.GetUserBalanceList;
+    }
+
+    public async Task<CurrentRaceInfoCache> GetCurrentRaceInfoAsync()
+    {
+        var racePri = "CurrentRaceInfo";
+        var date = DateTime.UtcNow.ToString("yyyy-MM-dd");
+        var cacheKey = $"{racePri}:{date}";
+        var cache = await _cacheProvider.Get<CurrentRaceInfoCache>(cacheKey);
+
+        if (cache != null)
+        {
+            return cache;
+        }
+        
+        var raceInfo = await _contractProvider.GetCurrentRaceInfoAsync(_chainOptions.ChainInfos.Keys.First());
+        var raceCache = new CurrentRaceInfoCache
+        {
+            WeekNum = raceInfo.WeekNum,
+            CurrentRaceTimeInfo = new CurrentRaceTimeInfo
+            {
+                BeginTime = raceInfo.RaceTimeInfo.BeginTime.ToDateTime(),
+                EndTime = raceInfo.RaceTimeInfo.EndTime.ToDateTime(),
+                SettleBeginTime = raceInfo.RaceTimeInfo.SettleBeginTime.ToDateTime(),
+                SettleEndTime = raceInfo.RaceTimeInfo.SettleEndTime.ToDateTime()
+            }
+        };
+        
+        await _cacheProvider.Set<CurrentRaceInfoCache>(cacheKey, raceCache, null);
+        return raceCache;
     }
 }

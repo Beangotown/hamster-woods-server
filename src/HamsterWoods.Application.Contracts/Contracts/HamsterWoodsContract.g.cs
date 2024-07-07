@@ -92,54 +92,58 @@ namespace Contracts.HamsterWoods {
             "TG9ja2VkQWNvcm5zSW5mbxIMCgR3ZWVrGAEgASgFEg4KBmFjb3JucxgCIAEo",
             "AxIvCgtzZXR0bGVfdGltZRgDIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1l",
             "c3RhbXASHAoUaXNfYWRkX2xvY2tlZF9hY29ybnMYBSABKAgSEwoLaXNfdW5s",
-            "b2NrZWQYBiABKAgiMQoRVW5sb2NrQWNvcm5zSW5wdXQSHAoFdmFsdWUYASAD",
-            "KAsyDS5hZWxmLkFkZHJlc3MiKwoLTWFuYWdlckxpc3QSHAoFdmFsdWUYASAD",
-            "KAsyDS5hZWxmLkFkZHJlc3MilwEKClJhY2VDb25maWcSLgoKYmVnaW5fdGlt",
-            "ZRgBIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXASEgoKZ2FtZV9o",
-            "b3VycxgCIAEoBRIPCgdpc19yYWNlGAMgASgIEjQKEGNhbGlicmF0aW9uX3Rp",
-            "bWUYBCABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wItgBCgxSYWNl",
-            "VGltZUluZm8SLgoKYmVnaW5fdGltZRgBIAEoCzIaLmdvb2dsZS5wcm90b2J1",
-            "Zi5UaW1lc3RhbXASLAoIZW5kX3RpbWUYAiABKAsyGi5nb29nbGUucHJvdG9i",
-            "dWYuVGltZXN0YW1wEjUKEXNldHRsZV9iZWdpbl90aW1lGAMgASgLMhouZ29v",
-            "Z2xlLnByb3RvYnVmLlRpbWVzdGFtcBIzCg9zZXR0bGVfZW5kX3RpbWUYBCAB",
-            "KAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wKicKCEdyaWRUeXBlEggK",
-            "BEJsdWUQABIHCgNSZWQQARIICgRHb2xkEAIyrQwKFEhhbXN0ZXJXb29kc0Nv",
-            "bnRyYWN0EiwKBFBsYXkSCi5QbGF5SW5wdXQaFi5nb29nbGUucHJvdG9idWYu",
-            "RW1wdHkiABJHCg5QdXJjaGFzZUNoYW5jZRIbLmdvb2dsZS5wcm90b2J1Zi5J",
-            "bnQzMlZhbHVlGhYuZ29vZ2xlLnByb3RvYnVmLkVtcHR5IgASRAoUU2V0R2Ft",
-            "ZUxpbWl0U2V0dGluZ3MSEi5HYW1lTGltaXRTZXR0aW5ncxoWLmdvb2dsZS5w",
-            "cm90b2J1Zi5FbXB0eSIAEj4KCkluaXRpYWxpemUSFi5nb29nbGUucHJvdG9i",
-            "dWYuRW1wdHkaFi5nb29nbGUucHJvdG9idWYuRW1wdHkiABI2CgtDaGFuZ2VB",
-            "ZG1pbhINLmFlbGYuQWRkcmVzcxoWLmdvb2dsZS5wcm90b2J1Zi5FbXB0eSIA",
-            "EjQKDFNldEdhbWVSdWxlcxIKLkdhbWVSdWxlcxoWLmdvb2dsZS5wcm90b2J1",
-            "Zi5FbXB0eSIAEjoKD1NldFJhbmtpbmdSdWxlcxINLlJhbmtpbmdSdWxlcxoW",
-            "Lmdvb2dsZS5wcm90b2J1Zi5FbXB0eSIAEkoKF1NldFB1cmNoYXNlQ2hhbmNl",
-            "Q29uZmlnEhUuUHVyY2hhc2VDaGFuY2VDb25maWcaFi5nb29nbGUucHJvdG9i",
-            "dWYuRW1wdHkiABI7ChBTZXRVbmxvY2tNYW5hZ2VyEg0uYWVsZi5BZGRyZXNz",
-            "GhYuZ29vZ2xlLnByb3RvYnVmLkVtcHR5IgASQQoRQmF0Y2hVbmxvY2tBY29y",
-            "bnMSEi5VbmxvY2tBY29ybnNJbnB1dBoWLmdvb2dsZS5wcm90b2J1Zi5FbXB0",
-            "eSIAEj0KCVN0YXJ0UmFjZRIWLmdvb2dsZS5wcm90b2J1Zi5FbXB0eRoWLmdv",
-            "b2dsZS5wcm90b2J1Zi5FbXB0eSIAEjwKCFN0b3BSYWNlEhYuZ29vZ2xlLnBy",
-            "b3RvYnVmLkVtcHR5GhYuZ29vZ2xlLnByb3RvYnVmLkVtcHR5IgASNgoNU2V0",
-            "UmFjZUNvbmZpZxILLlJhY2VDb25maWcaFi5nb29nbGUucHJvdG9idWYuRW1w",
-            "dHkiABJEChBDaGVja0hhbXN0ZXJQYXNzEg0uYWVsZi5BZGRyZXNzGhouZ29v",
-            "Z2xlLnByb3RvYnVmLkJvb2xWYWx1ZSIFiIn3AQESQAoUR2V0UGxheWVySW5m",
-            "b3JtYXRpb24SDS5hZWxmLkFkZHJlc3MaEi5QbGF5ZXJJbmZvcm1hdGlvbiIF",
-            "iIn3AQESRwoSR2V0Qm91dEluZm9ybWF0aW9uEhguR2V0Qm91dEluZm9ybWF0",
-            "aW9uSW5wdXQaEC5Cb3V0SW5mb3JtYXRpb24iBYiJ9wEBEjgKCEdldEFkbWlu",
-            "EhYuZ29vZ2xlLnByb3RvYnVmLkVtcHR5Gg0uYWVsZi5BZGRyZXNzIgWIifcB",
-            "ARJJChRHZXRHYW1lTGltaXRTZXR0aW5ncxIWLmdvb2dsZS5wcm90b2J1Zi5F",
-            "bXB0eRoSLkdhbWVMaW1pdFNldHRpbmdzIgWIifcBARI5CgxHZXRHYW1lUnVs",
-            "ZXMSFi5nb29nbGUucHJvdG9idWYuRW1wdHkaCi5HYW1lUnVsZXMiBYiJ9wEB",
-            "Ej8KD0dldFJhbmtpbmdSdWxlcxIWLmdvb2dsZS5wcm90b2J1Zi5FbXB0eRoN",
-            "LlJhbmtpbmdSdWxlcyIFiIn3AQESTwoXR2V0UHVyY2hhc2VDaGFuY2VDb25m",
-            "aWcSFi5nb29nbGUucHJvdG9idWYuRW1wdHkaFS5QdXJjaGFzZUNoYW5jZUNv",
-            "bmZpZyIFiIn3AQESOwoNR2V0UmFjZUNvbmZpZxIWLmdvb2dsZS5wcm90b2J1",
-            "Zi5FbXB0eRoLLlJhY2VDb25maWciBYiJ9wEBEkYKF0dldExvY2tlZEFjb3Ju",
-            "c0luZm9MaXN0Eg0uYWVsZi5BZGRyZXNzGhUuTG9ja2VkQWNvcm5zSW5mb0xp",
-            "c3QiBYiJ9wEBGkWyzPYBMENvbnRyYWN0cy5IYW1zdGVyV29vZHMuSGFtc3Rl",
-            "cldvb2RzQ29udHJhY3RTdGF0ZcrK9gELYWNzMTIucHJvdG9CGaoCFkNvbnRy",
-            "YWN0cy5IYW1zdGVyV29vZHNiBnByb3RvMw=="));
+            "b2NrZWQYBiABKAgiRwoRVW5sb2NrQWNvcm5zSW5wdXQSIAoJYWRkcmVzc2Vz",
+            "GAEgAygLMg0uYWVsZi5BZGRyZXNzEhAKCHdlZWtfbnVtGAIgASgFIisKC01h",
+            "bmFnZXJMaXN0EhwKBXZhbHVlGAEgAygLMg0uYWVsZi5BZGRyZXNzIpcBCgpS",
+            "YWNlQ29uZmlnEi4KCmJlZ2luX3RpbWUYASABKAsyGi5nb29nbGUucHJvdG9i",
+            "dWYuVGltZXN0YW1wEhIKCmdhbWVfaG91cnMYAiABKAUSDwoHaXNfcmFjZRgD",
+            "IAEoCBI0ChBjYWxpYnJhdGlvbl90aW1lGAQgASgLMhouZ29vZ2xlLnByb3Rv",
+            "YnVmLlRpbWVzdGFtcCLYAQoMUmFjZVRpbWVJbmZvEi4KCmJlZ2luX3RpbWUY",
+            "ASABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEiwKCGVuZF90aW1l",
+            "GAIgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcBI1ChFzZXR0bGVf",
+            "YmVnaW5fdGltZRgDIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXAS",
+            "MwoPc2V0dGxlX2VuZF90aW1lGAQgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRp",
+            "bWVzdGFtcCJKCg9DdXJyZW50UmFjZUluZm8SJQoOcmFjZV90aW1lX2luZm8Y",
+            "ASABKAsyDS5SYWNlVGltZUluZm8SEAoId2Vla19udW0YAiABKAUqJwoIR3Jp",
+            "ZFR5cGUSCAoEQmx1ZRAAEgcKA1JlZBABEggKBEdvbGQQAjL0DAoUSGFtc3Rl",
+            "cldvb2RzQ29udHJhY3QSLAoEUGxheRIKLlBsYXlJbnB1dBoWLmdvb2dsZS5w",
+            "cm90b2J1Zi5FbXB0eSIAEkcKDlB1cmNoYXNlQ2hhbmNlEhsuZ29vZ2xlLnBy",
+            "b3RvYnVmLkludDMyVmFsdWUaFi5nb29nbGUucHJvdG9idWYuRW1wdHkiABJE",
+            "ChRTZXRHYW1lTGltaXRTZXR0aW5ncxISLkdhbWVMaW1pdFNldHRpbmdzGhYu",
+            "Z29vZ2xlLnByb3RvYnVmLkVtcHR5IgASPgoKSW5pdGlhbGl6ZRIWLmdvb2ds",
+            "ZS5wcm90b2J1Zi5FbXB0eRoWLmdvb2dsZS5wcm90b2J1Zi5FbXB0eSIAEjYK",
+            "C0NoYW5nZUFkbWluEg0uYWVsZi5BZGRyZXNzGhYuZ29vZ2xlLnByb3RvYnVm",
+            "LkVtcHR5IgASNAoMU2V0R2FtZVJ1bGVzEgouR2FtZVJ1bGVzGhYuZ29vZ2xl",
+            "LnByb3RvYnVmLkVtcHR5IgASOgoPU2V0UmFua2luZ1J1bGVzEg0uUmFua2lu",
+            "Z1J1bGVzGhYuZ29vZ2xlLnByb3RvYnVmLkVtcHR5IgASSgoXU2V0UHVyY2hh",
+            "c2VDaGFuY2VDb25maWcSFS5QdXJjaGFzZUNoYW5jZUNvbmZpZxoWLmdvb2ds",
+            "ZS5wcm90b2J1Zi5FbXB0eSIAEjsKEFNldFVubG9ja01hbmFnZXISDS5hZWxm",
+            "LkFkZHJlc3MaFi5nb29nbGUucHJvdG9idWYuRW1wdHkiABJBChFCYXRjaFVu",
+            "bG9ja0Fjb3JucxISLlVubG9ja0Fjb3Juc0lucHV0GhYuZ29vZ2xlLnByb3Rv",
+            "YnVmLkVtcHR5IgASPQoJU3RhcnRSYWNlEhYuZ29vZ2xlLnByb3RvYnVmLkVt",
+            "cHR5GhYuZ29vZ2xlLnByb3RvYnVmLkVtcHR5IgASPAoIU3RvcFJhY2USFi5n",
+            "b29nbGUucHJvdG9idWYuRW1wdHkaFi5nb29nbGUucHJvdG9idWYuRW1wdHki",
+            "ABI2Cg1TZXRSYWNlQ29uZmlnEgsuUmFjZUNvbmZpZxoWLmdvb2dsZS5wcm90",
+            "b2J1Zi5FbXB0eSIAEkQKEENoZWNrSGFtc3RlclBhc3MSDS5hZWxmLkFkZHJl",
+            "c3MaGi5nb29nbGUucHJvdG9idWYuQm9vbFZhbHVlIgWIifcBARJAChRHZXRQ",
+            "bGF5ZXJJbmZvcm1hdGlvbhINLmFlbGYuQWRkcmVzcxoSLlBsYXllckluZm9y",
+            "bWF0aW9uIgWIifcBARJHChJHZXRCb3V0SW5mb3JtYXRpb24SGC5HZXRCb3V0",
+            "SW5mb3JtYXRpb25JbnB1dBoQLkJvdXRJbmZvcm1hdGlvbiIFiIn3AQESOAoI",
+            "R2V0QWRtaW4SFi5nb29nbGUucHJvdG9idWYuRW1wdHkaDS5hZWxmLkFkZHJl",
+            "c3MiBYiJ9wEBEkkKFEdldEdhbWVMaW1pdFNldHRpbmdzEhYuZ29vZ2xlLnBy",
+            "b3RvYnVmLkVtcHR5GhIuR2FtZUxpbWl0U2V0dGluZ3MiBYiJ9wEBEjkKDEdl",
+            "dEdhbWVSdWxlcxIWLmdvb2dsZS5wcm90b2J1Zi5FbXB0eRoKLkdhbWVSdWxl",
+            "cyIFiIn3AQESPwoPR2V0UmFua2luZ1J1bGVzEhYuZ29vZ2xlLnByb3RvYnVm",
+            "LkVtcHR5Gg0uUmFua2luZ1J1bGVzIgWIifcBARJPChdHZXRQdXJjaGFzZUNo",
+            "YW5jZUNvbmZpZxIWLmdvb2dsZS5wcm90b2J1Zi5FbXB0eRoVLlB1cmNoYXNl",
+            "Q2hhbmNlQ29uZmlnIgWIifcBARI7Cg1HZXRSYWNlQ29uZmlnEhYuZ29vZ2xl",
+            "LnByb3RvYnVmLkVtcHR5GgsuUmFjZUNvbmZpZyIFiIn3AQESRgoXR2V0TG9j",
+            "a2VkQWNvcm5zSW5mb0xpc3QSDS5hZWxmLkFkZHJlc3MaFS5Mb2NrZWRBY29y",
+            "bnNJbmZvTGlzdCIFiIn3AQESRQoSR2V0Q3VycmVudFJhY2VJbmZvEhYuZ29v",
+            "Z2xlLnByb3RvYnVmLkVtcHR5GhAuQ3VycmVudFJhY2VJbmZvIgWIifcBARpF",
+            "ssz2ATBDb250cmFjdHMuSGFtc3Rlcldvb2RzLkhhbXN0ZXJXb29kc0NvbnRy",
+            "YWN0U3RhdGXKyvYBC2FjczEyLnByb3RvQhmqAhZDb250cmFjdHMuSGFtc3Rl",
+            "cldvb2RzYgZwcm90bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::AElf.Types.CoreReflection.Descriptor, global::AElf.OptionsReflection.Descriptor, global::Google.Protobuf.WellKnownTypes.EmptyReflection.Descriptor, global::Google.Protobuf.WellKnownTypes.WrappersReflection.Descriptor, global::Google.Protobuf.WellKnownTypes.TimestampReflection.Descriptor, global::AElf.Standards.ACS12.Acs12Reflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(new[] {typeof(global::Contracts.HamsterWoods.GridType), }, null, new pbr::GeneratedClrTypeInfo[] {
@@ -162,10 +166,11 @@ namespace Contracts.HamsterWoods {
             new pbr::GeneratedClrTypeInfo(typeof(global::Contracts.HamsterWoods.ChancePurchased), global::Contracts.HamsterWoods.ChancePurchased.Parser, new[]{ "PlayerAddress", "AcornsAmount", "ChanceCount", "WeeklyAcorns", "TotalAcorns", "TotalChance" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Contracts.HamsterWoods.LockedAcornsInfoList), global::Contracts.HamsterWoods.LockedAcornsInfoList.Parser, new[]{ "Value" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Contracts.HamsterWoods.LockedAcornsInfo), global::Contracts.HamsterWoods.LockedAcornsInfo.Parser, new[]{ "Week", "Acorns", "SettleTime", "IsAddLockedAcorns", "IsUnlocked" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Contracts.HamsterWoods.UnlockAcornsInput), global::Contracts.HamsterWoods.UnlockAcornsInput.Parser, new[]{ "Value" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Contracts.HamsterWoods.UnlockAcornsInput), global::Contracts.HamsterWoods.UnlockAcornsInput.Parser, new[]{ "Addresses", "WeekNum" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Contracts.HamsterWoods.ManagerList), global::Contracts.HamsterWoods.ManagerList.Parser, new[]{ "Value" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Contracts.HamsterWoods.RaceConfig), global::Contracts.HamsterWoods.RaceConfig.Parser, new[]{ "BeginTime", "GameHours", "IsRace", "CalibrationTime" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Contracts.HamsterWoods.RaceTimeInfo), global::Contracts.HamsterWoods.RaceTimeInfo.Parser, new[]{ "BeginTime", "EndTime", "SettleBeginTime", "SettleEndTime" }, null, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::Contracts.HamsterWoods.RaceTimeInfo), global::Contracts.HamsterWoods.RaceTimeInfo.Parser, new[]{ "BeginTime", "EndTime", "SettleBeginTime", "SettleEndTime" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Contracts.HamsterWoods.CurrentRaceInfo), global::Contracts.HamsterWoods.CurrentRaceInfo.Parser, new[]{ "RaceTimeInfo", "WeekNum" }, null, null, null, null)
           }));
     }
     #endregion
@@ -6580,7 +6585,8 @@ namespace Contracts.HamsterWoods {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public UnlockAcornsInput(UnlockAcornsInput other) : this() {
-      value_ = other.value_.Clone();
+      addresses_ = other.addresses_.Clone();
+      weekNum_ = other.weekNum_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -6590,15 +6596,27 @@ namespace Contracts.HamsterWoods {
       return new UnlockAcornsInput(this);
     }
 
-    /// <summary>Field number for the "value" field.</summary>
-    public const int ValueFieldNumber = 1;
-    private static readonly pb::FieldCodec<global::AElf.Types.Address> _repeated_value_codec
+    /// <summary>Field number for the "addresses" field.</summary>
+    public const int AddressesFieldNumber = 1;
+    private static readonly pb::FieldCodec<global::AElf.Types.Address> _repeated_addresses_codec
         = pb::FieldCodec.ForMessage(10, global::AElf.Types.Address.Parser);
-    private readonly pbc::RepeatedField<global::AElf.Types.Address> value_ = new pbc::RepeatedField<global::AElf.Types.Address>();
+    private readonly pbc::RepeatedField<global::AElf.Types.Address> addresses_ = new pbc::RepeatedField<global::AElf.Types.Address>();
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public pbc::RepeatedField<global::AElf.Types.Address> Value {
-      get { return value_; }
+    public pbc::RepeatedField<global::AElf.Types.Address> Addresses {
+      get { return addresses_; }
+    }
+
+    /// <summary>Field number for the "week_num" field.</summary>
+    public const int WeekNumFieldNumber = 2;
+    private int weekNum_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public int WeekNum {
+      get { return weekNum_; }
+      set {
+        weekNum_ = value;
+      }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -6616,7 +6634,8 @@ namespace Contracts.HamsterWoods {
       if (ReferenceEquals(other, this)) {
         return true;
       }
-      if(!value_.Equals(other.value_)) return false;
+      if(!addresses_.Equals(other.addresses_)) return false;
+      if (WeekNum != other.WeekNum) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -6624,7 +6643,8 @@ namespace Contracts.HamsterWoods {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override int GetHashCode() {
       int hash = 1;
-      hash ^= value_.GetHashCode();
+      hash ^= addresses_.GetHashCode();
+      if (WeekNum != 0) hash ^= WeekNum.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -6643,7 +6663,11 @@ namespace Contracts.HamsterWoods {
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       output.WriteRawMessage(this);
     #else
-      value_.WriteTo(output, _repeated_value_codec);
+      addresses_.WriteTo(output, _repeated_addresses_codec);
+      if (WeekNum != 0) {
+        output.WriteRawTag(16);
+        output.WriteInt32(WeekNum);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -6654,7 +6678,11 @@ namespace Contracts.HamsterWoods {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
-      value_.WriteTo(ref output, _repeated_value_codec);
+      addresses_.WriteTo(ref output, _repeated_addresses_codec);
+      if (WeekNum != 0) {
+        output.WriteRawTag(16);
+        output.WriteInt32(WeekNum);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
       }
@@ -6665,7 +6693,10 @@ namespace Contracts.HamsterWoods {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int CalculateSize() {
       int size = 0;
-      size += value_.CalculateSize(_repeated_value_codec);
+      size += addresses_.CalculateSize(_repeated_addresses_codec);
+      if (WeekNum != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeInt32Size(WeekNum);
+      }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
       }
@@ -6678,7 +6709,10 @@ namespace Contracts.HamsterWoods {
       if (other == null) {
         return;
       }
-      value_.Add(other.value_);
+      addresses_.Add(other.addresses_);
+      if (other.WeekNum != 0) {
+        WeekNum = other.WeekNum;
+      }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
 
@@ -6695,7 +6729,11 @@ namespace Contracts.HamsterWoods {
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
           case 10: {
-            value_.AddEntriesFrom(input, _repeated_value_codec);
+            addresses_.AddEntriesFrom(input, _repeated_addresses_codec);
+            break;
+          }
+          case 16: {
+            WeekNum = input.ReadInt32();
             break;
           }
         }
@@ -6714,7 +6752,11 @@ namespace Contracts.HamsterWoods {
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
             break;
           case 10: {
-            value_.AddEntriesFrom(ref input, _repeated_value_codec);
+            addresses_.AddEntriesFrom(ref input, _repeated_addresses_codec);
+            break;
+          }
+          case 16: {
+            WeekNum = input.ReadInt32();
             break;
           }
         }
@@ -7547,6 +7589,241 @@ namespace Contracts.HamsterWoods {
               SettleEndTime = new global::Google.Protobuf.WellKnownTypes.Timestamp();
             }
             input.ReadMessage(SettleEndTime);
+            break;
+          }
+        }
+      }
+    }
+    #endif
+
+  }
+
+  public sealed partial class CurrentRaceInfo : pb::IMessage<CurrentRaceInfo>
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      , pb::IBufferMessage
+  #endif
+  {
+    private static readonly pb::MessageParser<CurrentRaceInfo> _parser = new pb::MessageParser<CurrentRaceInfo>(() => new CurrentRaceInfo());
+    private pb::UnknownFieldSet _unknownFields;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public static pb::MessageParser<CurrentRaceInfo> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::Contracts.HamsterWoods.HamsterWoodsContractReflection.Descriptor.MessageTypes[23]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public CurrentRaceInfo() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public CurrentRaceInfo(CurrentRaceInfo other) : this() {
+      raceTimeInfo_ = other.raceTimeInfo_ != null ? other.raceTimeInfo_.Clone() : null;
+      weekNum_ = other.weekNum_;
+      _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public CurrentRaceInfo Clone() {
+      return new CurrentRaceInfo(this);
+    }
+
+    /// <summary>Field number for the "race_time_info" field.</summary>
+    public const int RaceTimeInfoFieldNumber = 1;
+    private global::Contracts.HamsterWoods.RaceTimeInfo raceTimeInfo_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public global::Contracts.HamsterWoods.RaceTimeInfo RaceTimeInfo {
+      get { return raceTimeInfo_; }
+      set {
+        raceTimeInfo_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "week_num" field.</summary>
+    public const int WeekNumFieldNumber = 2;
+    private int weekNum_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public int WeekNum {
+      get { return weekNum_; }
+      set {
+        weekNum_ = value;
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public override bool Equals(object other) {
+      return Equals(other as CurrentRaceInfo);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool Equals(CurrentRaceInfo other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if (!object.Equals(RaceTimeInfo, other.RaceTimeInfo)) return false;
+      if (WeekNum != other.WeekNum) return false;
+      return Equals(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public override int GetHashCode() {
+      int hash = 1;
+      if (raceTimeInfo_ != null) hash ^= RaceTimeInfo.GetHashCode();
+      if (WeekNum != 0) hash ^= WeekNum.GetHashCode();
+      if (_unknownFields != null) {
+        hash ^= _unknownFields.GetHashCode();
+      }
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void WriteTo(pb::CodedOutputStream output) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      output.WriteRawMessage(this);
+    #else
+      if (raceTimeInfo_ != null) {
+        output.WriteRawTag(10);
+        output.WriteMessage(RaceTimeInfo);
+      }
+      if (WeekNum != 0) {
+        output.WriteRawTag(16);
+        output.WriteInt32(WeekNum);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(output);
+      }
+    #endif
+    }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
+      if (raceTimeInfo_ != null) {
+        output.WriteRawTag(10);
+        output.WriteMessage(RaceTimeInfo);
+      }
+      if (WeekNum != 0) {
+        output.WriteRawTag(16);
+        output.WriteInt32(WeekNum);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(ref output);
+      }
+    }
+    #endif
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public int CalculateSize() {
+      int size = 0;
+      if (raceTimeInfo_ != null) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(RaceTimeInfo);
+      }
+      if (WeekNum != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeInt32Size(WeekNum);
+      }
+      if (_unknownFields != null) {
+        size += _unknownFields.CalculateSize();
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void MergeFrom(CurrentRaceInfo other) {
+      if (other == null) {
+        return;
+      }
+      if (other.raceTimeInfo_ != null) {
+        if (raceTimeInfo_ == null) {
+          RaceTimeInfo = new global::Contracts.HamsterWoods.RaceTimeInfo();
+        }
+        RaceTimeInfo.MergeFrom(other.RaceTimeInfo);
+      }
+      if (other.WeekNum != 0) {
+        WeekNum = other.WeekNum;
+      }
+      _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void MergeFrom(pb::CodedInputStream input) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      input.ReadRawMessage(this);
+    #else
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
+            break;
+          case 10: {
+            if (raceTimeInfo_ == null) {
+              RaceTimeInfo = new global::Contracts.HamsterWoods.RaceTimeInfo();
+            }
+            input.ReadMessage(RaceTimeInfo);
+            break;
+          }
+          case 16: {
+            WeekNum = input.ReadInt32();
+            break;
+          }
+        }
+      }
+    #endif
+    }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
+            break;
+          case 10: {
+            if (raceTimeInfo_ == null) {
+              RaceTimeInfo = new global::Contracts.HamsterWoods.RaceTimeInfo();
+            }
+            input.ReadMessage(RaceTimeInfo);
+            break;
+          }
+          case 16: {
+            WeekNum = input.ReadInt32();
             break;
           }
         }

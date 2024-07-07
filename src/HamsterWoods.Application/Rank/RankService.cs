@@ -51,22 +51,18 @@ public class RankService : HamsterWoodsBaseService, IRankService
 
     public async Task<WeekRankResultDto> GetWeekRankAsync(GetRankDto getRankDto)
     {
-        var weekNum = 2; // should get from contract
+        // var weekInfo = await _rankProvider.GetCurrentRaceInfoAsync();
+        // var weekNum = weekInfo.WeekNum;
+        // {
+        //     weekNum = weekNum - 1;
+        // }
+
+        var weekNum = 3;
+
         var rankInfos = await _rankProvider.GetWeekRankAsync(weekNum, getRankDto.CaAddress, getRankDto.SkipCount,
             getRankDto.MaxResultCount);
         //var dayOfWeek = DateTime.UtcNow.DayOfWeek;
 
-        if (getRankDto.CaAddress == "ELF_2f9rumzM1roxHb748W1Dkgx2mB1D7hqTpYQNyctn5A2S2d6yhS_tDVW")
-        {
-            if (rankInfos.SelfRank.CaAddress == "ELF_2f9rumzM1roxHb748W1Dkgx2mB1D7hqTpYQNyctn5A2S2d6yhS_tDVW")
-            {
-                rankInfos.SelfRank.Rank = 1;
-                rankInfos.RankingList[0].CaAddress = "ELF_2f9rumzM1roxHb748W1Dkgx2mB1D7hqTpYQNyctn5A2S2d6yhS_tDVW";
-            }
-        }
-
-        
-        
         if (true)
         {
             var settleDayRankingList = new List<SettleDayRank>();
@@ -171,24 +167,14 @@ public class RankService : HamsterWoodsBaseService, IRankService
         return rankInfos;
     }
 
-    public async Task<WeekRankResultDto> GetWeekRankWeek1Async(GetRankDto getRankDto)
+
+    public async Task<WeekRankResultDto> GetWeekRankWeek1Async(GetRankDto getRankDto, int weekNum)
     {
-        var weekNum = 1; // should calculate
         var rankInfos = await _rankProvider.GetWeekRankAsync(weekNum, getRankDto.CaAddress, getRankDto.SkipCount,
             getRankDto.MaxResultCount);
         //var dayOfWeek = DateTime.UtcNow.DayOfWeek;
-        
-        
-        if (getRankDto.CaAddress == "ELF_2f9rumzM1roxHb748W1Dkgx2mB1D7hqTpYQNyctn5A2S2d6yhS_tDVW")
-        {
-            if (rankInfos.SelfRank.CaAddress == "ELF_2f9rumzM1roxHb748W1Dkgx2mB1D7hqTpYQNyctn5A2S2d6yhS_tDVW")
-            {
-                rankInfos.SelfRank.Rank = 1;
-                rankInfos.RankingList[0].CaAddress = "ELF_2f9rumzM1roxHb748W1Dkgx2mB1D7hqTpYQNyctn5A2S2d6yhS_tDVW";
-            }
-        }
-        
-        
+
+
         if (true)
         {
             var settleDayRankingList = new List<SettleDayRank>();
@@ -392,12 +378,12 @@ public class RankService : HamsterWoodsBaseService, IRankService
 
         var dto = new GetHistoryDto()
         {
-            Time = "2024-2-07050706",
+            Time = "2024-3-07060707",
             CaAddress = input.CaAddress,
             Score = rankInfos.SettleDaySelfRank.Score,
             Decimals = 8,
             Rank = rankInfos.SettleDaySelfRank.Rank,
-            WeekNum = 2,
+            WeekNum = 3,
             RewardNftInfo = rankInfos.SettleDaySelfRank.RewardNftInfo
         };
         if (dto.RewardNftInfo != null)
@@ -408,18 +394,23 @@ public class RankService : HamsterWoodsBaseService, IRankService
                 dto.RewardNftInfo = null;
             }
         }
-        
-        result.Add(dto);
 
-        var his = await GetHistoryWeek1Async(input);
-        result.AddRange(his);
+        if (dto.Score > 0)
+        {
+            result.Add(dto);
+        }
+
+        var his1 = await GetHistoryWeek1Async(input, 1, "2024-1-07040705");
+        result.AddRange(his1);
+        var his2 = await GetHistoryWeek1Async(input, 2, "2024-2-07050706");
+        result.AddRange(his2);
         return result.OrderByDescending(t => t.WeekNum).ToList();
     }
 
-    public async Task<List<GetHistoryDto>> GetHistoryWeek1Async(GetRankDto input)
+    public async Task<List<GetHistoryDto>> GetHistoryWeek1Async(GetRankDto input, int weekNum, string time)
     {
         var result = new List<GetHistoryDto>();
-        var rankInfos = await GetWeekRankWeek1Async(input);
+        var rankInfos = await GetWeekRankWeek1Async(input, weekNum);
         if (rankInfos.SettleDaySelfRank == null)
         {
             return result;
@@ -427,17 +418,17 @@ public class RankService : HamsterWoodsBaseService, IRankService
 
         var dto = new GetHistoryDto()
         {
-            Time = "2024-1-07040705",
+            Time = time,
             CaAddress = input.CaAddress,
             Score = rankInfos.SettleDaySelfRank.Score,
             Decimals = 8,
             Rank = rankInfos.SettleDaySelfRank.Rank,
-            WeekNum = 1,
+            WeekNum = weekNum,
             RewardNftInfo = rankInfos.SettleDaySelfRank.RewardNftInfo
         };
         if (dto.RewardNftInfo != null)
         {
-            var check = await CheckClaim(input.CaAddress, 1);
+            var check = await CheckClaim(input.CaAddress, weekNum);
             if (!check)
             {
                 dto.RewardNftInfo = null;
@@ -447,40 +438,6 @@ public class RankService : HamsterWoodsBaseService, IRankService
         result.Add(dto);
 
         return result;
-        // var dayOfWeek = DateTime.UtcNow.DayOfWeek;
-        // //if (_raceOptions.SettleDayOfWeek == (int)dayOfWeek)
-
-
-        // {
-        //     return Task.FromResult(new List<GetHistoryDto>()
-        //     {
-        //         new GetHistoryDto()
-        //         {
-        //             Time = "2024-06-28",
-        //             CaAddress = input.CaAddress,
-        //             Score = 20000000000,
-        //             Decimals = 8,
-        //             Rank = 3,
-        //             RewardNftInfo = new NftInfo()
-        //             {
-        //                 Balance = 5,
-        //                 ChainId = "tDVW",
-        //                 ImageUrl =
-        //                     "https://forest-testnet.s3.ap-northeast-1.amazonaws.com/1008xAUTO/1718204324416-Activity%20Icon.png",
-        //                 Symbol = "KINGPASS-1",
-        //                 TokenName = "KINGPASS"
-        //             }
-        //         },
-        //         new GetHistoryDto()
-        //         {
-        //             Time = "2024-06-21",
-        //             CaAddress = input.CaAddress,
-        //             Score = 230000000000,
-        //             Decimals = 8,
-        //             Rank = 2
-        //         }
-        //     });
-        // }
     }
 
     private const string _hamsterPassCacheKeyPrefix = "HamsterKing_";

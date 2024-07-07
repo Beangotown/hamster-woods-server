@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using HamsterWoods.Cache;
+using Newtonsoft.Json;
 using StackExchange.Redis;
 using Volo.Abp.DependencyInjection;
 
@@ -34,6 +35,24 @@ public class RedisCacheProvider : ICacheProvider, ISingletonDependency
         if (expire != null) _database.KeyExpire(GetKey(key), expire);
 
         return count;
+    }
+    
+    public async Task<T?> Get<T>(string key) where T : class
+    {
+        var value = await _database.StringGetAsync(key);
+        if (value.IsNullOrEmpty) return default;
+
+        return JsonConvert.DeserializeObject<T>(value);
+    }
+
+    public async Task Set<T>(string key, T? value, TimeSpan? expire) where T : class
+    {
+        if (value == null)
+        {
+            throw new ArgumentNullException(nameof(value), "redis cache set error, value can not be null.");
+        }
+
+        await _database.StringSetAsync(key, JsonConvert.SerializeObject(value), expiry: expire);
     }
 
     private string GetKey(string key)
