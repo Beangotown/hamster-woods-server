@@ -378,7 +378,7 @@ public class RankService : HamsterWoodsBaseService, IRankService
         };
         if (dto.RewardNftInfo != null)
         {
-            var check = await CheckClaim(input.CaAddress, 1);
+            var check = await CheckClaim(input.CaAddress, dto.WeekNum);
             if (!check)
             {
                 dto.RewardNftInfo = null;
@@ -389,7 +389,7 @@ public class RankService : HamsterWoodsBaseService, IRankService
 
         var his = await GetHistoryWeek1Async(input);
         result.AddRange(his);
-        return result.OrderBy(t => t.WeekNum).ToList();
+        return result.OrderByDescending(t => t.WeekNum).ToList();
     }
 
     public async Task<List<GetHistoryDto>> GetHistoryWeek1Async(GetRankDto input)
