@@ -83,7 +83,7 @@ public class RewardAppService : IRewardAppService, ISingletonDependency
 
         var symbol = "KINGHAMSTER-1";
         var sendTransactionOutput = await _contractProvider.SendTransferAsync(symbol, amount.ToString(),
-            AddressHelper.ToShortAddress("2f9rumzM1roxHb748W1Dkgx2mB1D7hqTpYQNyctn5A2S2d6yhS"),
+            AddressHelper.ToShortAddress(input.CaAddress),
             GetDefaultChainId()
         );
 
