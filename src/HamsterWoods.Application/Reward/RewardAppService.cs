@@ -47,7 +47,7 @@ public class RewardAppService : IRewardAppService, ISingletonDependency
         var weekNum = input.WeekNum;
         if (weekNum == 0)
         {
-            weekNum = 2; // current weekNum
+            weekNum = 3; // current weekNum
         }
 
         var caAddress = AddressHelper.ToFullAddress(input.CaAddress, GetDefaultChainId());

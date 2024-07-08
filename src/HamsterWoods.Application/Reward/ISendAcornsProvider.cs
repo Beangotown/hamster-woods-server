@@ -46,11 +46,12 @@ public class SendAcornsProvider : ISendAcornsProvider, ISingletonDependency
         try
         {
             var chainId = _chainOptions.ChainInfos.Keys.First();
-            var weekNum = 1;
+            var weekNum = 2;
             var caAddress = AddressHelper.ToFullAddress(input.CaAddress, chainId);
             // var transferParam = new UnlockAcornsInput
             // {
-            //     Value = { new[] { Address.FromBase58(input.CaAddress) } }
+            //     Addresses = {  new[] { Address.FromBase58(input.CaAddress) } },
+            //     WeekNum = 2
             // };
             //
             //
