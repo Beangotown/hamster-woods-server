@@ -19,4 +19,5 @@ public interface IRankProvider
     public Task<List<UserBalanceDto>> GetUserBalanceAsync(GetUserBalanceDto dto);
 
     Task<CurrentRaceInfoCache> GetCurrentRaceInfoAsync();
+    Task<RankDto> GetSelfWeekRankAsync(int weekNum, string caAddress); 
 }

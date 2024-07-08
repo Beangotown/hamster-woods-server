@@ -178,6 +178,29 @@ public class RankProvider : IRankProvider, ISingletonDependency
         });
         return graphQLResponse?.GetUserBalanceList;
     }
+    
+    public async Task<RankDto> GetSelfWeekRankAsync(int weekNum, string caAddress)
+    {
+        var graphQLResponse = await _graphQlHelper.QueryAsync<SelfWeekRankGraphQlDto>(new GraphQLRequest
+        {
+            Query = @"
+            query($weekNum:Int!,$caAddress:String!) {
+              getSelfWeekRank(getRankDto:{weekNum:$weekNum,caAddress:$caAddress}){
+                  rank
+                  score
+                  caAddress
+                  symbol
+                  decimals
+                }
+            }",
+            Variables = new
+            {
+                weekNum,
+                caAddress
+            }
+        });
+        return graphQLResponse?.GetSelfWeekRank;
+    }
 
     public async Task<CurrentRaceInfoCache> GetCurrentRaceInfoAsync()
     {

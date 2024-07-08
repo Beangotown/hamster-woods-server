@@ -22,8 +22,7 @@ public class WeekRankResultDto
     [CanBeNull] public SettleDaySelfRank SettleDaySelfRank { get; set; }
 }
 
-public class WeekRankGraphQlItemDto
+public class SelfWeekRankGraphQlDto
 {
-    [CanBeNull] public List<RankDto> RankingList { get; set; }
-    [CanBeNull] public RankDto SelfRank { get; set; }
+    [CanBeNull] public RankDto GetSelfWeekRank { get; set; }
 }

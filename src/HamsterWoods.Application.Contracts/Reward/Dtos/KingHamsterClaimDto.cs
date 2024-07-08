@@ -10,3 +10,8 @@ public class KingHamsterClaimDto
 
     public HamsterPassInfoDto KingHamsterInfo { get; set; }
 }
+
+public class HamsterRewardNftInfo : HamsterPassInfoDto
+{
+    public int Amount { get; set; }
+}

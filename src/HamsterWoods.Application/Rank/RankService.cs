@@ -57,7 +57,7 @@ public class RankService : HamsterWoodsBaseService, IRankService
         //     weekNum = weekNum - 1;
         // }
 
-        var weekNum = 3;
+        var weekNum = 4;
 
         var rankInfos = await _rankProvider.GetWeekRankAsync(weekNum, getRankDto.CaAddress, getRankDto.SkipCount,
             getRankDto.MaxResultCount);
@@ -378,12 +378,12 @@ public class RankService : HamsterWoodsBaseService, IRankService
 
         var dto = new GetHistoryDto()
         {
-            Time = "2024-3-07060707",
+            Time = "2024-4-07070708",
             CaAddress = input.CaAddress,
             Score = rankInfos.SettleDaySelfRank.Score,
             Decimals = 8,
             Rank = rankInfos.SettleDaySelfRank.Rank,
-            WeekNum = 3,
+            WeekNum = 4,
             RewardNftInfo = rankInfos.SettleDaySelfRank.RewardNftInfo
         };
         if (dto.RewardNftInfo != null)
@@ -401,10 +401,20 @@ public class RankService : HamsterWoodsBaseService, IRankService
         }
 
         var his1 = await GetHistoryWeek1Async(input, 1, "2024-1-07040705");
+        foreach (var item in his1)
+        {
+            item.RewardNftInfo = null;
+        }
         result.AddRange(his1);
         var his2 = await GetHistoryWeek1Async(input, 2, "2024-2-07050706");
+        foreach (var item in his2)
+        {
+            item.RewardNftInfo = null;
+        }
         result.AddRange(his2);
-        return result.OrderByDescending(t => t.WeekNum).ToList();
+        var his3 = await GetHistoryWeek1Async(input, 3, "2024-3-07060707");
+        result.AddRange(his3);
+        return result.Where(t => t.Score > 0).OrderByDescending(t => t.WeekNum).ToList();
     }
 
     public async Task<List<GetHistoryDto>> GetHistoryWeek1Async(GetRankDto input, int weekNum, string time)
