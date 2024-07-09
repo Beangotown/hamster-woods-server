@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using HamsterWoods.NFT;
+using HamsterWoods.Options;
 using HamsterWoods.Rank;
 using HamsterWoods.Trace;
 
@@ -19,5 +20,6 @@ public class HamsterWoodsApplicationAutoMapperProfile : Profile
             opts => opts.MapFrom(src => src.Score)).ReverseMap();
         CreateMap<GetUserActionDto, UserActionIndex>();
         CreateMap<HamsterPassInfoDto, HamsterPassResultDto>().ReverseMap();
+        CreateMap<RewardNftInfoOptions, NftInfo>();
     }
 }

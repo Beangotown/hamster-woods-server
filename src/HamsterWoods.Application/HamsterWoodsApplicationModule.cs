@@ -42,5 +42,6 @@ public class HamsterWoodsApplicationModule : AbpModule
         Configure<ChainOptions>(configuration.GetSection("Chains"));
         Configure<PortkeyOptions>(configuration.GetSection("Portkey"));
         Configure<RaceOptions>(configuration.GetSection("Race"));
+        Configure<RewardNftInfoOptions>(configuration.GetSection("RewardNftInfo"));
     }
 }

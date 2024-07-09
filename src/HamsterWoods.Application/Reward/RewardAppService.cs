@@ -46,7 +46,7 @@ public class RewardAppService : IRewardAppService, ISingletonDependency
     public async Task<KingHamsterClaimDto> ClaimHamsterKingAsync(HamsterPassInput input)
     {
         var caAddress = AddressHelper.ToFullAddress(input.CaAddress, GetDefaultChainId());
-        var weekNum = _rewardProvider.GetWeekNum(input.WeekNum);
+        var weekNum = await _rewardProvider.GetWeekNumAsync(input.WeekNum);
         var claimableDto = await _rewardProvider.IsClaimableAsync(caAddress, input.WeekNum);
         if (!claimableDto.Claimable)
         {

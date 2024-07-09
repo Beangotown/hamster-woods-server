@@ -1,8 +1,11 @@
+using System;
 using System.Threading.Tasks;
 using HamsterWoods.Cache;
 using HamsterWoods.NFT;
+using HamsterWoods.Options;
 using HamsterWoods.Rank;
 using HamsterWoods.Reward.Dtos;
+using Microsoft.Extensions.Options;
 using Volo.Abp.DependencyInjection;
 
 namespace HamsterWoods.Reward.Provider;
@@ -11,7 +14,10 @@ public interface IRewardProvider
 {
     Task<TokenTransferInfo> GetRewardNftAsync(string caAddress, int weekNum);
     Task<KingHamsterClaimDto> IsClaimableAsync(string caAddress, int weekNum);
-    int GetWeekNum(int weekNum);
+    Task<int> GetWeekNumAsync(int weekNum);
+    Task<TokenTransferInfo> GetRewardNftAsync(RankDto selfRankDto);
+    Task<TokenTransferInfo> GetCheckedRewardNftAsync(RankDto selfRankDto, int weekNum);
+    int GetRewardNftBalance(int rank);
 }
 
 public class RewardProvider : IRewardProvider, ISingletonDependency
@@ -19,19 +25,32 @@ public class RewardProvider : IRewardProvider, ISingletonDependency
     private const string HamsterPassCacheKeyPrefix = "HamsterKing_";
     private readonly ICacheProvider _cacheProvider;
     private readonly IRankProvider _rankProvider;
+    private readonly RewardNftInfoOptions _rewardNftInfoOptions;
+    private readonly RaceOptions _raceOptions;
 
-    public RewardProvider(ICacheProvider cacheProvider, IRankProvider rankProvider)
+    public RewardProvider(ICacheProvider cacheProvider, IRankProvider rankProvider,
+        IOptionsSnapshot<RewardNftInfoOptions> rewardNftInfoOptions,
+        IOptionsSnapshot<RaceOptions> raceOptions)
     {
         _cacheProvider = cacheProvider;
         _rankProvider = rankProvider;
+        _rewardNftInfoOptions = rewardNftInfoOptions.Value;
+        _raceOptions = raceOptions.Value;
     }
 
     public async Task<KingHamsterClaimDto> IsClaimableAsync(string caAddress, int weekNum)
     {
-        // judge settle day
-        var currentNum = 5;
-        weekNum = GetWeekNum(weekNum);
-        if (weekNum < currentNum - 2)
+        var weekInfo = await _rankProvider.GetCurrentRaceInfoAsync();
+        var dayOfWeek = DateTime.UtcNow.DayOfWeek;
+
+        var isSettleDay = _raceOptions.SettleDayOfWeeks.Contains((int)dayOfWeek);
+        if (isSettleDay)
+        {
+            weekNum = weekNum - 1;
+        }
+
+        weekNum = await GetWeekNumAsync(weekNum);
+        if (weekNum < weekInfo.WeekNum - 2)
         {
             return new KingHamsterClaimDto()
             {
@@ -41,7 +60,7 @@ public class RewardProvider : IRewardProvider, ISingletonDependency
         }
 
         var isClaimed = await IsClaimedAsync(caAddress, weekNum);
-        if (!isClaimed)
+        if (isClaimed)
         {
             return new KingHamsterClaimDto()
             {
@@ -67,12 +86,13 @@ public class RewardProvider : IRewardProvider, ISingletonDependency
         };
     }
 
-    public int GetWeekNum(int weekNum)
+    public async Task<int> GetWeekNumAsync(int weekNum)
     {
-        var currentNum = 5;
+        var weekInfo = await _rankProvider.GetCurrentRaceInfoAsync();
+        var currentNum = weekInfo.WeekNum;
         if (weekNum == 0)
         {
-            weekNum = 4; // current weekNum -1
+            weekNum = currentNum - 1;
         }
 
         return weekNum;
@@ -81,7 +101,7 @@ public class RewardProvider : IRewardProvider, ISingletonDependency
     private async Task<bool> IsClaimedAsync(string caAddress, int weekNum)
     {
         var passValue = await _cacheProvider.GetAsync($"{HamsterPassCacheKeyPrefix}{caAddress}_{weekNum}");
-        return passValue.IsNull;
+        return !passValue.IsNull;
     }
 
     public async Task<TokenTransferInfo> GetRewardNftAsync(string caAddress, int weekNum)
@@ -93,12 +113,37 @@ public class RewardProvider : IRewardProvider, ISingletonDependency
         return new TokenTransferInfo
         {
             Amount = nftBalance,
-            ChainId = "tDVW",
-            Symbol = "KINGHAMSTER-1"
+            ChainId = _rewardNftInfoOptions.ChainId,
+            Symbol = _rewardNftInfoOptions.Symbol
         };
     }
 
-    private int GetRewardNftBalance(int rank)
+    public async Task<TokenTransferInfo> GetRewardNftAsync(RankDto selfRankDto)
+    {
+        if (selfRankDto == null || selfRankDto.Rank > 10 || selfRankDto.Rank <= 0) return null;
+
+        var nftBalance = GetRewardNftBalance(selfRankDto.Rank);
+        return new TokenTransferInfo
+        {
+            Amount = nftBalance,
+            ChainId = _rewardNftInfoOptions.ChainId,
+            Symbol = _rewardNftInfoOptions.Symbol
+        };
+    }
+
+    public async Task<TokenTransferInfo> GetCheckedRewardNftAsync(RankDto selfRankDto, int weekNum)
+    {
+        var rewardInfo = await GetRewardNftAsync(selfRankDto);
+        if (rewardInfo == null)
+        {
+            return null;
+        }
+        
+        var isClaimed = await IsClaimedAsync(selfRankDto.CaAddress, weekNum);
+        return isClaimed ? null : rewardInfo;
+    }
+
+    public int GetRewardNftBalance(int rank)
     {
         var nftBalance = 0;
         if (rank is > 10 or <= 0) return nftBalance;
