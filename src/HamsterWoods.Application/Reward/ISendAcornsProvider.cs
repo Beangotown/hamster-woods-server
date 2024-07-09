@@ -46,7 +46,7 @@ public class SendAcornsProvider : ISendAcornsProvider, ISingletonDependency
         try
         {
             var chainId = _chainOptions.ChainInfos.Keys.First();
-            var weekNum = 2;
+            var weekNum = 3;
             var caAddress = AddressHelper.ToFullAddress(input.CaAddress, chainId);
             // var transferParam = new UnlockAcornsInput
             // {
@@ -110,7 +110,7 @@ public class SendAcornsProvider : ISendAcornsProvider, ISingletonDependency
         var itemsParam = new UnlockAcornsInput
         {
             Addresses = {  },
-            WeekNum = 2
+            WeekNum = 3
         };
 
         foreach (var item in list)

@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Google.Protobuf.WellKnownTypes;
 using GraphQL;
 using HamsterWoods.Cache;
 using HamsterWoods.Common;
@@ -207,6 +206,7 @@ public class RankProvider : IRankProvider, ISingletonDependency
         var racePri = "CurrentRaceInfo";
         var date = DateTime.UtcNow.ToString("yyyy-MM-dd");
         var cacheKey = $"{racePri}:{date}";
+        cacheKey = cacheKey.Replace("-", ":");
         var cache = await _cacheProvider.Get<CurrentRaceInfoCache>(cacheKey);
 
         if (cache != null)
