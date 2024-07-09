@@ -21,5 +21,6 @@ public class HamsterWoodsApplicationAutoMapperProfile : Profile
         CreateMap<GetUserActionDto, UserActionIndex>();
         CreateMap<HamsterPassInfoDto, HamsterPassResultDto>().ReverseMap();
         CreateMap<RewardNftInfoOptions, NftInfo>();
+        CreateMap<UserWeekRankRecordIndex, UserWeekRankDto>();
     }
 }

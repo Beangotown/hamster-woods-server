@@ -21,7 +21,7 @@ namespace HamsterWoods.Rank;
 [RemoteService(false), DisableAuditing]
 public class RankService : HamsterWoodsBaseService, IRankService
 {
-    private readonly INESTRepository<UserWeekRankIndex, string> _userRankWeekRepository;
+    private readonly INESTRepository<UserWeekRankRecordIndex, string> _userRankWeekRepository;
     private readonly INESTRepository<UserActionIndex, string> _userActionRepository;
     private readonly IRankProvider _rankProvider;
     private readonly IObjectMapper _objectMapper;
@@ -35,7 +35,7 @@ public class RankService : HamsterWoodsBaseService, IRankService
     private readonly ICacheProvider _cacheProvider;
     private readonly IRewardProvider _rewardProvider;
 
-    public RankService(INESTRepository<UserWeekRankIndex, string> userRankWeekRepository,
+    public RankService(INESTRepository<UserWeekRankRecordIndex, string> userRankWeekRepository,
         INESTRepository<UserActionIndex, string> userActionRepository,
         IRankProvider rankProvider,
         IObjectMapper objectMapper,
@@ -72,7 +72,7 @@ public class RankService : HamsterWoodsBaseService, IRankService
             getRankDto.MaxResultCount);
 
         if (!isSettleDay) return rankInfos;
-        
+
         var settleDayRankingList = new List<SettleDayRank>();
 
         NftInfo selfReward = null;
@@ -126,7 +126,7 @@ public class RankService : HamsterWoodsBaseService, IRankService
             RewardNftInfo = _objectMapper.Map<RewardNftInfoOptions, NftInfo>(_rewardNftInfoOptions)
         };
         lastRank.RewardNftInfo.Balance = _rewardProvider.GetRewardNftBalance(lastRank.FromRank);
-        
+
         settleDayRankingList.Add(lastRank);
         return new WeekRankResultDto()
         {
@@ -247,28 +247,23 @@ public class RankService : HamsterWoodsBaseService, IRankService
         return rankInfos;
     }
 
-    private async Task<List<WeekRankDto>> GetWeekRankDtoListAsync(GetRankingHisDto getRankingHisDto)
+    private async Task<List<UserWeekRankDto>> GetWeekRankListAsync(string caAddress)
     {
-        var mustQuery = new List<Func<QueryContainerDescriptor<UserWeekRankIndex>, QueryContainer>>();
-        mustQuery.Add(q => q.Term(i => i.Field(f => f.SeasonId).Value(getRankingHisDto.SeasonId)));
-        mustQuery.Add(q => q.Term(i => i.Field(f => f.CaAddress).Value(getRankingHisDto.CaAddress)));
+        var mustQuery = new List<Func<QueryContainerDescriptor<UserWeekRankRecordIndex>, QueryContainer>>();
+        mustQuery.Add(q => q.Term(i => i.Field(f => f.CaAddress).Value(caAddress)));
 
-        QueryContainer Filter(QueryContainerDescriptor<UserWeekRankIndex> f)
+        QueryContainer Filter(QueryContainerDescriptor<UserWeekRankRecordIndex> f)
         {
             return f.Bool(b => b.Must(mustQuery));
         }
 
         var result = await _userRankWeekRepository.GetSortListAsync(Filter, null,
-            s => s.Ascending(a => a.Week)
+            s => s.Descending(a => a.WeekNum)
         );
-        var weekRankDtos = new List<WeekRankDto>();
-        foreach (var userWeekRankIndex in result.Item2)
-        {
-            var userWeekRank = _objectMapper.Map<UserWeekRankIndex, WeekRankDto>(userWeekRankIndex);
-            weekRankDtos.Add(userWeekRank);
-        }
 
-        return weekRankDtos;
+        return result.Item1 > 0
+            ? _objectMapper.Map<List<UserWeekRankRecordIndex>, List<UserWeekRankDto>>(result.Item2)
+            : new List<UserWeekRankDto>();
     }
 
     public async Task SyncGameDataAsync()
@@ -338,35 +333,47 @@ public class RankService : HamsterWoodsBaseService, IRankService
     public async Task<List<GetHistoryDto>> GetHistoryAsync(GetRankDto input)
     {
         var result = new List<GetHistoryDto>();
-        var rankInfos = await GetWeekRankAsync(input);
-        if (rankInfos.SettleDaySelfRank == null)
+        var rankInfos = await GetWeekRankListAsync(input.CaAddress);
+        var weekInfo = await _rankProvider.GetCurrentRaceInfoAsync();
+        var weekNum = weekInfo.WeekNum - 1;
+        if (weekNum < 1)
         {
             return result;
         }
-
-        var dto = new GetHistoryDto()
+        
+        foreach (var item in rankInfos)
         {
-            Time = "2024-4-07070708",
-            CaAddress = input.CaAddress,
-            Score = rankInfos.SettleDaySelfRank.Score,
-            Decimals = 8,
-            Rank = rankInfos.SettleDaySelfRank.Rank,
-            WeekNum = 4,
-            RewardNftInfo = rankInfos.SettleDaySelfRank.RewardNftInfo
-        };
-        if (dto.RewardNftInfo != null)
-        {
-            var check = await CheckClaim(input.CaAddress, dto.WeekNum);
-            if (!check)
-            {
-                dto.RewardNftInfo = null;
-            }
         }
 
-        if (dto.Score > 0)
-        {
-            result.Add(dto);
-        }
+
+        // if (rankInfos.SettleDaySelfRank == null)
+        // {
+        //     return result;
+        // }
+        //
+        // var dto = new GetHistoryDto()
+        // {
+        //     Time = "2024-4-07070708",
+        //     CaAddress = input.CaAddress,
+        //     Score = rankInfos.SettleDaySelfRank.Score,
+        //     Decimals = 8,
+        //     Rank = rankInfos.SettleDaySelfRank.Rank,
+        //     WeekNum = 4,
+        //     RewardNftInfo = rankInfos.SettleDaySelfRank.RewardNftInfo
+        // };
+        // if (dto.RewardNftInfo != null)
+        // {
+        //     var check = await CheckClaim(input.CaAddress, dto.WeekNum);
+        //     if (!check)
+        //     {
+        //         dto.RewardNftInfo = null;
+        //     }
+        // }
+        //
+        // if (dto.Score > 0)
+        // {
+        //     result.Add(dto);
+        // }
 
         var his1 = await GetHistoryWeek1Async(input, 1, "2024-1-07040705");
         foreach (var item in his1)

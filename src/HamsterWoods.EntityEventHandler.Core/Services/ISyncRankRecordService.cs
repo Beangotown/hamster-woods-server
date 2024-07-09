@@ -48,16 +48,25 @@ public class SyncRankRecordService : ISyncRankRecordService, ISingletonDependenc
 
     public async Task SyncRankRecordAsync()
     {
-        //var weekNum = await _weekNumProvider.GetWeekNumAsync(0);
-        var weekNum = 0;
-        var syncValue = await _cacheProvider.GetAsync(SyncRankRecordCachePrefix + weekNum);
-        if (!syncValue.IsNull)
+        var list = new List<int>() { 1, 2, 3, 4, 5 };
+        foreach (var item in list)
         {
-            _logger.LogInformation("data already sync, weekNum:{weekNum}", weekNum);
+            await SyncRankRecordAsync(item);
         }
+    }
+
+    public async Task SyncRankRecordAsync(int weekNum)
+    {
+        //var weekNum = await _weekNumProvider.GetWeekNumAsync(0);
+       
+        // var syncValue = await _cacheProvider.GetAsync(SyncRankRecordCachePrefix + weekNum);
+        // if (!syncValue.IsNull)
+        // {
+        //     _logger.LogInformation("data already sync, weekNum:{weekNum}", weekNum);
+        // }
 
         var skipCount = 0;
-        var maxResultCount = 10;
+        var maxResultCount = 1000;
         var result = await _syncRankRecordProvider.GetWeekRankRecordsAsync(weekNum, skipCount, maxResultCount);
         await SaveRecordAsync(result?.RankRecordList, skipCount);
 
@@ -79,6 +88,7 @@ public class SyncRankRecordService : ISyncRankRecordService, ISingletonDependenc
 
         var rank = rankNum;
         var records = _objectMapper.Map<List<RankRecordDto>, List<UserWeekRankRecordIndex>>(recordList);
+
         records = records.OrderByDescending(t => t.SumScore).ThenBy(f => f.UpdateTime).ToList();
         foreach (var record in records)
         {
