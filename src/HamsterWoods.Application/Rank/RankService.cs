@@ -333,16 +333,53 @@ public class RankService : HamsterWoodsBaseService, IRankService
     public async Task<List<GetHistoryDto>> GetHistoryAsync(GetRankDto input)
     {
         var result = new List<GetHistoryDto>();
-        var rankInfos = await GetWeekRankListAsync(input.CaAddress);
+        var rankInfos = (await GetWeekRankListAsync(input.CaAddress)).OrderByDescending(t => t.WeekNum).ToList();
         var weekInfo = await _rankProvider.GetCurrentRaceInfoAsync();
         var weekNum = weekInfo.WeekNum - 1;
         if (weekNum < 1)
         {
             return result;
         }
-        
+
+        var showCount = 0;
+        var startDate = "2024-07-04";
+        var start = DateTime.Parse(startDate);
+        var interval = 1;
         foreach (var item in rankInfos)
         {
+            var begin = start.AddDays((item.WeekNum - 1) * interval);
+            var end = start.AddDays((item.WeekNum) * interval);
+            var beginStr = begin.ToString("MMdd");
+            var endStr = end.ToString("MMdd");
+            var dto = new GetHistoryDto()
+            {
+                Time = $"2024-{item.WeekNum}-{beginStr}{endStr}",
+                CaAddress = input.CaAddress,
+                Score = item.SumScore,
+                Decimals = 8,
+                Rank = item.Rank,
+                WeekNum = item.WeekNum
+            };
+            if (weekNum - item.WeekNum < 2)
+            {
+                NftInfo selfReward = null;
+                var rewardInfo = await _rewardProvider.GetCheckedRewardNftAsync(new RankDto()
+                {
+                    CaAddress = item.CaAddress,
+                    Rank = item.Rank,
+                    Decimals = 8,
+                    Score = item.SumScore
+                }, weekNum);
+                if (rewardInfo != null)
+                {
+                    selfReward = _objectMapper.Map<RewardNftInfoOptions, NftInfo>(_rewardNftInfoOptions);
+                    selfReward.Balance = rewardInfo.Amount;
+                }
+
+                dto.RewardNftInfo = selfReward;
+            }
+
+            result.Add(dto);
         }
 
 
@@ -375,23 +412,23 @@ public class RankService : HamsterWoodsBaseService, IRankService
         //     result.Add(dto);
         // }
 
-        var his1 = await GetHistoryWeek1Async(input, 1, "2024-1-07040705");
-        foreach (var item in his1)
-        {
-            item.RewardNftInfo = null;
-        }
-
-        result.AddRange(his1);
-        var his2 = await GetHistoryWeek1Async(input, 2, "2024-2-07050706");
-        foreach (var item in his2)
-        {
-            item.RewardNftInfo = null;
-        }
-
-        result.AddRange(his2);
-        var his3 = await GetHistoryWeek1Async(input, 3, "2024-3-07060707");
-        result.AddRange(his3);
-        return result.Where(t => t.Score > 0).OrderByDescending(t => t.WeekNum).ToList();
+        // var his1 = await GetHistoryWeek1Async(input, 1, "2024-1-07040705");
+        // foreach (var item in his1)
+        // {
+        //     item.RewardNftInfo = null;
+        // }
+        //
+        // result.AddRange(his1);
+        // var his2 = await GetHistoryWeek1Async(input, 2, "2024-2-07050706");
+        // foreach (var item in his2)
+        // {
+        //     item.RewardNftInfo = null;
+        // }
+        //
+        // result.AddRange(his2);
+        // var his3 = await GetHistoryWeek1Async(input, 3, "2024-3-07060707");
+        // result.AddRange(his3);
+        return result.OrderByDescending(t => t.WeekNum).ToList();
     }
 
     public async Task<List<GetHistoryDto>> GetHistoryWeek1Async(GetRankDto input, int weekNum, string time)

@@ -26,7 +26,7 @@ public class SyncRankRecordWorker : AsyncPeriodicBackgroundWorkerBase
     protected override async Task DoWorkAsync(PeriodicBackgroundWorkerContext workerContext)
     {
         _logger.LogInformation("[SyncRankRecord]SyncRankRecordWorker Start.");
-        await _syncRankRecordService.SyncRankRecordAsync();
+        //await _syncRankRecordService.SyncRankRecordAsync();
         _logger.LogInformation("[SyncRankRecord]SyncRankRecordWorker End.");
     }
 }
