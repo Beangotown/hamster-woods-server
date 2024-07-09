@@ -6,6 +6,7 @@ using GraphQL.Client.Serializer.Newtonsoft;
 using HamsterWoods.Cache;
 using HamsterWoods.Common;
 using HamsterWoods.Commons;
+using HamsterWoods.Contract;
 using Medallion.Threading;
 using Medallion.Threading.Redis;
 using HamsterWoods.EntityEventHandler.Core;
@@ -49,14 +50,16 @@ public class HamsterWoodsEntityEventHandlerModule : AbpModule
         var configuration = context.Services.GetConfiguration();
         ConfigureTokenCleanupService();
         context.Services.AddHostedService<HamsterWoodsHostedService>();
-        ConfigureCache(configuration);
+        ConfigureCache(context, configuration);
         ConfigureEsIndexCreation();
         ConfigureDistributedLocking(context, configuration);
         ConfigureGraphQl(context, configuration);
-        ConfigureOrleans(context, configuration);
-        context.Services.AddSingleton<ICacheProvider, RedisCacheProvider>();
+        ConfigureOrleans(context, configuration); 
+        // context.Services.AddSingleton<ICacheProvider, RedisCacheProvider>();
+        // context.Services.AddSingleton<IContractProvider, ContractProvider>();
         Configure<SyncPriceDataOptions>(configuration.GetSection("SyncPrice"));
     }
+
     private void ConfigureGraphQl(ServiceConfigurationContext context,
         IConfiguration configuration)
     {
@@ -64,6 +67,7 @@ public class HamsterWoodsEntityEventHandlerModule : AbpModule
             new NewtonsoftJsonSerializer()));
         context.Services.AddScoped<IGraphQLClient>(sp => sp.GetRequiredService<GraphQLHttpClient>());
     }
+
     private static void ConfigureOrleans(ServiceConfigurationContext context, IConfiguration configuration)
     {
         context.Services.AddSingleton<IClusterClient>(o =>
@@ -100,18 +104,14 @@ public class HamsterWoodsEntityEventHandlerModule : AbpModule
         });
     }
 
-    private void ConfigureCache(IConfiguration configuration)
+    private void ConfigureCache(ServiceConfigurationContext context, IConfiguration configuration)
     {
-        Configure<AbpDistributedCacheOptions>(options =>
-        {
-            options.KeyPrefix = "HamsterWoods:";
-            options.GlobalCacheEntryOptions = new DistributedCacheEntryOptions
-            {
-                AbsoluteExpiration = CommonConstant.DefaultAbsoluteExpiration
-            };
-        });
+        var multiplexer = ConnectionMultiplexer
+            .Connect(configuration["Redis:Configuration"]);
+        context.Services.AddSingleton<IConnectionMultiplexer>(multiplexer);
+        Configure<AbpDistributedCacheOptions>(options => { options.KeyPrefix = "HamsterWoods:"; });
     }
-    
+
     private void ConfigureEsIndexCreation()
     {
         Configure<IndexCreateOption>(x => { x.AddModule(typeof(HamsterWoodsDomainModule)); });
@@ -128,7 +128,7 @@ public class HamsterWoodsEntityEventHandlerModule : AbpModule
 
         ConfigurationProvidersHelper.DisplayConfigurationProviders(context);
     }
-    
+
     public override void OnPreApplicationInitialization(ApplicationInitializationContext context)
     {
         //StartOrleans(context.ServiceProvider);

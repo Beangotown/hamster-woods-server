@@ -30,9 +30,13 @@ public class SyncRankRecordService : ISyncRankRecordService, ISingletonDependenc
     private readonly ICacheProvider _cacheProvider;
     private const string SyncRankRecordCachePrefix = "SyncRankRecordCache";
 
-    public SyncRankRecordService(ILogger<SyncRankRecordService> logger, ISyncRankRecordProvider syncRankRecordProvider,
-        IWeekNumProvider weekNumProvider, INESTRepository<UserWeekRankRecordIndex, string> userRecordRepository,
-        IObjectMapper objectMapper, ICacheProvider cacheProvider)
+    public SyncRankRecordService(ILogger<SyncRankRecordService> logger,
+        ISyncRankRecordProvider syncRankRecordProvider,
+        IWeekNumProvider weekNumProvider,
+        INESTRepository<UserWeekRankRecordIndex, string> userRecordRepository,
+        IObjectMapper objectMapper,
+        ICacheProvider cacheProvider
+    )
     {
         _logger = logger;
         _syncRankRecordProvider = syncRankRecordProvider;
@@ -44,9 +48,10 @@ public class SyncRankRecordService : ISyncRankRecordService, ISingletonDependenc
 
     public async Task SyncRankRecordAsync()
     {
-        var weekNum = _weekNumProvider.GetWeekNum(DateTime.UtcNow);
-        var passValue = await _cacheProvider.GetAsync(SyncRankRecordCachePrefix + weekNum);
-        if (!passValue.IsNull)
+        //var weekNum = await _weekNumProvider.GetWeekNumAsync(0);
+        var weekNum = 0;
+        var syncValue = await _cacheProvider.GetAsync(SyncRankRecordCachePrefix + weekNum);
+        if (!syncValue.IsNull)
         {
             _logger.LogInformation("data already sync, weekNum:{weekNum}", weekNum);
         }
@@ -62,7 +67,7 @@ public class SyncRankRecordService : ISyncRankRecordService, ISingletonDependenc
             result = await _syncRankRecordProvider.GetWeekRankRecordsAsync(weekNum, skipCount, maxResultCount);
             await SaveRecordAsync(result?.RankRecordList, skipCount);
         }
-        
+
         await _cacheProvider.SetAsync(SyncRankRecordCachePrefix + weekNum,
             DateTime.UtcNow.ToTimestamp().ToString(),
             null);
