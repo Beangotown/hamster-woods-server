@@ -92,8 +92,6 @@ public class RankService : HamsterWoodsBaseService, IRankService
             RewardNftInfo = selfReward
         };
 
-        var fromScore = rankInfos.RankingList[3].Score;
-        var toScore = rankInfos.RankingList[9].Score;
         foreach (var rankDto in rankInfos.RankingList.OrderBy(t => t.Rank).Take(3))
         {
             if (rankDto.Rank > 3) continue;
@@ -113,10 +111,23 @@ public class RankService : HamsterWoodsBaseService, IRankService
             settleDayRankingList.Add(itemRank);
         }
 
+        if (rankInfos.RankingList.Count <= 3)
+        {
+            return new WeekRankResultDto()
+            {
+                SettleDayRankingList = settleDayRankingList,
+                SettleDaySelfRank = settleDaySelfRank
+            };
+        }
+
+        var fromScore = rankInfos.RankingList[3].Score;
+        var toScore = rankInfos.RankingList.Count > 10
+            ? rankInfos.RankingList[9].Score
+            : rankInfos.RankingList.OrderBy(t => t.Rank).Last().Score;
         var lastRank = new SettleDayRank()
         {
             FromRank = 4,
-            ToRank = 10,
+            ToRank = rankInfos.RankingList.OrderBy(t => t.Rank).Last().Rank,
             CaAddress = getRankDto.CaAddress,
             FromScore = fromScore,
             ToScore = toScore,
