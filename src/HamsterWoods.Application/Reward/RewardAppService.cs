@@ -47,7 +47,7 @@ public class RewardAppService : IRewardAppService, ISingletonDependency
     {
         var caAddress = AddressHelper.ToFullAddress(input.CaAddress, GetDefaultChainId());
         var weekNum = await _rewardProvider.GetWeekNumAsync(input.WeekNum);
-        var claimableDto = await _rewardProvider.IsClaimableAsync(caAddress, input.WeekNum);
+        var claimableDto = await _rewardProvider.IsClaimableAsync(caAddress, weekNum);
         if (!claimableDto.Claimable)
         {
             _logger.LogInformation(

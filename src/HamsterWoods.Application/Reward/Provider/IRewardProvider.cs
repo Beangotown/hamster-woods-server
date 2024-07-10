@@ -41,15 +41,6 @@ public class RewardProvider : IRewardProvider, ISingletonDependency
     public async Task<KingHamsterClaimDto> IsClaimableAsync(string caAddress, int weekNum)
     {
         var weekInfo = await _rankProvider.GetCurrentRaceInfoAsync();
-        var dayOfWeek = DateTime.UtcNow.DayOfWeek;
-
-        var isSettleDay = _raceOptions.SettleDayOfWeeks.Contains((int)dayOfWeek);
-        if (isSettleDay)
-        {
-            weekNum = weekNum - 1;
-        }
-
-        weekNum = await GetWeekNumAsync(weekNum);
         if (weekNum < weekInfo.WeekNum - 2)
         {
             return new KingHamsterClaimDto()
