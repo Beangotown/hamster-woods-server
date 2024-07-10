@@ -127,7 +127,7 @@ public class RankService : HamsterWoodsBaseService, IRankService
         var lastRank = new SettleDayRank()
         {
             FromRank = 4,
-            ToRank = rankInfos.RankingList.OrderBy(t => t.Rank).Last().Rank,
+            ToRank = 10,
             CaAddress = getRankDto.CaAddress,
             FromScore = fromScore,
             ToScore = toScore,
