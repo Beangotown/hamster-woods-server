@@ -39,7 +39,7 @@ public class RedisCacheProvider : ICacheProvider, ISingletonDependency
     
     public async Task<T?> Get<T>(string key) where T : class
     {
-        var value = await _database.StringGetAsync(key);
+        var value = await _database.StringGetAsync(GetKey(key));
         if (value.IsNullOrEmpty) return default;
 
         return JsonConvert.DeserializeObject<T>(value);
@@ -52,7 +52,7 @@ public class RedisCacheProvider : ICacheProvider, ISingletonDependency
             throw new ArgumentNullException(nameof(value), "redis cache set error, value can not be null.");
         }
 
-        await _database.StringSetAsync(key, JsonConvert.SerializeObject(value), expiry: expire);
+        await _database.StringSetAsync(GetKey(key), JsonConvert.SerializeObject(value), expiry: expire);
     }
 
     private string GetKey(string key)
