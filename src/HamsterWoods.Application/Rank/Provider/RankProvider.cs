@@ -239,6 +239,11 @@ public class RankProvider : IRankProvider, ISingletonDependency
             }
         };
 
+        if (raceCache.CurrentRaceTimeInfo.BeginTime.Date == raceCache.CurrentRaceTimeInfo.EndTime.Date)
+        {
+            return raceCache;
+        }
+        
         await _cacheProvider.Set<CurrentRaceInfoCache>(cacheKey, raceCache, null);
         return raceCache;
     }
