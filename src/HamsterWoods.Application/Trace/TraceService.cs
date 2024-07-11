@@ -9,11 +9,12 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Nest;
 using Volo.Abp;
+using Volo.Abp.Auditing;
 using Volo.Abp.ObjectMapping;
 
 namespace HamsterWoods.Trace;
 
-[RemoteService(false)]
+[RemoteService(false), DisableAuditing]
 public class TraceService : HamsterWoodsBaseService, ITraceService
 {
     private readonly INESTRepository<UserActionIndex, string> _userActionRepository;
@@ -21,7 +22,7 @@ public class TraceService : HamsterWoodsBaseService, ITraceService
     private readonly ILogger<TraceService> _logger;
     private readonly IObjectMapper _objectMapper;
     private readonly ChainOptions _chainOptions;
-    
+
     private const int CaAddressQueryOnceLimit = 50;
     private const int QueryOnceLimit = 1000;
     private const int QueryMaxLimit = 8000;
@@ -51,9 +52,11 @@ public class TraceService : HamsterWoodsBaseService, ITraceService
         var userActionIndex = _objectMapper.Map<GetUserActionDto, UserActionIndex>(dto);
         userActionIndex.ChainId = GetDefaultChainId();
         userActionIndex.Timestamp = DateTime.UtcNow;
-        userActionIndex.Id = $"{userActionIndex.CaAddress}_{userActionIndex.ChainId}_{DateTimeHelper.ToUnixTimeMilliseconds(userActionIndex.Timestamp)}";
-        userActionIndex.ActionType = (await GetCountAsync(dto.CaAddress)) == 0 ? UserActionType.Register : UserActionType.Login;
-        
+        userActionIndex.Id =
+            $"{userActionIndex.CaAddress}_{userActionIndex.ChainId}_{DateTimeHelper.ToUnixTimeMilliseconds(userActionIndex.Timestamp)}";
+        userActionIndex.ActionType =
+            (await GetCountAsync(dto.CaAddress)) == 0 ? UserActionType.Register : UserActionType.Login;
+
         await _userActionRepository.AddOrUpdateAsync(userActionIndex);
     }
 
@@ -71,9 +74,16 @@ public class TraceService : HamsterWoodsBaseService, ITraceService
         }
         else if (getStatDto.Type == 1)
         {
-            dto.StartTime = DateTimeHelper.ParseDateTimeByStr($"{DateTimeHelper.DatetimeToString(DateTime.Today.AddDays(-7), DateFormat)} {StartTime}").AddHours(-8);
-            dto.EndTime = DateTimeHelper.ParseDateTimeByStr($"{DateTimeHelper.DatetimeToString(DateTime.Today.AddDays(-1), DateFormat)} {EndTime}").AddHours(-8);
+            dto.StartTime = DateTimeHelper
+                .ParseDateTimeByStr(
+                    $"{DateTimeHelper.DatetimeToString(DateTime.Today.AddDays(-7), DateFormat)} {StartTime}")
+                .AddHours(-8);
+            dto.EndTime = DateTimeHelper
+                .ParseDateTimeByStr(
+                    $"{DateTimeHelper.DatetimeToString(DateTime.Today.AddDays(-1), DateFormat)} {EndTime}")
+                .AddHours(-8);
         }
+
         dto.SkipCount = 0;
         dto.MaxResultCount = QueryMaxLimit;
         var result = new StatResultDto();
@@ -85,7 +95,7 @@ public class TraceService : HamsterWoodsBaseService, ITraceService
             var caAddressList = await GetCaAddressListAsync(dto.StartTime, dto.EndTime, i == 0 ? 0 : null);
 
             if (dto.CaAddressList == null) dto.CaAddressList = new List<string>();
-            
+
             for (var j = 0; j < caAddressList.Count; j++)
             {
                 dto.CaAddressList.Add($"{CaAddressPrefix}_{caAddressList[j]}_{chainId}");
@@ -147,18 +157,24 @@ public class TraceService : HamsterWoodsBaseService, ITraceService
                 }
             }
         }
-        
+
         if (getStatDto.Type == 1)
         {
             count = 0;
-            var startTime = DateTimeHelper.ParseDateTimeByStr($"{DateTimeHelper.DatetimeToString(DateTime.Today.AddDays(-14), DateFormat)} {StartTime}").AddHours(-8);
-            var endTime = DateTimeHelper.ParseDateTimeByStr($"{DateTimeHelper.DatetimeToString(DateTime.Today.AddDays(-8), DateFormat)} {EndTime}").AddHours(-8);
+            var startTime = DateTimeHelper
+                .ParseDateTimeByStr(
+                    $"{DateTimeHelper.DatetimeToString(DateTime.Today.AddDays(-14), DateFormat)} {StartTime}")
+                .AddHours(-8);
+            var endTime = DateTimeHelper
+                .ParseDateTimeByStr(
+                    $"{DateTimeHelper.DatetimeToString(DateTime.Today.AddDays(-8), DateFormat)} {EndTime}")
+                .AddHours(-8);
             dto.GoCount = GoArray[0];
-            
+
             var caAddressList = await GetCaAddressListAsync(startTime, endTime, 0);
-            
+
             if (dto.CaAddressList == null) dto.CaAddressList = new List<string>();
-            
+
             for (var j = 0; j < caAddressList.Count; j++)
             {
                 dto.CaAddressList.Add($"{CaAddressPrefix}_{caAddressList[j]}_{chainId}");
@@ -174,7 +190,7 @@ public class TraceService : HamsterWoodsBaseService, ITraceService
                 count += await _rankProvider.GetGoCountAsync(dto);
                 dto.CaAddressList.Clear();
             }
-            
+
             result.LoginAddressCountByWeek = caAddressList.Count;
             result.OneGoAddressCountByWeek = count;
             result.RetentionRateByWeek =
@@ -193,10 +209,12 @@ public class TraceService : HamsterWoodsBaseService, ITraceService
     {
         var mustQuery = new List<Func<QueryContainerDescriptor<UserActionIndex>, QueryContainer>>();
         mustQuery.Add(q => q.Term(i => i.Field(f => f.CaAddress).Value(caAddress)));
+
         QueryContainer Filter(QueryContainerDescriptor<UserActionIndex> f)
         {
             return f.Bool(b => b.Must(mustQuery));
         }
+
         var result = await _userActionRepository.CountAsync(Filter);
         return result.Count;
     }
@@ -223,7 +241,7 @@ public class TraceService : HamsterWoodsBaseService, ITraceService
         {
             return f.Bool(b => b.Must(mustQuery));
         }
-        
+
         var skipCount = 0;
         var userActionList = new List<UserActionIndex>();
         Tuple<long, List<UserActionIndex>> result = null;
