@@ -46,39 +46,41 @@ public class SendAcornsProvider : ISendAcornsProvider, ISingletonDependency
         try
         {
             var chainId = _chainOptions.ChainInfos.Keys.First();
-            var weekNum = 4;
+            var weekNum = 5;
             var caAddress = AddressHelper.ToFullAddress(input.CaAddress, chainId);
-            // var transferParam = new UnlockAcornsInput
+            var transferParam = new UnlockAcornsInput
+            {
+                Addresses = {  new[] { Address.FromBase58(input.CaAddress) } },
+                WeekNum = 1
+            };
+            
+            
+            var output = await SendTransactionAsync(chainId, _chainOptions.ChainInfos[chainId].HamsterWoodsAddress,
+                "BatchUnlockAcorns", transferParam);
+            _logger.LogInformation("BatchUnlockAcorns success, transactionId:{transactionId}, adds:{adds}",
+                output.TransactionId, input.CaAddress);
+
+            // var rankInfos = await _rankProvider.GetWeekRankAsync(weekNum, caAddress, 0,
+            //     1000);
+            // var needSendAddresses =
+            //     rankInfos.RankingList.Select(t => AddressHelper.ToShortAddress(t.CaAddress)).ToList();
+            //
+            // var adds = new List<string>();
+            // foreach (var item in needSendAddresses)
             // {
-            //     Addresses = {  new[] { Address.FromBase58(input.CaAddress) } },
-            //     WeekNum = 2
-            // };
+            //     if (adds.Count > 10)
+            //     {
+            //         await BatchTransfer(adds, chainId);
+            //         adds.Clear();
+            //     }
             //
+            //     adds.Add(item);
+            // }
             //
-            // var output = await SendTransactionAsync(chainId, _chainOptions.ChainInfos[chainId].HamsterWoodsAddress,
-            //     "BatchUnlockAcorns", transferParam);
-
-            var rankInfos = await _rankProvider.GetWeekRankAsync(weekNum, caAddress, 0,
-                1000);
-            var needSendAddresses =
-                rankInfos.RankingList.Select(t => AddressHelper.ToShortAddress(t.CaAddress)).ToList();
-
-            var adds = new List<string>();
-            foreach (var item in needSendAddresses)
-            {
-                if (adds.Count > 10)
-                {
-                    await BatchTransfer(adds, chainId);
-                    adds.Clear();
-                }
-
-                adds.Add(item);
-            }
-
-            if (adds.Count > 0)
-            {
-                await BatchTransfer(adds, chainId);
-            }
+            // if (adds.Count > 0)
+            // {
+            //     await BatchTransfer(adds, chainId);
+            // }
 
             return new KingHamsterClaimDto()
             {
@@ -110,7 +112,7 @@ public class SendAcornsProvider : ISendAcornsProvider, ISingletonDependency
         var itemsParam = new UnlockAcornsInput
         {
             Addresses = {  },
-            WeekNum = 4
+            WeekNum = 5
         };
 
         foreach (var item in list)
