@@ -71,7 +71,12 @@ public class RankService : HamsterWoodsBaseService, IRankService
         var rankInfos = await _rankProvider.GetWeekRankAsync(weekNum, getRankDto.CaAddress, getRankDto.SkipCount,
             getRankDto.MaxResultCount);
 
-        if (!isSettleDay) return rankInfos;
+        rankInfos.WeekNum = weekNum;
+        if (!isSettleDay)
+        {
+            rankInfos.EndDate = weekInfo.CurrentRaceTimeInfo.EndTime.ToString("yyyy-MM-dd");
+            return rankInfos;
+        }
 
         var settleDayRankingList = new List<SettleDayRank>();
 
