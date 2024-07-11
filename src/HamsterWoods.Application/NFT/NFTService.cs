@@ -28,26 +28,15 @@ public class NFTService : HamsterWoodsBaseService, INFTService
     private readonly IContractProvider _contractProvider;
     private readonly IRankProvider _rankProvider;
     private readonly ILogger<NFTService> _logger;
-    private readonly UserActivityOptions _userActivityOptions;
-    private readonly HalloweenActivityOptions _halloweenActivityOptions;
     private readonly IPortkeyProvider _portkeyProvider;
     private readonly ChainOptions _chainOptions;
-    private readonly IContractService _contractService;
     private readonly IObjectMapper _objectMapper;
-
-    private const string BeanPopPassCacheKeyPrefix = "HamsterPassPop:";
-    private const string BeanPassCurrentlyNot = "This HamsterPass NFT is currently not in your account.";
-    private const string BeanPassNoHave = "You don't have any HamsterPass NFTs in your account.";
-
 
     public NFTService(
         IPortkeyProvider portkeyProvider,
         ICacheProvider cacheProvider,
         IContractProvider contractProvider,
-        IContractService contractService,
         IRankProvider rankProvider,
-        IOptionsSnapshot<UserActivityOptions> userActivityOptions,
-        IOptionsSnapshot<HalloweenActivityOptions> halloweenActivityOptions,
         IOptionsSnapshot<ChainOptions> chainOptions, ILogger<NFTService> logger,
         IObjectMapper objectMapper)
     {
@@ -55,9 +44,6 @@ public class NFTService : HamsterWoodsBaseService, INFTService
         _cacheProvider = cacheProvider;
         _contractProvider = contractProvider;
         _rankProvider = rankProvider;
-        _contractService = contractService;
-        _userActivityOptions = userActivityOptions.Value;
-        _halloweenActivityOptions = halloweenActivityOptions.Value;
         _chainOptions = chainOptions.Value;
         _objectMapper = objectMapper;
         _logger = logger;
@@ -103,7 +89,7 @@ public class NFTService : HamsterWoodsBaseService, INFTService
             return new HamsterPassClaimableDto
             {
                 Claimable = false,
-                Reason = ClaimBeanPassStatus.DoubleClaim.ToString()
+                Reason = ClaimHamsterNftStatus.DoubleClaim.ToString()
             };
 
         return new HamsterPassClaimableDto
@@ -139,35 +125,13 @@ public class NFTService : HamsterWoodsBaseService, INFTService
         return result;
     }
 
-    public async Task<HamsterPassResultDto> UsingBeanPassAsync(GetHamsterPassInput input)
-    {
-        if (!_halloweenActivityOptions.BeanPass.Contains(input.Symbol))
-        {
-            throw new UserFriendlyException(BeanPassCurrentlyNot);
-        }
-
-        var amount = await GetAmountAsync(input.CaAddress, input.Symbol);
-        if (amount == 0)
-        {
-            throw new UserFriendlyException(BeanPassCurrentlyNot);
-        }
-
-        var info = await GetHamsterPassInfoAsync(input.Symbol);
-        var dto = _objectMapper.Map<HamsterPassInfoDto, HamsterPassResultDto>(info) ?? new HamsterPassResultDto();
-        dto.Owned = true;
-        dto.UsingBeanPass = true;
-        var key = $"{_hamsterPassUsingCacheKeyPrefix}{input.CaAddress}";
-        await _cacheProvider.SetAsync(key, input.Symbol, null);
-        return dto;
-    }
-
     public async Task<bool> CheckHamsterPassAsync(HamsterPassInput input)
     {
         var balanceDto = new GetUserBalanceDto()
         {
             ChainId = GetDefaultChainId(),
             CaAddress = input.CaAddress,
-            Symbols = _halloweenActivityOptions.BeanPass
+            Symbols = new List<string> { "HAMSTERPASS-1" }
         };
         var balanceList = (await _rankProvider.GetUserBalanceAsync(balanceDto))?.FindAll(b => b.Amount > 0);
         return !balanceList.IsNullOrEmpty();
@@ -210,18 +174,6 @@ public class NFTService : HamsterWoodsBaseService, INFTService
         return _objectMapper.Map<PriceInfo, PriceDto>(priceInfo);
     }
 
-    private async Task<long> GetAmountAsync(string caAddress, string symbol)
-    {
-        var balanceDto = new GetUserBalanceDto()
-        {
-            ChainId = GetDefaultChainId(),
-            CaAddress = caAddress,
-            Symbols = new List<string>() { symbol }
-        };
-        var balanceList = await _rankProvider.GetUserBalanceAsync(balanceDto);
-        return balanceList?.FirstOrDefault()?.Amount ?? 0L;
-    }
-
     private async Task<HamsterPassInfoDto> GetHamsterPassInfoAsync(string symbol)
     {
         var key = $"{_hamsterPassCacheKeyPrefix}:{symbol}";
@@ -243,74 +195,8 @@ public class NFTService : HamsterWoodsBaseService, INFTService
         return SerializeHelper.Deserialize<HamsterPassInfoDto>(beanPassValue);
     }
 
-    public async Task<bool> PopupBeanPassAsync(HamsterPassInput input)
-    {
-        var beginTime = _halloweenActivityOptions.BeginTime;
-        var endTime = _halloweenActivityOptions.EndTime;
-        var beginDateTime = DateTimeHelper.ParseDateTimeByStr(beginTime);
-        var endDateTime = DateTimeHelper.ParseDateTimeByStr(endTime);
-        var dateUtcTime = DateTime.UtcNow;
-        _logger.LogDebug("PopupBeanPass beginTime :{beginTime} endTime:{endTime}", beginTime, endTime);
-
-        if (dateUtcTime.CompareTo(beginDateTime) < 0 || dateUtcTime.CompareTo(endDateTime) > 0)
-        {
-            return false;
-        }
-
-        var claimTime = await _cacheProvider.GetAsync(_hamsterPassCacheKeyPrefix + input.CaAddress);
-        _logger.LogDebug("PopupBeanPass claimTime :{claimTime} caAddress:{caAddress}", claimTime, input.CaAddress);
-
-
-        if (claimTime.IsNullOrEmpty)
-        {
-            return false;
-        }
-
-        var timeStr1 = claimTime.ToString().Replace("\"", "");
-        var lastDotIndex = timeStr1.LastIndexOf('.');
-        var result = timeStr1.Substring(0, lastDotIndex);
-        _logger.LogDebug("PopupBeanPass result time :{result} caAddress:{caAddress}", result, input.CaAddress);
-
-        var claimDateTime = DateTime.ParseExact(result, "yyyy-MM-dd'T'HH:mm:ss", null);
-        if (claimDateTime.CompareTo(beginDateTime) > 0)
-        {
-            return false;
-        }
-
-        var popValue = await _cacheProvider.GetAsync(BeanPopPassCacheKeyPrefix + input.CaAddress);
-        if (popValue.IsNullOrEmpty)
-        {
-            var beanPassPopKey = BeanPopPassCacheKeyPrefix + input.CaAddress;
-            var beanPassPopValue = dateUtcTime.ToString();
-            _logger.LogDebug("PopupBeanPassAsync key:{key} ,value{value}", beanPassPopKey, beanPassPopValue);
-            await _cacheProvider.SetAsync(beanPassPopKey, beanPassPopValue, null);
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
-
     private string GetDefaultChainId()
     {
         return _chainOptions.ChainInfos.Keys.First();
-    }
-
-    private List<int> GetDices(Hash hashValue, int diceCount)
-    {
-        var hexString = hashValue.ToHex();
-        var dices = new List<int>();
-
-        for (var i = 0; i < diceCount; i++)
-        {
-            var startIndex = i * 8;
-            var intValue = int.Parse(hexString.Substring(startIndex, 8),
-                NumberStyles.HexNumber);
-            var dice = Math.Abs(intValue % 2);
-            dices.Add(dice);
-        }
-
-        return dices;
     }
 }

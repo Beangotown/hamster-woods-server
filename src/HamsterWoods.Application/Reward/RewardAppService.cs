@@ -120,7 +120,7 @@ public class RewardAppService : IRewardAppService, ISingletonDependency
             return new HamsterPassClaimableDto
             {
                 Claimable = false,
-                Reason = ClaimBeanPassStatus.DoubleClaim.ToString()
+                Reason = ClaimHamsterNftStatus.DoubleClaim.ToString()
             };
 
         return new HamsterPassClaimableDto

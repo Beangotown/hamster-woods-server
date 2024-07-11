@@ -1,6 +1,6 @@
 namespace HamsterWoods.NFT;
 
-public enum ClaimBeanPassStatus
+public enum ClaimHamsterNftStatus
 {
     Claimed,
     InsufficientElfAmount,

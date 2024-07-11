@@ -47,30 +47,6 @@ public class HamsterPassController : HamsterWoodsBaseController
     }
 
     /// <summary>
-    /// multiple pass change
-    /// </summary>
-    /// <param name="input"></param>
-    /// <returns></returns>
-    [HttpPost]
-    [Route("using")]
-    public async Task<HamsterPassResultDto> UsingBeanPassAsync(GetHamsterPassInput input)
-    {
-        return await _nftService.UsingBeanPassAsync(input);
-    }
-
-    /// <summary>
-    /// user popup
-    /// </summary>
-    /// <param name="input"></param>
-    /// <returns></returns>
-    [HttpPost]
-    [Route("popup")]
-    public async Task<bool> PopupBeanPassAsync(HamsterPassInput input)
-    {
-        return await _nftService.PopupBeanPassAsync(input);
-    }
-
-    /// <summary>
     /// check whether address has hamster pass
     /// </summary>
     /// <param name="input"></param>

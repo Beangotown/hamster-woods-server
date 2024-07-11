@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AElf.Indexing.Elasticsearch;
-using HamsterWoods.Cache;
 using HamsterWoods.Commons;
 using HamsterWoods.Contract;
 using HamsterWoods.NFT;
@@ -32,7 +31,6 @@ public class RankService : HamsterWoodsBaseService, IRankService
     private const int QueryOnceLimit = 1000;
     private const string DateFormat = "yyyy-MM-dd";
     private const string StartTime = "00:00:00";
-    private readonly ICacheProvider _cacheProvider;
     private readonly IRewardProvider _rewardProvider;
 
     public RankService(INESTRepository<UserWeekRankRecordIndex, string> userRankWeekRepository,
@@ -42,12 +40,11 @@ public class RankService : HamsterWoodsBaseService, IRankService
         IOptionsSnapshot<ChainOptions> chainOptions,
         IOptionsSnapshot<RaceOptions> raceOptions,
         IOptionsSnapshot<RewardNftInfoOptions> rewardNftInfoOptions,
-        ICacheProvider cacheProvider, IRewardProvider rewardProvider)
+        IRewardProvider rewardProvider)
     {
         _userRankWeekRepository = userRankWeekRepository;
         _userActionRepository = userActionRepository;
         _objectMapper = objectMapper;
-        _cacheProvider = cacheProvider;
         _rewardProvider = rewardProvider;
         _rankProvider = rankProvider;
         _chainOptions = chainOptions.Value;
@@ -287,18 +284,7 @@ public class RankService : HamsterWoodsBaseService, IRankService
         
         return result.OrderByDescending(t => t.WeekNum).ToList();
     }
-
-    private const string _hamsterPassCacheKeyPrefix = "HamsterKing_";
-
-    public async Task<bool> CheckClaim(string caAddress, int weekNum)
-    {
-        var passValue = await _cacheProvider.GetAsync($"{_hamsterPassCacheKeyPrefix}{caAddress}_{weekNum}");
-        if (!passValue.IsNull)
-            return false;
-
-        return true;
-    }
-
+    
     private string GetDefaultChainId()
     {
         return _chainOptions.ChainInfos.Keys.First();

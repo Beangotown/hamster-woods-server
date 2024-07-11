@@ -56,7 +56,7 @@ public class RewardProvider : IRewardProvider, ISingletonDependency
             return new KingHamsterClaimDto()
             {
                 Claimable = false,
-                Reason = ClaimBeanPassStatus.DoubleClaim.ToString()
+                Reason = ClaimHamsterNftStatus.DoubleClaim.ToString()
             };
         }
 
