@@ -125,6 +125,7 @@ public class HamsterWoodsEntityEventHandlerModule : AbpModule
     public override void OnApplicationInitialization(ApplicationInitializationContext context)
     {
         context.AddBackgroundWorkerAsync<SyncRankRecordWorker>();
+        context.AddBackgroundWorkerAsync<SyncPriceWorker>();
 
         ConfigurationProvidersHelper.DisplayConfigurationProviders(context);
     }

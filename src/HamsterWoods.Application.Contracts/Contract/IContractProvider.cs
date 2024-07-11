@@ -3,6 +3,7 @@ using AElf.Client.Dto;
 using AElf.Contracts.MultiToken;
 using AElf.Types;
 using Contracts.HamsterWoods;
+using Google.Protobuf;
 
 namespace HamsterWoods.Contract;
 
@@ -17,4 +18,8 @@ public interface IContractProvider
     
     public Task<TokenInfo> GetTokenInfo(string symbol, string chainId);
     Task<CurrentRaceInfo> GetCurrentRaceInfoAsync(string chainId);
+
+    Task<T> CallTransactionAsync<T>(string chainId, string contractAddress, string methodName,
+        IMessage param
+    ) where T : class, IMessage<T>, new();
 }

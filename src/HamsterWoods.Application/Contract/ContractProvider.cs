@@ -100,7 +100,7 @@ public class ContractProvider : IContractProvider, ISingletonDependency
     }
 
 
-    private async Task<T> CallTransactionAsync<T>(string chainId, string contractAddress, string methodName,
+    public async Task<T> CallTransactionAsync<T>(string chainId, string contractAddress, string methodName,
         IMessage param
     ) where T : class, IMessage<T>, new()
     {

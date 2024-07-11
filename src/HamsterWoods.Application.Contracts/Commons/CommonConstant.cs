@@ -14,4 +14,6 @@ public static class CommonConstant
     public const string ElfSymbol = "ELF";
     public const string AcornsSymbol = "ACORNS";
     public const int UsedTokenDecimals = 8;
+
+    public const string DataPriceCacheKey = "DataPriceCache";
 }

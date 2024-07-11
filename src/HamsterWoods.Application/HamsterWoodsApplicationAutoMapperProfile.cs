@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using HamsterWoods.Cache;
 using HamsterWoods.NFT;
 using HamsterWoods.Options;
 using HamsterWoods.Rank;
@@ -22,5 +23,9 @@ public class HamsterWoodsApplicationAutoMapperProfile : Profile
         CreateMap<HamsterPassInfoDto, HamsterPassResultDto>().ReverseMap();
         CreateMap<RewardNftInfoOptions, NftInfo>();
         CreateMap<UserWeekRankRecordIndex, UserWeekRankDto>();
+        CreateMap<PriceInfo, PriceDto>()
+            .ForMember(t => t.ElfInUsd, opt => opt.MapFrom(f => f.ElfToUsd))
+            .ForMember(t => t.AcornsInElf, opt => opt.MapFrom(f => f.AcornsToElf))
+            .ForMember(t => t.AcornsInUsd, opt => opt.MapFrom(f => f.AcornsToUsd));
     }
 }

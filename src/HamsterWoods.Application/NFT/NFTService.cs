@@ -204,14 +204,10 @@ public class NFTService : HamsterWoodsBaseService, INFTService
         return !long.TryParse(balanceStr, out var balance) ? 0 : balance;
     }
 
-    public Task<PriceDto> GetPriceAsync()
+    public async Task<PriceDto> GetPriceAsync()
     {
-        return Task.FromResult(new PriceDto()
-        {
-            AcornsInElf = 0.1m,
-            ElfInUsd = 0.35m,
-            AcornsInUsd = 0.01m
-        });
+        var priceInfo = await _cacheProvider.Get<PriceInfo>(CommonConstant.DataPriceCacheKey);
+        return _objectMapper.Map<PriceInfo, PriceDto>(priceInfo);
     }
 
     private async Task<long> GetAmountAsync(string caAddress, string symbol)
