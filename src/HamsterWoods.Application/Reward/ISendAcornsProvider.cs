@@ -11,6 +11,7 @@ using Google.Protobuf;
 using HamsterWoods.Contract;
 using HamsterWoods.NFT;
 using HamsterWoods.Rank;
+using HamsterWoods.Rank.Provider;
 using HamsterWoods.Reward.Dtos;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;

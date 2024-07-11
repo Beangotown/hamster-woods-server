@@ -4,6 +4,7 @@ using HamsterWoods.Cache;
 using HamsterWoods.NFT;
 using HamsterWoods.Options;
 using HamsterWoods.Rank;
+using HamsterWoods.Rank.Provider;
 using HamsterWoods.Reward.Dtos;
 using Microsoft.Extensions.Options;
 using Volo.Abp.DependencyInjection;

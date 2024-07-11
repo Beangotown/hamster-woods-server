@@ -2,12 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AElf.Indexing.Elasticsearch;
 using GraphQL;
 using HamsterWoods.Cache;
 using HamsterWoods.Common;
 using HamsterWoods.Contract;
+using HamsterWoods.TokenLock;
 using HamsterWoods.Trace;
 using Microsoft.Extensions.Options;
+using Nest;
 using Volo.Abp.DependencyInjection;
 
 namespace HamsterWoods.Rank.Provider;
@@ -18,13 +21,16 @@ public class RankProvider : IRankProvider, ISingletonDependency
     private readonly ChainOptions _chainOptions;
     private readonly ICacheProvider _cacheProvider;
     private readonly IContractProvider _contractProvider;
+    private readonly INESTRepository<RaceInfoConfigIndex, string> _configRepository;
 
     public RankProvider(IGraphQLHelper graphQlHelper, IOptionsSnapshot<ChainOptions> chainOptions,
-        ICacheProvider cacheProvider, IContractProvider contractProvider)
+        ICacheProvider cacheProvider, IContractProvider contractProvider,
+        INESTRepository<RaceInfoConfigIndex, string> configRepository)
     {
         _graphQlHelper = graphQlHelper;
         _cacheProvider = cacheProvider;
         _contractProvider = contractProvider;
+        _configRepository = configRepository;
         _chainOptions = chainOptions.Value;
     }
 
@@ -177,7 +183,7 @@ public class RankProvider : IRankProvider, ISingletonDependency
         });
         return graphQLResponse?.GetUserBalanceList;
     }
-    
+
     public async Task<RankDto> GetSelfWeekRankAsync(int weekNum, string caAddress)
     {
         var graphQLResponse = await _graphQlHelper.QueryAsync<SelfWeekRankGraphQlDto>(new GraphQLRequest
@@ -201,6 +207,12 @@ public class RankProvider : IRankProvider, ISingletonDependency
         return graphQLResponse?.GetSelfWeekRank;
     }
 
+    public async Task<List<RaceInfoConfigIndex>> GetRaceInfoAsync()
+    {
+        var result = await _configRepository.GetListAsync();
+        return result.Item2;
+    }
+
     public async Task<CurrentRaceInfoCache> GetCurrentRaceInfoAsync()
     {
         var racePri = "CurrentRaceInfo";
@@ -213,7 +225,7 @@ public class RankProvider : IRankProvider, ISingletonDependency
         {
             return cache;
         }
-        
+
         var raceInfo = await _contractProvider.GetCurrentRaceInfoAsync(_chainOptions.ChainInfos.Keys.First());
         var raceCache = new CurrentRaceInfoCache
         {
@@ -226,7 +238,7 @@ public class RankProvider : IRankProvider, ISingletonDependency
                 SettleEndTime = raceInfo.RaceTimeInfo.SettleEndTime.ToDateTime()
             }
         };
-        
+
         await _cacheProvider.Set<CurrentRaceInfoCache>(cacheKey, raceCache, null);
         return raceCache;
     }

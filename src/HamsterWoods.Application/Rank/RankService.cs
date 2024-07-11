@@ -7,6 +7,7 @@ using HamsterWoods.Commons;
 using HamsterWoods.Contract;
 using HamsterWoods.NFT;
 using HamsterWoods.Options;
+using HamsterWoods.Rank.Provider;
 using HamsterWoods.Reward.Provider;
 using HamsterWoods.Trace;
 using Microsoft.Extensions.Options;
@@ -241,17 +242,16 @@ public class RankService : HamsterWoodsBaseService, IRankService
             return result;
         }
 
+        // not sync last?
+        
+        var raceInfoList = await _rankProvider.GetRaceInfoAsync();
         var showCount = 0;
-        var startDate = "2024-07-04";
-        var start = DateTime.Parse(startDate);
-        var interval = 1;
         foreach (var item in rankInfos)
         {
-            var begin = start.AddDays((item.WeekNum - 1) * interval);
-            var end = start.AddDays((item.WeekNum) * interval);
-            var beginStr = begin.ToString("MMdd");
-            var endStr = end.ToString("MMdd");
-            var dto = new GetHistoryDto()
+            var raceInfo = raceInfoList.FirstOrDefault(t => t.WeekNum == item.WeekNum);
+            var beginStr = raceInfo.BeginTime.ToString("MMdd");
+            var endStr = raceInfo.EndTime.ToString("MMdd");
+            var dto = new GetHistoryDto
             {
                 Time = $"2024-{item.WeekNum}-{beginStr}{endStr}",
                 CaAddress = input.CaAddress,

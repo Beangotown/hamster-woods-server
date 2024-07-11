@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using AElf.Indexing.Elasticsearch;
 using HamsterWoods.Contract;
 using HamsterWoods.Rank;
+using HamsterWoods.Rank.Provider;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Nest;

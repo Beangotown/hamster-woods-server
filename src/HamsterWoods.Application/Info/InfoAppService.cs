@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using HamsterWoods.Cache;
 using HamsterWoods.Rank;
+using HamsterWoods.Rank.Provider;
 using Volo.Abp.DependencyInjection;
 
 namespace HamsterWoods.Info;

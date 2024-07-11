@@ -10,6 +10,7 @@ using HamsterWoods.Commons;
 using HamsterWoods.Contract;
 using HamsterWoods.Portkey;
 using HamsterWoods.Rank;
+using HamsterWoods.Rank.Provider;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Volo.Abp;

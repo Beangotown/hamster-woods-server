@@ -1,8 +1,9 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using HamsterWoods.TokenLock;
 using HamsterWoods.Trace;
 
-namespace HamsterWoods.Rank;
+namespace HamsterWoods.Rank.Provider;
 
 public interface IRankProvider
 {
@@ -20,4 +21,5 @@ public interface IRankProvider
 
     Task<CurrentRaceInfoCache> GetCurrentRaceInfoAsync();
     Task<RankDto> GetSelfWeekRankAsync(int weekNum, string caAddress); 
+    Task<List<RaceInfoConfigIndex>> GetRaceInfoAsync(); 
 }

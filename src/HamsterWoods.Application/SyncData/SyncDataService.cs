@@ -35,32 +35,31 @@ public class SyncDataService : HamsterWoodsBaseService, ISyncDataService
 
     public async Task SyncRaceConfigAsync()
     {
-        // var raceInfo = await _contractProvider.GetCurrentRaceInfoAsync(_chainOptions.ChainInfos.Keys.First());
-        // var id = $"{raceInfo.WeekNum}";
-        // var index = new RaceInfoConfigIndex
-        // {
-        //     Id = id,
-        //     WeekNum = raceInfo.WeekNum,
-        //     //AcornsLockedDays = raceInfo.AcornsLockedDays,
-        //     AcornsLockedDays = 1,
-        //     BeginTime = raceInfo.RaceTimeInfo.BeginTime.ToDateTime(),
-        //     EndTime = raceInfo.RaceTimeInfo.EndTime.ToDateTime(),
-        //     SettleBeginTime = raceInfo.RaceTimeInfo.SettleBeginTime.ToDateTime(),
-        //     SettleEndTime = raceInfo.RaceTimeInfo.SettleEndTime.ToDateTime(),
-        //     CreateTime = DateTime.UtcNow,
-        //     UpdateTime = DateTime.UtcNow
-        // };
-        //
-        // var configIndex = await _configRepository.GetAsync(id);
-        // if (configIndex != null)
-        // {
-        //     index.CreateTime = configIndex.CreateTime;
-        // }
-        //
-        // _logger.LogInformation("sync race config success, data:{data}", JsonConvert.SerializeObject(index));
-        // await _configRepository.AddOrUpdateAsync(index);
+        var raceInfo = await _contractProvider.GetCurrentRaceInfoAsync(_chainOptions.ChainInfos.Keys.First());
+        var id = $"{raceInfo.WeekNum}";
+        var index = new RaceInfoConfigIndex
+        {
+            Id = id,
+            WeekNum = raceInfo.WeekNum,
+            AcornsLockedDays = raceInfo.AcornsLockedDays,
+            BeginTime = raceInfo.RaceTimeInfo.BeginTime.ToDateTime(),
+            EndTime = raceInfo.RaceTimeInfo.EndTime.ToDateTime(),
+            SettleBeginTime = raceInfo.RaceTimeInfo.SettleBeginTime.ToDateTime(),
+            SettleEndTime = raceInfo.RaceTimeInfo.SettleEndTime.ToDateTime(),
+            CreateTime = DateTime.UtcNow,
+            UpdateTime = DateTime.UtcNow
+        };
+        
+        var configIndex = await _configRepository.GetAsync(id);
+        if (configIndex != null)
+        {
+            index.CreateTime = configIndex.CreateTime;
+        }
+        
+        _logger.LogInformation("sync race config success, data:{data}", JsonConvert.SerializeObject(index));
+        await _configRepository.AddOrUpdateAsync(index);
 
-        await SaveHis();
+        //await SaveHis();
     }
 
     private async Task SaveHis()
