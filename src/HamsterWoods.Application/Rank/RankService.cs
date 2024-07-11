@@ -54,8 +54,7 @@ public class RankService : HamsterWoodsBaseService, IRankService
         _raceOptions = raceOptions.Value;
         _rewardNftInfoOptions = rewardNftInfoOptions.Value;
     }
-
-
+    
     public async Task<WeekRankResultDto> GetWeekRankAsync(GetRankDto getRankDto)
     {
         var weekInfo = await _rankProvider.GetCurrentRaceInfoAsync();
@@ -149,118 +148,6 @@ public class RankService : HamsterWoodsBaseService, IRankService
             SettleDayRankingList = settleDayRankingList,
             SettleDaySelfRank = settleDaySelfRank
         };
-    }
-
-
-    public async Task<WeekRankResultDto> GetWeekRankWeek1Async(GetRankDto getRankDto, int weekNum)
-    {
-        var rankInfos = await _rankProvider.GetWeekRankAsync(weekNum, getRankDto.CaAddress, getRankDto.SkipCount,
-            getRankDto.MaxResultCount);
-        //var dayOfWeek = DateTime.UtcNow.DayOfWeek;
-
-
-        if (true)
-        {
-            var settleDayRankingList = new List<SettleDayRank>();
-            var selfBal = 0;
-            NftInfo selfR = null;
-            if (rankInfos.SelfRank.Rank <= 10 && rankInfos.SelfRank.Rank > 0)
-            {
-                if (rankInfos.SelfRank.Rank == 1) selfBal = 3;
-                if (rankInfos.SelfRank.Rank == 2) selfBal = 2;
-                if (rankInfos.SelfRank.Rank == 3) selfBal = 2;
-                if (rankInfos.SelfRank.Rank > 3) selfBal = 1;
-
-                selfR = new NftInfo()
-                {
-                    Balance = selfBal,
-                    ChainId = "tDVW",
-                    ImageUrl =
-                        "https://hamster-testnet.s3.ap-northeast-1.amazonaws.com/Acorns/NFT_KingHamster.png",
-                    Symbol = "KINGHAMSTER-1",
-                    TokenName = "King of Hamsters"
-                };
-            }
-
-            var settleDaySelfRank = new SettleDaySelfRank
-            {
-                Score = rankInfos.SelfRank.Score,
-                CaAddress = rankInfos.SelfRank.CaAddress,
-                Decimals = 8,
-                Rank = rankInfos.SelfRank.Rank,
-                RewardNftInfo = selfR
-            };
-
-            if (settleDaySelfRank.RewardNftInfo != null)
-            {
-                var check = await CheckClaim(settleDaySelfRank.CaAddress, weekNum);
-                if (!check)
-                {
-                    settleDaySelfRank.RewardNftInfo = null;
-                }
-            }
-
-            var fromScore = rankInfos.RankingList[3].Score;
-            var toScore = rankInfos.RankingList[9].Score;
-            foreach (var rankDto in rankInfos.RankingList.OrderBy(t => t.Rank).Take(3))
-            {
-                if (rankDto.Rank <= 3)
-                {
-                    var balance = 0;
-                    if (rankDto.Rank == 1) balance = 3;
-                    if (rankDto.Rank == 2) balance = 2;
-                    if (rankDto.Rank == 3) balance = 2;
-                    settleDayRankingList.Add(new SettleDayRank()
-                    {
-                        FromRank = 0,
-                        ToRank = 0,
-                        CaAddress = rankDto.CaAddress,
-                        FromScore = 0,
-                        ToScore = 0,
-                        Rank = rankDto.Rank,
-                        Score = rankDto.Score,
-                        Decimals = 8,
-                        RewardNftInfo = new NftInfo()
-                        {
-                            Balance = balance,
-                            ChainId = "tDVW",
-                            ImageUrl =
-                                "https://hamster-testnet.s3.ap-northeast-1.amazonaws.com/Acorns/NFT_KingHamster.png",
-                            Symbol = "KINGHAMSTER-1",
-                            TokenName = "King of Hamsters"
-                        }
-                    });
-                }
-            }
-
-            settleDayRankingList.Add(new SettleDayRank()
-            {
-                FromRank = 4,
-                ToRank = 10,
-                CaAddress = getRankDto.CaAddress,
-                FromScore = fromScore,
-                ToScore = toScore,
-                Rank = 0,
-                Score = 0,
-                Decimals = 8,
-                RewardNftInfo = new NftInfo()
-                {
-                    Balance = 1,
-                    ChainId = "tDVW",
-                    ImageUrl =
-                        "https://hamster-testnet.s3.ap-northeast-1.amazonaws.com/Acorns/NFT_KingHamster.png",
-                    Symbol = "KINGHAMSTER-1",
-                    TokenName = "King of Hamsters"
-                }
-            });
-            return new WeekRankResultDto()
-            {
-                SettleDayRankingList = settleDayRankingList,
-                SettleDaySelfRank = settleDaySelfRank
-            };
-        }
-
-        return rankInfos;
     }
 
     private async Task<List<UserWeekRankDto>> GetWeekRankListAsync(string caAddress)
@@ -385,7 +272,7 @@ public class RankService : HamsterWoodsBaseService, IRankService
                     Rank = item.Rank,
                     Decimals = 8,
                     Score = item.SumScore
-                }, weekNum);
+                }, item.WeekNum);
                 if (rewardInfo != null)
                 {
                     selfReward = _objectMapper.Map<RewardNftInfoOptions, NftInfo>(_rewardNftInfoOptions);
@@ -397,87 +284,8 @@ public class RankService : HamsterWoodsBaseService, IRankService
 
             result.Add(dto);
         }
-
-
-        // if (rankInfos.SettleDaySelfRank == null)
-        // {
-        //     return result;
-        // }
-        //
-        // var dto = new GetHistoryDto()
-        // {
-        //     Time = "2024-4-07070708",
-        //     CaAddress = input.CaAddress,
-        //     Score = rankInfos.SettleDaySelfRank.Score,
-        //     Decimals = 8,
-        //     Rank = rankInfos.SettleDaySelfRank.Rank,
-        //     WeekNum = 4,
-        //     RewardNftInfo = rankInfos.SettleDaySelfRank.RewardNftInfo
-        // };
-        // if (dto.RewardNftInfo != null)
-        // {
-        //     var check = await CheckClaim(input.CaAddress, dto.WeekNum);
-        //     if (!check)
-        //     {
-        //         dto.RewardNftInfo = null;
-        //     }
-        // }
-        //
-        // if (dto.Score > 0)
-        // {
-        //     result.Add(dto);
-        // }
-
-        // var his1 = await GetHistoryWeek1Async(input, 1, "2024-1-07040705");
-        // foreach (var item in his1)
-        // {
-        //     item.RewardNftInfo = null;
-        // }
-        //
-        // result.AddRange(his1);
-        // var his2 = await GetHistoryWeek1Async(input, 2, "2024-2-07050706");
-        // foreach (var item in his2)
-        // {
-        //     item.RewardNftInfo = null;
-        // }
-        //
-        // result.AddRange(his2);
-        // var his3 = await GetHistoryWeek1Async(input, 3, "2024-3-07060707");
-        // result.AddRange(his3);
+        
         return result.OrderByDescending(t => t.WeekNum).ToList();
-    }
-
-    public async Task<List<GetHistoryDto>> GetHistoryWeek1Async(GetRankDto input, int weekNum, string time)
-    {
-        var result = new List<GetHistoryDto>();
-        var rankInfos = await GetWeekRankWeek1Async(input, weekNum);
-        if (rankInfos.SettleDaySelfRank == null)
-        {
-            return result;
-        }
-
-        var dto = new GetHistoryDto()
-        {
-            Time = time,
-            CaAddress = input.CaAddress,
-            Score = rankInfos.SettleDaySelfRank.Score,
-            Decimals = 8,
-            Rank = rankInfos.SettleDaySelfRank.Rank,
-            WeekNum = weekNum,
-            RewardNftInfo = rankInfos.SettleDaySelfRank.RewardNftInfo
-        };
-        if (dto.RewardNftInfo != null)
-        {
-            var check = await CheckClaim(input.CaAddress, weekNum);
-            if (!check)
-            {
-                dto.RewardNftInfo = null;
-            }
-        }
-
-        result.Add(dto);
-
-        return result;
     }
 
     private const string _hamsterPassCacheKeyPrefix = "HamsterKing_";

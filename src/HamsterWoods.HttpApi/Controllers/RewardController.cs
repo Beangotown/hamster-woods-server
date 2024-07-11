@@ -11,6 +11,7 @@ namespace HamsterWoods.Controllers;
 [Area("app")]
 [ControllerName("Reward")]
 [Route("api/app/reward/")]
+[IgnoreAntiforgeryToken]
 public class RewardController: HamsterWoodsBaseController
 {
     private readonly IRewardAppService _rewardAppService;
