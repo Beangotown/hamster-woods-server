@@ -144,7 +144,8 @@ public class RankService : HamsterWoodsBaseService, IRankService
         return new WeekRankResultDto()
         {
             SettleDayRankingList = settleDayRankingList,
-            SettleDaySelfRank = settleDaySelfRank
+            SettleDaySelfRank = settleDaySelfRank,
+            WeekNum = rankInfos.WeekNum
         };
     }
 
