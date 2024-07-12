@@ -56,7 +56,7 @@ public class AssetLockAppService : HamsterWoodsBaseService, IAssetLockAppService
         // }
 
 
-        var rankInfos2 = await _rankProvider.GetWeekRankAsync(6, input.CaAddress, 0, 1);
+        var rankInfos2 = await _rankProvider.GetWeekRankAsync(7, input.CaAddress, 0, 1);
         if (rankInfos2 != null && rankInfos2.SelfRank != null && rankInfos2.SelfRank.Score > 0)
         {
             lockedInfoList.Add(new AssetLockedInfoDto()

@@ -48,7 +48,7 @@ public class SyncRankRecordService : ISyncRankRecordService, ISingletonDependenc
 
     public async Task SyncRankRecordAsync()
     {
-        var list = new List<int>() { 5, 6 };
+        var list = new List<int>() { 7 };
         foreach (var item in list)
         {
             await SyncRankRecordAsync(item);
