@@ -48,7 +48,7 @@ public class SyncRankRecordService : ISyncRankRecordService, ISingletonDependenc
 
     public async Task SyncRankRecordAsync()
     {
-        var list = new List<int>() { 1, 2, 3, 4, 5 };
+        var list = new List<int>() { 5, 6 };
         foreach (var item in list)
         {
             await SyncRankRecordAsync(item);
@@ -58,7 +58,7 @@ public class SyncRankRecordService : ISyncRankRecordService, ISingletonDependenc
     public async Task SyncRankRecordAsync(int weekNum)
     {
         //var weekNum = await _weekNumProvider.GetWeekNumAsync(0);
-       
+
         // var syncValue = await _cacheProvider.GetAsync(SyncRankRecordCachePrefix + weekNum);
         // if (!syncValue.IsNull)
         // {
