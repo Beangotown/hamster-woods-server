@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using HamsterWoods.SyncData;
+using HamsterWoods.SyncData.Dtos;
 using Microsoft.AspNetCore.Mvc;
 using Volo.Abp;
 
@@ -10,7 +11,7 @@ namespace HamsterWoods.Controllers;
 [ControllerName("SyncData")]
 [Route("api/app/sync/")]
 [IgnoreAntiforgeryToken]
-public class SyncDataController: HamsterWoodsBaseController
+public class SyncDataController : HamsterWoodsBaseController
 {
     private readonly ISyncDataService _syncDataService;
 
@@ -20,8 +21,8 @@ public class SyncDataController: HamsterWoodsBaseController
     }
 
     [HttpPost("current-race-info")]
-    public async Task SyncCurrentRaceInfoAsync()
+    public async Task<CurrentRaceDto> SyncCurrentRaceInfoAsync()
     {
-        await _syncDataService.SyncRaceConfigAsync();
+        return await _syncDataService.SyncRaceConfigAsync();
     }
 }

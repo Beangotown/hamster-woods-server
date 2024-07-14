@@ -10,7 +10,9 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="Quartz" Version="3.8.1" />
+        <PackageReference Include="Hangfire" Version="1.8.7" />
+        <PackageReference Include="Hangfire.Core" Version="1.8.7" />
+        <PackageReference Include="Hangfire.Mongo" Version="1.7.1" />
     </ItemGroup>
 
 </Project>

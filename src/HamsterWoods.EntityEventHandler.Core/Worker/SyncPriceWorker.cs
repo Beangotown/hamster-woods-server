@@ -11,11 +11,11 @@ namespace HamsterWoods.EntityEventHandler.Core.Worker;
 
 public class SyncPriceWorker  : AsyncPeriodicBackgroundWorkerBase
 {
-    private readonly ILogger<SyncRankRecordWorker> _logger;
+    private readonly ILogger<SyncPriceWorker> _logger;
     private readonly ISyncPriceService _syncPriceService;
 
     public SyncPriceWorker(AbpAsyncTimer timer, IServiceScopeFactory serviceScopeFactory,
-        ILogger<SyncRankRecordWorker> logger, IOptionsMonitor<SyncPriceDataOptions> options,
+        ILogger<SyncPriceWorker> logger, IOptionsMonitor<SyncPriceDataOptions> options,
         ISyncPriceService syncPriceService) : base(timer,
         serviceScopeFactory)
     {

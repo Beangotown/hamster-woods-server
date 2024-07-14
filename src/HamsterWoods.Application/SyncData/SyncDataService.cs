@@ -4,12 +4,14 @@ using System.Threading.Tasks;
 using AElf.Indexing.Elasticsearch;
 using HamsterWoods.Cache;
 using HamsterWoods.Contract;
+using HamsterWoods.SyncData.Dtos;
 using HamsterWoods.TokenLock;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Volo.Abp;
 using Volo.Abp.Auditing;
+using Volo.Abp.ObjectMapping;
 
 namespace HamsterWoods.SyncData;
 
@@ -21,19 +23,21 @@ public class SyncDataService : HamsterWoodsBaseService, ISyncDataService
     private readonly ICacheProvider _cacheProvider;
     private readonly IContractProvider _contractProvider;
     private readonly ILogger<SyncDataService> _logger;
+    private readonly IObjectMapper _objectMapper;
 
     public SyncDataService(INESTRepository<RaceInfoConfigIndex, string> configRepository,
         IContractProvider contractProvider, IOptionsMonitor<ChainOptions> chainOptions, ICacheProvider cacheProvider,
-        ILogger<SyncDataService> logger)
+        ILogger<SyncDataService> logger, IObjectMapper objectMapper)
     {
         _configRepository = configRepository;
         _contractProvider = contractProvider;
         _cacheProvider = cacheProvider;
         _logger = logger;
+        _objectMapper = objectMapper;
         _chainOptions = chainOptions.CurrentValue;
     }
 
-    public async Task SyncRaceConfigAsync()
+    public async Task<CurrentRaceDto> SyncRaceConfigAsync()
     {
         var raceInfo = await _contractProvider.GetCurrentRaceInfoAsync(_chainOptions.ChainInfos.Keys.First());
         var id = $"{raceInfo.WeekNum}";
@@ -49,17 +53,18 @@ public class SyncDataService : HamsterWoodsBaseService, ISyncDataService
             CreateTime = DateTime.UtcNow,
             UpdateTime = DateTime.UtcNow
         };
-        
+
         var configIndex = await _configRepository.GetAsync(id);
         if (configIndex != null)
         {
             index.CreateTime = configIndex.CreateTime;
         }
-        
+
         _logger.LogInformation("sync race config success, data:{data}", JsonConvert.SerializeObject(index));
         await _configRepository.AddOrUpdateAsync(index);
 
         //await SaveHis();
+        return _objectMapper.Map<RaceInfoConfigIndex, CurrentRaceDto>(index);
     }
 
     private async Task SaveHis()
@@ -67,7 +72,7 @@ public class SyncDataService : HamsterWoodsBaseService, ISyncDataService
         var startDate = "2024-07-05";
         var start = DateTime.Parse(startDate);
         var utcStart = DateTime.SpecifyKind(start, DateTimeKind.Utc);
-        
+
         // Time = "2024-1-07040705",
         for (int i = 1; i < 6; i++)
         {
@@ -90,7 +95,7 @@ public class SyncDataService : HamsterWoodsBaseService, ISyncDataService
             await _configRepository.AddOrUpdateAsync(index);
             utcStart = utcStart.AddDays(1);
         }
-        
+
         var index2 = new RaceInfoConfigIndex
         {
             Id = "6",
@@ -107,8 +112,5 @@ public class SyncDataService : HamsterWoodsBaseService, ISyncDataService
 
         _logger.LogInformation("sync race config success, data:{data}", JsonConvert.SerializeObject(index2));
         await _configRepository.AddOrUpdateAsync(index2);
-   
-     
-        
     }
 }

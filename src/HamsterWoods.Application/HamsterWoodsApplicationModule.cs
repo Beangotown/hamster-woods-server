@@ -43,6 +43,7 @@ public class HamsterWoodsApplicationModule : AbpModule
         Configure<PortkeyOptions>(configuration.GetSection("Portkey"));
         Configure<RaceOptions>(configuration.GetSection("Race"));
         Configure<RewardNftInfoOptions>(configuration.GetSection("RewardNftInfo"));
+        Configure<BackgroundJobOptions>(configuration.GetSection("BackgroundJob"));
         context.Services.AddSingleton<ISearchService, UserWeekRankRecordSearchService>();
         context.Services.AddSingleton<ISearchService, RaceInfoConfigSearchService>();
     }

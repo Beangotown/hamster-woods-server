@@ -9,6 +9,7 @@ using HamsterWoods.Common;
 using HamsterWoods.EntityEventHandler.Core.Providers;
 using HamsterWoods.EntityEventHandler.Core.Services.Dtos;
 using HamsterWoods.Rank;
+using HamsterWoods.SyncData;
 using Microsoft.Extensions.Logging;
 using Volo.Abp.DependencyInjection;
 using Volo.Abp.ObjectMapping;
@@ -24,49 +25,51 @@ public class SyncRankRecordService : ISyncRankRecordService, ISingletonDependenc
 {
     private readonly ILogger<SyncRankRecordService> _logger;
     private readonly ISyncRankRecordProvider _syncRankRecordProvider;
-    private readonly IWeekNumProvider _weekNumProvider;
     private readonly INESTRepository<UserWeekRankRecordIndex, string> _userRecordRepository;
     private readonly IObjectMapper _objectMapper;
-    private readonly ICacheProvider _cacheProvider;
-    private const string SyncRankRecordCachePrefix = "SyncRankRecordCache";
+    private readonly ISyncDataService _syncDataService;
 
     public SyncRankRecordService(ILogger<SyncRankRecordService> logger,
         ISyncRankRecordProvider syncRankRecordProvider,
-        IWeekNumProvider weekNumProvider,
         INESTRepository<UserWeekRankRecordIndex, string> userRecordRepository,
-        IObjectMapper objectMapper,
-        ICacheProvider cacheProvider
-    )
+        IObjectMapper objectMapper, ISyncDataService syncDataService)
     {
         _logger = logger;
         _syncRankRecordProvider = syncRankRecordProvider;
-        _weekNumProvider = weekNumProvider;
         _userRecordRepository = userRecordRepository;
         _objectMapper = objectMapper;
-        _cacheProvider = cacheProvider;
+        _syncDataService = syncDataService;
     }
 
     public async Task SyncRankRecordAsync()
     {
-        var list = new List<int>() { 7 };
-        foreach (var item in list)
+        _logger.LogInformation("[SyncRankRecord] SyncRankRecord Start.");
+        var currentRaceDto = await _syncDataService.SyncRaceConfigAsync();
+
+        var weekNum = currentRaceDto.WeekNum;
+        if (weekNum == 1)
         {
-            await SyncRankRecordAsync(item);
+            _logger.LogInformation("[SyncRankRecord] weekNum:{weekNum}, first week race", weekNum);
+            return;
         }
+
+        if (currentRaceDto.BeginTime.Date != DateTime.UtcNow.Date)
+        {
+            _logger.LogInformation("[SyncRankRecord] weekNum:{weekNum}, beginTime:{beginTime}, not settle day", weekNum,
+                currentRaceDto.BeginTime.ToString("yyyy-MM-dd HH:mm:ss"));
+            return;
+        }
+
+        weekNum = currentRaceDto.WeekNum - 1; // last weekNum
+        _logger.LogInformation("[SyncRankRecord] weekNum:{weekNum}", weekNum);
+        await SyncRecordAsync(weekNum);
+        _logger.LogInformation("[SyncRankRecord] SyncRankRecord End.");
     }
 
-    public async Task SyncRankRecordAsync(int weekNum)
+    private async Task SyncRecordAsync(int weekNum)
     {
-        //var weekNum = await _weekNumProvider.GetWeekNumAsync(0);
-
-        // var syncValue = await _cacheProvider.GetAsync(SyncRankRecordCachePrefix + weekNum);
-        // if (!syncValue.IsNull)
-        // {
-        //     _logger.LogInformation("data already sync, weekNum:{weekNum}", weekNum);
-        // }
-
         var skipCount = 0;
-        var maxResultCount = 1000;
+        var maxResultCount = 100;
         var result = await _syncRankRecordProvider.GetWeekRankRecordsAsync(weekNum, skipCount, maxResultCount);
         await SaveRecordAsync(result?.RankRecordList, skipCount);
 
@@ -76,10 +79,6 @@ public class SyncRankRecordService : ISyncRankRecordService, ISingletonDependenc
             result = await _syncRankRecordProvider.GetWeekRankRecordsAsync(weekNum, skipCount, maxResultCount);
             await SaveRecordAsync(result?.RankRecordList, skipCount);
         }
-
-        await _cacheProvider.SetAsync(SyncRankRecordCachePrefix + weekNum,
-            DateTime.UtcNow.ToTimestamp().ToString(),
-            null);
     }
 
     private async Task SaveRecordAsync(List<RankRecordDto> recordList, int rankNum)
