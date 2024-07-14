@@ -56,18 +56,18 @@ public class AssetLockAppService : HamsterWoodsBaseService, IAssetLockAppService
         // }
 
 
-        var rankInfos2 = await _rankProvider.GetWeekRankAsync(7, input.CaAddress, 0, 1);
-        if (rankInfos2 != null && rankInfos2.SelfRank != null && rankInfos2.SelfRank.Score > 0)
-        {
-            lockedInfoList.Add(new AssetLockedInfoDto()
-            {
-                Amount = rankInfos2.SelfRank.Score,
-                Decimals = 8,
-                LockedTime = DateTime.UtcNow.ToString("yyyy-MM-dd"),
-                Symbol = "ACORNS",
-                UnLockTime = DateTime.UtcNow.AddDays(1).ToString("yyyy-MM-dd")
-            });
-        }
+        // var rankInfos2 = await _rankProvider.GetWeekRankAsync(7, input.CaAddress, 0, 1);
+        // if (rankInfos2 != null && rankInfos2.SelfRank != null && rankInfos2.SelfRank.Score > 0)
+        // {
+        //     lockedInfoList.Add(new AssetLockedInfoDto()
+        //     {
+        //         Amount = rankInfos2.SelfRank.Score,
+        //         Decimals = 8,
+        //         LockedTime = DateTime.UtcNow.ToString("yyyy-MM-dd"),
+        //         Symbol = "ACORNS",
+        //         UnLockTime = DateTime.UtcNow.AddDays(1).ToString("yyyy-MM-dd")
+        //     });
+        // }
 
         var totalLockedAmount = lockedInfoList.Sum(t => t.Amount);
         // var weekNum = 1;
