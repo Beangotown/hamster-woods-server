@@ -3,6 +3,7 @@ using HamsterWoods.Common;
 using HamsterWoods.Contract;
 using HamsterWoods.Options;
 using HamsterWoods.Grains;
+using HamsterWoods.Info;
 using HamsterWoods.Portkey;
 using Microsoft.Extensions.DependencyInjection;
 using Volo.Abp.Account;
@@ -38,10 +39,11 @@ public class HamsterWoodsApplicationModule : AbpModule
         context.Services.AddSingleton<ICacheProvider, RedisCacheProvider>();
 
         var configuration = context.Services.GetConfiguration();
-        Configure<ScheduledTasksOptions>(configuration.GetSection("ScheduledTasks"));
         Configure<ChainOptions>(configuration.GetSection("Chains"));
         Configure<PortkeyOptions>(configuration.GetSection("Portkey"));
         Configure<RaceOptions>(configuration.GetSection("Race"));
         Configure<RewardNftInfoOptions>(configuration.GetSection("RewardNftInfo"));
+        context.Services.AddSingleton<ISearchService, UserWeekRankRecordSearchService>();
+        context.Services.AddSingleton<ISearchService, RaceInfoConfigSearchService>();
     }
 }

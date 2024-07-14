@@ -1,5 +1,6 @@
 using System.Threading.Tasks;
 using HamsterWoods.Info;
+using HamsterWoods.Info.Dtos;
 using HamsterWoods.Rank;
 using Microsoft.AspNetCore.Mvc;
 using Volo.Abp;
@@ -38,5 +39,11 @@ public class InfoController : HamsterWoodsBaseController
     public async Task<object> SetValAsync(string key, string val)
     {
         return await _infoAppService.SetValAsync(key, val);
+    }
+
+    [HttpGet("{indexName}")]
+    public async Task<string> GetDataAsync(GetIndexDataDto input, string indexName)
+    {
+        return await _infoAppService.GetDataAsync(input, indexName);
     }
 }
