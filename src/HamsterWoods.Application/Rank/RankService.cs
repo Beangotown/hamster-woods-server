@@ -251,7 +251,7 @@ public class RankService : HamsterWoodsBaseService, IRankService
         {
             var raceInfo = raceInfoList.FirstOrDefault(t => t.WeekNum == item.WeekNum);
             var beginStr = raceInfo.BeginTime.ToString("MMdd");
-            var endStr = raceInfo.EndTime.ToString("MMdd");
+            var endStr = raceInfo.EndTime.AddDays(-1).ToString("MMdd");
             var dto = new GetHistoryDto
             {
                 Time = $"2024-{item.WeekNum}-{beginStr}{endStr}",
