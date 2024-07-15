@@ -71,7 +71,7 @@ public class RankService : HamsterWoodsBaseService, IRankService
         rankInfos.WeekNum = weekNum;
         if (!isSettleDay)
         {
-            rankInfos.EndDate = weekInfo.CurrentRaceTimeInfo.EndTime.ToString("yyyy-MM-dd");
+            rankInfos.EndDate = weekInfo.CurrentRaceTimeInfo.EndTime.AddDays(-1).ToString("yyyy-MM-dd");
             return rankInfos;
         }
 
