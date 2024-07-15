@@ -8,7 +8,7 @@ using HamsterWoods.AssetLock.Provider;
 using HamsterWoods.Options;
 using HamsterWoods.Rank;
 using HamsterWoods.Rank.Provider;
-using JetBrains.Annotations;
+using HamsterWoods.TokenLock;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Nest;
@@ -23,74 +23,53 @@ public class AssetLockAppService : HamsterWoodsBaseService, IAssetLockAppService
     private readonly ILogger<AssetLockAppService> _logger;
     private readonly RaceOptions _raceOptions;
     private readonly INESTRepository<UserWeekRankRecordIndex, string> _userRecordRepository;
+    private readonly INESTRepository<RaceInfoConfigIndex, string> raceInfoRepository;
     private readonly IRankProvider _rankProvider;
     private readonly IAssetLockProvider _assetLockProvider;
 
     public AssetLockAppService(ILogger<AssetLockAppService> logger, IOptionsMonitor<RaceOptions> raceOptions,
         INESTRepository<UserWeekRankRecordIndex, string> userRecordRepository, IRankProvider rankProvider,
-        IAssetLockProvider assetLockProvider)
+        IAssetLockProvider assetLockProvider, INESTRepository<RaceInfoConfigIndex, string> raceInfoRepository)
     {
         _logger = logger;
         _userRecordRepository = userRecordRepository;
         _rankProvider = rankProvider;
         _assetLockProvider = assetLockProvider;
+        this.raceInfoRepository = raceInfoRepository;
         _raceOptions = raceOptions.CurrentValue;
     }
 
     public async Task<AssetLockedInfoResultDto> GetLockedInfosAsync(GetAssetLockInfoDto input)
     {
         var lockedInfoList = new List<AssetLockedInfoDto>();
-        // var weekNum = 2; // should calculate
-        // var rankInfos = await _rankProvider.GetWeekRankAsync(weekNum, input.CaAddress, 0, 1);
-        // if (rankInfos != null && rankInfos.SelfRank != null && rankInfos.SelfRank.Score > 0)
-        // {
-        //     var info = rankInfos.SelfRank;
-        //     lockedInfoList.Add(new AssetLockedInfoDto()
-        //     {
-        //         Amount = info.Score,
-        //         Decimals = 8,
-        //         LockedTime = DateTime.UtcNow.AddDays(-1).ToString("yyyy-MM-dd"),
-        //         Symbol = "ACORNS",
-        //         UnLockTime = DateTime.UtcNow.AddDays(1).AddDays(-1).ToString("yyyy-MM-dd")
-        //     });
-        // }
+        var weekInfo = await _rankProvider.GetCurrentRaceInfoAsync();
 
+        var unlockRecords = await _assetLockProvider.GetUnlockRecordsAsync(0, input.CaAddress, 0, 1000);
+        var maxUnlockWeekNum = unlockRecords.UnLockRecordList.Max(t => t.WeekNum);
+        var weekNums = new List<int>();
+        for (var i = maxUnlockWeekNum + 1; i < weekInfo.WeekNum; i++)
+        {
+            weekNums.Add(i);
+        }
 
-        // var rankInfos2 = await _rankProvider.GetWeekRankAsync(7, input.CaAddress, 0, 1);
-        // if (rankInfos2 != null && rankInfos2.SelfRank != null && rankInfos2.SelfRank.Score > 0)
-        // {
-        //     lockedInfoList.Add(new AssetLockedInfoDto()
-        //     {
-        //         Amount = rankInfos2.SelfRank.Score,
-        //         Decimals = 8,
-        //         LockedTime = DateTime.UtcNow.ToString("yyyy-MM-dd"),
-        //         Symbol = "ACORNS",
-        //         UnLockTime = DateTime.UtcNow.AddDays(1).ToString("yyyy-MM-dd")
-        //     });
-        // }
+        var records = await GetRecordsAsync(weekNums, input.CaAddress);
+        var raceInfos = await GetRaceConfigAsync(weekNums);
+        foreach (var record in records)
+        {
+            var raceInfo = raceInfos.FirstOrDefault(t => t.WeekNum == record.WeekNum);
+            if (raceInfo == null) continue;
+
+            lockedInfoList.Add(new AssetLockedInfoDto()
+            {
+                Amount = record.SumScore,
+                Decimals = record.Decimals,
+                Symbol = record.Symbol,
+                LockedTime = raceInfo.SettleBeginTime.ToString("yyyy-MM-dd"),
+                UnLockTime = raceInfo.SettleBeginTime.AddDays(raceInfo.AcornsLockedDays).ToString("yyyy-MM-dd")
+            });
+        }
 
         var totalLockedAmount = lockedInfoList.Sum(t => t.Amount);
-        // var weekNum = 1;
-        // var weekNums = new List<int>() { 1, 2, 3, 4 };
-        // var records = await GetRecordsAsync(weekNums, input.CaAddress);
-        // var totalLockedAmount = records.Sum(t => t.SumScore);
-        // int lockedDays = 30;
-        //
-        // var lockedInfoList = new List<AssetLockedInfoDto>();
-        // foreach (var record in records)
-        // {
-        //     // next day as begin
-        //     var date = _raceOptions.CalibrationTime.AddHours(_raceOptions.RaceHours * weekNum).AddHours(10);
-        //     lockedInfoList.Add(new AssetLockedInfoDto()
-        //     {
-        //         Amount = record.SumScore,
-        //         Decimals = 8,
-        //         Symbol = "ACORNS",
-        //         LockedTime = date.ToString("yyyy-MM-dd"),
-        //         UnLockTime = date.AddDays(lockedDays).ToString("yyyy-MM-dd")
-        //     });
-        // }
-
         var result = new AssetLockedInfoResultDto
         {
             LockedInfoList = lockedInfoList,
@@ -102,6 +81,8 @@ public class AssetLockAppService : HamsterWoodsBaseService, IAssetLockAppService
 
     private async Task<List<UserWeekRankRecordIndex>> GetRecordsAsync(List<int> weekNums, string caAddress)
     {
+        if (weekNums.IsNullOrEmpty()) return new List<UserWeekRankRecordIndex>();
+
         var mustQuery = new List<Func<QueryContainerDescriptor<UserWeekRankRecordIndex>, QueryContainer>>();
         mustQuery.Add(q => q.Term(i => i.Field(f => f.CaAddress).Value(caAddress)));
         mustQuery.Add(q => q.Terms(i => i.Field(f => f.WeekNum).Terms(weekNums)));
@@ -109,6 +90,19 @@ public class AssetLockAppService : HamsterWoodsBaseService, IAssetLockAppService
 
         var result = await _userRecordRepository.GetSortListAsync(Filter, null,
             sortFunc: s => s.Descending(a => a.WeekNum));
+
+        return result.Item2;
+    }
+
+    private async Task<List<RaceInfoConfigIndex>> GetRaceConfigAsync(List<int> weekNums)
+    {
+        if (weekNums.IsNullOrEmpty()) return new List<RaceInfoConfigIndex>();
+
+        var mustQuery = new List<Func<QueryContainerDescriptor<RaceInfoConfigIndex>, QueryContainer>>();
+        mustQuery.Add(q => q.Terms(i => i.Field(f => f.WeekNum).Terms(weekNums)));
+        QueryContainer Filter(QueryContainerDescriptor<RaceInfoConfigIndex> f) => f.Bool(b => b.Must(mustQuery));
+
+        var result = await raceInfoRepository.GetListAsync(Filter);
 
         return result.Item2;
     }
