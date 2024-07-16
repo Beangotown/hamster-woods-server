@@ -16,4 +16,6 @@ public static class CommonConstant
     public const int UsedTokenDecimals = 8;
 
     public const string DataPriceCacheKey = "DataPriceCache";
+    public const int DefaultSkipCount = 0;
+    public const int DefaultMaxResultCount = 100;
 }

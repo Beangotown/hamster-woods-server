@@ -5,12 +5,11 @@ using System.Threading.Tasks;
 using AElf.Indexing.Elasticsearch;
 using HamsterWoods.AssetLock.Dtos;
 using HamsterWoods.AssetLock.Provider;
-using HamsterWoods.Options;
+using HamsterWoods.Commons;
 using HamsterWoods.Rank;
 using HamsterWoods.Rank.Provider;
 using HamsterWoods.TokenLock;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Nest;
 using Volo.Abp;
 using Volo.Abp.Auditing;
@@ -21,13 +20,12 @@ namespace HamsterWoods.AssetLock;
 public class AssetLockAppService : HamsterWoodsBaseService, IAssetLockAppService
 {
     private readonly ILogger<AssetLockAppService> _logger;
-    private readonly RaceOptions _raceOptions;
     private readonly INESTRepository<UserWeekRankRecordIndex, string> _userRecordRepository;
-    private readonly INESTRepository<RaceInfoConfigIndex, string> raceInfoRepository;
+    private readonly INESTRepository<RaceInfoConfigIndex, string> _raceInfoRepository;
     private readonly IRankProvider _rankProvider;
     private readonly IAssetLockProvider _assetLockProvider;
 
-    public AssetLockAppService(ILogger<AssetLockAppService> logger, IOptionsMonitor<RaceOptions> raceOptions,
+    public AssetLockAppService(ILogger<AssetLockAppService> logger,
         INESTRepository<UserWeekRankRecordIndex, string> userRecordRepository, IRankProvider rankProvider,
         IAssetLockProvider assetLockProvider, INESTRepository<RaceInfoConfigIndex, string> raceInfoRepository)
     {
@@ -35,25 +33,27 @@ public class AssetLockAppService : HamsterWoodsBaseService, IAssetLockAppService
         _userRecordRepository = userRecordRepository;
         _rankProvider = rankProvider;
         _assetLockProvider = assetLockProvider;
-        this.raceInfoRepository = raceInfoRepository;
-        _raceOptions = raceOptions.CurrentValue;
+        _raceInfoRepository = raceInfoRepository;
     }
 
     public async Task<AssetLockedInfoResultDto> GetLockedInfosAsync(GetAssetLockInfoDto input)
     {
         var lockedInfoList = new List<AssetLockedInfoDto>();
+        var resultDto = new AssetLockedInfoResultDto()
+        {
+            LockedInfoList = lockedInfoList,
+            TotalLockedAmount = 0,
+            Decimals = CommonConstant.UsedTokenDecimals
+        };
         var weekInfo = await _rankProvider.GetCurrentRaceInfoAsync();
 
-        var unlockRecords = await _assetLockProvider.GetUnlockRecordsAsync(0, input.CaAddress, 0, 1000);
+        var unlockRecords = await _assetLockProvider.GetUnlockRecordsAsync(0, input.CaAddress,
+            CommonConstant.DefaultSkipCount, CommonConstant.DefaultMaxResultCount);
         if (unlockRecords.UnLockRecordList.IsNullOrEmpty())
         {
-            return new AssetLockedInfoResultDto()
-            {
-                LockedInfoList = lockedInfoList,
-                TotalLockedAmount = 0,
-                Decimals = 8
-            };
+            return resultDto;
         }
+
         var maxUnlockWeekNum = unlockRecords.UnLockRecordList.Max(t => t.WeekNum);
         var weekNums = new List<int>();
         for (var i = maxUnlockWeekNum + 1; i < weekInfo.WeekNum; i++)
@@ -61,62 +61,30 @@ public class AssetLockAppService : HamsterWoodsBaseService, IAssetLockAppService
             weekNums.Add(i);
         }
 
-        //var records = await GetRecordsAsync(weekNums, input.CaAddress);
         if (weekNums.Count == 0)
         {
-            return new AssetLockedInfoResultDto()
-            {
-                LockedInfoList = lockedInfoList,
-                TotalLockedAmount = 0,
-                Decimals = 8
-            };
+            return resultDto;
         }
-        var weekNum = weekNums.First();
-        var records = await _rankProvider.GetWeekRankAsync(weekNum, input.CaAddress,0,1);
-        var raceInfos = await GetRaceConfigAsync(weekNums);
-        if (records.SelfRank == null || records.SelfRank.Score == 0)
-        {
-            return new AssetLockedInfoResultDto()
-            {
-                LockedInfoList = lockedInfoList,
-                TotalLockedAmount = 0,
-                Decimals = 8
-            };
-        }
-        var raceInfo = raceInfos.FirstOrDefault(t => t.WeekNum == weekNum);
-        lockedInfoList.Add(new AssetLockedInfoDto()
-        {
-            //Amount = record.SumScore,
-            Amount = records.SelfRank.Score,
-            Decimals = records.SelfRank.Decimals,
-            Symbol = "ACORNS",
-            LockedTime = raceInfo.SettleBeginTime.ToString("yyyy-MM-dd"),
-            UnLockTime = raceInfo.SettleBeginTime.AddDays(raceInfo.AcornsLockedDays).ToString("yyyy-MM-dd")
-        });
-        // foreach (var record in records.RankingList)
-        // {
-        //     var raceInfo = raceInfos.FirstOrDefault(t => t.WeekNum == record.WeekNum);
-        //     if (raceInfo == null) continue;
-        //
-        //     lockedInfoList.Add(new AssetLockedInfoDto()
-        //     {
-        //         //Amount = record.SumScore,
-        //         Amount = record.Score,
-        //         Decimals = record.Decimals,
-        //         Symbol = "ACORNS",
-        //         LockedTime = raceInfo.SettleBeginTime.ToString("yyyy-MM-dd"),
-        //         UnLockTime = raceInfo.SettleBeginTime.AddDays(raceInfo.AcornsLockedDays).ToString("yyyy-MM-dd")
-        //     });
-        // }
 
-        var totalLockedAmount = lockedInfoList.Sum(t => t.Amount);
-        var result = new AssetLockedInfoResultDto
+        var records = await GetRecordsAsync(weekNums, input.CaAddress);
+        var raceInfos = await GetRaceConfigAsync(weekNums);
+        foreach (var record in records)
         {
-            LockedInfoList = lockedInfoList,
-            TotalLockedAmount = totalLockedAmount,
-            Decimals = 8
-        };
-        return result;
+            var raceInfo = raceInfos.FirstOrDefault(t => t.WeekNum == record.WeekNum);
+            if (raceInfo == null) continue;
+
+            lockedInfoList.Add(new AssetLockedInfoDto()
+            {
+                Amount = record.SumScore,
+                Decimals = record.Decimals,
+                Symbol = CommonConstant.AcornsSymbol,
+                LockedTime = raceInfo.SettleBeginTime.ToString("yyyy-MM-dd"),
+                UnLockTime = raceInfo.SettleBeginTime.AddDays(raceInfo.AcornsLockedDays).ToString("yyyy-MM-dd")
+            });
+        }
+
+        resultDto.TotalLockedAmount = lockedInfoList.Sum(t => t.Amount);
+        return resultDto;
     }
 
     private async Task<List<UserWeekRankRecordIndex>> GetRecordsAsync(List<int> weekNums, string caAddress)
@@ -141,9 +109,8 @@ public class AssetLockAppService : HamsterWoodsBaseService, IAssetLockAppService
         var mustQuery = new List<Func<QueryContainerDescriptor<RaceInfoConfigIndex>, QueryContainer>>();
         mustQuery.Add(q => q.Terms(i => i.Field(f => f.WeekNum).Terms(weekNums)));
         QueryContainer Filter(QueryContainerDescriptor<RaceInfoConfigIndex> f) => f.Bool(b => b.Must(mustQuery));
-
-        var result = await raceInfoRepository.GetListAsync(Filter);
-
+        
+        var result = await _raceInfoRepository.GetListAsync(Filter);
         return result.Item2;
     }
 
@@ -158,8 +125,8 @@ public class AssetLockAppService : HamsterWoodsBaseService, IAssetLockAppService
             result.Add(new GetUnlockRecordDto()
             {
                 UnLockTime = item.BlockTime.ToString("yyyy-MM-dd"),
-                Symbol = "ACORNS",
-                Decimals = 8,
+                Symbol = CommonConstant.AcornsSymbol,
+                Decimals = CommonConstant.UsedTokenDecimals,
                 Amount = item.Amount,
                 TransactionId = item.TransactionInfo?.TransactionId
             });
