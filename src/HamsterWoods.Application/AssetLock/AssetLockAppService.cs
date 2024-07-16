@@ -52,22 +52,53 @@ public class AssetLockAppService : HamsterWoodsBaseService, IAssetLockAppService
             weekNums.Add(i);
         }
 
-        var records = await GetRecordsAsync(weekNums, input.CaAddress);
-        var raceInfos = await GetRaceConfigAsync(weekNums);
-        foreach (var record in records)
+        //var records = await GetRecordsAsync(weekNums, input.CaAddress);
+        if (weekNums.Count == 0)
         {
-            var raceInfo = raceInfos.FirstOrDefault(t => t.WeekNum == record.WeekNum);
-            if (raceInfo == null) continue;
-
-            lockedInfoList.Add(new AssetLockedInfoDto()
+            return new AssetLockedInfoResultDto()
             {
-                Amount = record.SumScore,
-                Decimals = record.Decimals,
-                Symbol = record.Symbol,
-                LockedTime = raceInfo.SettleBeginTime.ToString("yyyy-MM-dd"),
-                UnLockTime = raceInfo.SettleBeginTime.AddDays(raceInfo.AcornsLockedDays).ToString("yyyy-MM-dd")
-            });
+                LockedInfoList = lockedInfoList,
+                TotalLockedAmount = 0,
+                Decimals = 8
+            };
         }
+        var weekNum = weekNums.First();
+        var records = await _rankProvider.GetWeekRankAsync(weekNum, input.CaAddress,0,1);
+        var raceInfos = await GetRaceConfigAsync(weekNums);
+        if (records.SelfRank == null || records.SelfRank.Score == 0)
+        {
+            return new AssetLockedInfoResultDto()
+            {
+                LockedInfoList = lockedInfoList,
+                TotalLockedAmount = 0,
+                Decimals = 8
+            };
+        }
+        var raceInfo = raceInfos.FirstOrDefault(t => t.WeekNum == weekNum);
+        lockedInfoList.Add(new AssetLockedInfoDto()
+        {
+            //Amount = record.SumScore,
+            Amount = records.SelfRank.Score,
+            Decimals = records.SelfRank.Decimals,
+            Symbol = "ACORNS",
+            LockedTime = raceInfo.SettleBeginTime.ToString("yyyy-MM-dd"),
+            UnLockTime = raceInfo.SettleBeginTime.AddDays(raceInfo.AcornsLockedDays).ToString("yyyy-MM-dd")
+        });
+        // foreach (var record in records.RankingList)
+        // {
+        //     var raceInfo = raceInfos.FirstOrDefault(t => t.WeekNum == record.WeekNum);
+        //     if (raceInfo == null) continue;
+        //
+        //     lockedInfoList.Add(new AssetLockedInfoDto()
+        //     {
+        //         //Amount = record.SumScore,
+        //         Amount = record.Score,
+        //         Decimals = record.Decimals,
+        //         Symbol = "ACORNS",
+        //         LockedTime = raceInfo.SettleBeginTime.ToString("yyyy-MM-dd"),
+        //         UnLockTime = raceInfo.SettleBeginTime.AddDays(raceInfo.AcornsLockedDays).ToString("yyyy-MM-dd")
+        //     });
+        // }
 
         var totalLockedAmount = lockedInfoList.Sum(t => t.Amount);
         var result = new AssetLockedInfoResultDto
