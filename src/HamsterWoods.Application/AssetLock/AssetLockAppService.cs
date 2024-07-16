@@ -45,6 +45,15 @@ public class AssetLockAppService : HamsterWoodsBaseService, IAssetLockAppService
         var weekInfo = await _rankProvider.GetCurrentRaceInfoAsync();
 
         var unlockRecords = await _assetLockProvider.GetUnlockRecordsAsync(0, input.CaAddress, 0, 1000);
+        if (unlockRecords.UnLockRecordList.IsNullOrEmpty())
+        {
+            return new AssetLockedInfoResultDto()
+            {
+                LockedInfoList = lockedInfoList,
+                TotalLockedAmount = 0,
+                Decimals = 8
+            };
+        }
         var maxUnlockWeekNum = unlockRecords.UnLockRecordList.Max(t => t.WeekNum);
         var weekNums = new List<int>();
         for (var i = maxUnlockWeekNum + 1; i < weekInfo.WeekNum; i++)

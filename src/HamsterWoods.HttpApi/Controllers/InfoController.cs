@@ -34,14 +34,7 @@ public class InfoController : HamsterWoodsBaseController
         return await _infoAppService.GetValAsync(key);
     }
 
-    [HttpPost]
-    [Route("set-val")]
-    public async Task<object> SetValAsync(string key, string val)
-    {
-        return await _infoAppService.SetValAsync(key, val);
-    }
-
-    [HttpGet("{indexName}")]
+    [HttpGet("search/{indexName}")]
     public async Task<string> GetDataAsync(GetIndexDataDto input, string indexName)
     {
         return await _infoAppService.GetDataAsync(input, indexName);
