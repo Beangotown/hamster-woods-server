@@ -1,0 +1,32 @@
+﻿using AutoMapper;
+using HamsterWoods.Cache;
+using HamsterWoods.NFT;
+using HamsterWoods.Options;
+using HamsterWoods.Rank;
+using HamsterWoods.SyncData.Dtos;
+using HamsterWoods.TokenLock;
+using HamsterWoods.Trace;
+
+namespace HamsterWoods;
+
+public class HamsterWoodsApplicationAutoMapperProfile : Profile
+{
+    public HamsterWoodsApplicationAutoMapperProfile()
+    {
+        CreateMap<RankDto, UserWeekRankIndex>().ForMember(dest => dest.SumScore,
+            opts => opts.MapFrom(src => src.Score)).ReverseMap();
+        CreateMap<UserWeekRankIndex, WeekRankDto>().ForMember(destination => destination.Score,
+            opt => opt.MapFrom(source => source.SumScore));
+        CreateMap<WeekRankDto, UserWeekRankIndex>().ForMember(dest => dest.SumScore,
+            opts => opts.MapFrom(src => src.Score)).ReverseMap();
+        CreateMap<GetUserActionDto, UserActionIndex>();
+        CreateMap<HamsterPassInfoDto, HamsterPassResultDto>().ReverseMap();
+        CreateMap<RewardNftInfoOptions, NftInfo>();
+        CreateMap<UserWeekRankRecordIndex, UserWeekRankDto>();
+        CreateMap<RaceInfoConfigIndex, CurrentRaceDto>();
+        CreateMap<PriceInfo, PriceDto>()
+            .ForMember(t => t.ElfInUsd, opt => opt.MapFrom(f => f.ElfToUsd))
+            .ForMember(t => t.AcornsInElf, opt => opt.MapFrom(f => f.AcornsToElf))
+            .ForMember(t => t.AcornsInUsd, opt => opt.MapFrom(f => f.AcornsToUsd));
+    }
+}
