@@ -34,7 +34,7 @@ public static class HamsterWoodsHostBuilderExtensions
     private static IHostBuilder AddAppSettingsApolloJson(this IHostBuilder hostBuilder)
     {
         return hostBuilder.ConfigureAppConfiguration(
-            (_, builder) => { builder.AddJsonFile("appsettings.apollo.json"); });
+            (_, builder) => { builder.AddJsonFile("apollo.appsettings.json"); });
     }
 
     private static IHostBuilder InitConfigurationHelper(this IHostBuilder hostBuilder, bool configureService)
