@@ -11,7 +11,7 @@ public static class HamsterWoodsHostBuilderExtensions
     public static IHostBuilder UseApolloForConfigureHostBuilder(this IHostBuilder hostBuilder)
     {
         return hostBuilder
-            .ConfigureAppConfiguration((_, builder) => { builder.AddJsonFile("appsettings.apollo.json"); })
+            .ConfigureAppConfiguration((_, builder) => { builder.AddJsonFile("apollo.appsettings.json"); })
             .ConfigureAppConfiguration((context, builder) =>
             {
                 if (!context.Configuration.GetValue<bool>("IsApolloEnabled", false))
@@ -99,7 +99,7 @@ public static class HamsterWoodsHostBuilderExtensions
     public static IHostBuilder UseApolloForHostBuilder(this IHostBuilder hostBuilder)
     {
         return hostBuilder
-            .ConfigureAppConfiguration((_, builder) => { builder.AddJsonFile("appsettings.apollo.json"); })
+            .ConfigureAppConfiguration((_, builder) => { builder.AddJsonFile("apollo.appsettings.json"); })
             .ConfigureAppConfiguration((_, builder) =>
             {
                 if (!builder.Build().GetValue<bool>("IsApolloEnabled", false))
