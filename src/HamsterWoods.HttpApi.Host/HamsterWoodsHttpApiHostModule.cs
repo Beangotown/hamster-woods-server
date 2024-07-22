@@ -250,7 +250,7 @@ public class HamsterWoodsHttpApiHostModule : AbpModule
 
         app.UseConfiguredEndpoints();
 
-        StartOrleans(context.ServiceProvider);
+       // StartOrleans(context.ServiceProvider);
         ConfigurationProvidersHelper.DisplayConfigurationProviders(context);
     }
 
@@ -261,7 +261,7 @@ public class HamsterWoodsHttpApiHostModule : AbpModule
 
     public override void OnApplicationShutdown(ApplicationShutdownContext context)
     {
-        StopOrleans(context.ServiceProvider);
+       // StopOrleans(context.ServiceProvider);
     }
 
     private static void StartOrleans(IServiceProvider serviceProvider)
