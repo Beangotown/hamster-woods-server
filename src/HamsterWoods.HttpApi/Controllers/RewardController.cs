@@ -27,11 +27,4 @@ public class RewardController: HamsterWoodsBaseController
     {
         return await _rewardAppService.ClaimHamsterKingAsync(input);
     }
-    
-    [HttpGet]
-    [Route("send")]
-    public async Task<KingHamsterClaimDto> SendAsync(HamsterPassInput input)
-    {
-        return await _rewardAppService.SendAsync(input);
-    }
 }

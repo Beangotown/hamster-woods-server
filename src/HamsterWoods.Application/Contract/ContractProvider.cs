@@ -98,6 +98,20 @@ public class ContractProvider : IContractProvider, ISingletonDependency
         return await SendTransactionAsync(chainId, _chainOptions.ChainInfos[chainId].TokenContractAddress,
             AElfConstants.Transfer, transferParam);
     }
+    
+    public async Task<SendTransactionOutput> SendHamsterKingAsync(string symbol, string amount, string address,
+        string chainId)
+    {
+        var param = new IssueInput()
+        {
+            Symbol = symbol,
+            Amount = long.Parse(amount),
+            To = Address.FromBase58(address)
+        };
+
+        return await SendKingMasterTransactionAsync(chainId, _chainOptions.ChainInfos[chainId].TokenContractAddress,
+            AElfConstants.Issue, param);
+    }
 
 
     public async Task<T> CallTransactionAsync<T>(string chainId, string contractAddress, string methodName,
@@ -131,6 +145,35 @@ public class ContractProvider : IContractProvider, ISingletonDependency
         value.MergeFrom(ByteArrayHelper.HexStringToByteArray(result));
 
         return value;
+    }
+    
+    private async Task<SendTransactionOutput> SendKingMasterTransactionAsync(string chainId, string contractAddress,
+        string method, IMessage param)
+    {
+        var key = _chainOptions.ChainInfos[chainId].PrivateKeyForCall;
+
+        var client = _factory.GetClient(chainId);
+
+        var address = client.GetAddressFromPrivateKey(key);
+
+        var generateIndicator = _indicatorScope.Begin(MonitorTag.AelfClient,
+            MonitorAelfClientType.GenerateTransactionAsync.ToString());
+        var transaction = await client.GenerateTransactionAsync(address, contractAddress, method, param);
+        _indicatorScope.End(generateIndicator);
+
+        var txWithSign = client.SignTransaction(key, transaction);
+
+        var rawTransaction = txWithSign.ToByteArray().ToHex();
+
+        var interIndicator = _indicatorScope.Begin(MonitorTag.AelfClient,
+            MonitorAelfClientType.SendTransactionAsync.ToString());
+        var result = await client.SendTransactionAsync(new SendTransactionInput
+        {
+            RawTransaction = rawTransaction
+        });
+        _indicatorScope.End(interIndicator);
+
+        return result;
     }
 
     private async Task<SendTransactionOutput> SendTransactionAsync(string chainId, string contractAddress,

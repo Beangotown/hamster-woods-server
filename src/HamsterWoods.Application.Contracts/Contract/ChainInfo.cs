@@ -9,4 +9,5 @@ public class ChainInfo
     public string HamsterWoodsAddress { get; set; }
     public string AwakenAddress { get; set; }
     public string PrivateKey { get; set; }
+    public string PrivateKeyForCall { get; set; }
 }

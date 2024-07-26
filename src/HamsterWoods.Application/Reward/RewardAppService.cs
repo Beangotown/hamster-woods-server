@@ -21,7 +21,7 @@ public class RewardAppService : IRewardAppService, ISingletonDependency
     private readonly ICacheProvider _cacheProvider;
     private readonly IObjectMapper _objectMapper;
     private readonly ChainOptions _chainOptions;
-    private const string _hamsterPassCacheKeyPrefix = "HamsterKing_";
+    private const string _hamsterKingCacheKeyPrefix = "HamsterKing_";
     private readonly string _imageUrlKey = "__nft_image_url";
     private readonly IContractProvider _contractProvider;
     private readonly IRewardProvider _rewardProvider;
@@ -63,13 +63,13 @@ public class RewardAppService : IRewardAppService, ISingletonDependency
             caAddress,
             weekNum, transferInfo.Amount.ToString());
         
-        var sendTransactionOutput = await _contractProvider.SendTransferAsync(transferInfo.Symbol,
+        var sendTransactionOutput = await _contractProvider.SendHamsterKingAsync(transferInfo.Symbol,
             transferInfo.Amount.ToString(),
             AddressHelper.ToShortAddress(input.CaAddress),
             GetDefaultChainId()
         );
 
-        await _cacheProvider.SetAsync($"{_hamsterPassCacheKeyPrefix}{caAddress}_{weekNum}",
+        await _cacheProvider.SetAsync($"{_hamsterKingCacheKeyPrefix}{caAddress}_{weekNum}",
             DateTime.UtcNow.ToTimestamp().ToString(),
             null);
         _logger.LogInformation(
@@ -77,7 +77,7 @@ public class RewardAppService : IRewardAppService, ISingletonDependency
             caAddress,
             weekNum, sendTransactionOutput.TransactionId);
 
-        var info = await GetHamsterPassInfoAsync(transferInfo.Symbol);
+        var info = await GetHamsterKingInfoAsync(transferInfo.Symbol);
         return new KingHamsterClaimDto
         {
             Claimable = true,
@@ -92,11 +92,11 @@ public class RewardAppService : IRewardAppService, ISingletonDependency
         return await _sendAcornsProvider.SendAsync(input);
     }
 
-    private async Task<HamsterPassInfoDto> GetHamsterPassInfoAsync(string symbol)
+    private async Task<HamsterPassInfoDto> GetHamsterKingInfoAsync(string symbol)
     {
-        var key = $"{_hamsterPassCacheKeyPrefix}:{symbol}";
-        var beanPassValue = await _cacheProvider.GetAsync(key);
-        if (beanPassValue.IsNull)
+        var key = $"{_hamsterKingCacheKeyPrefix}:{symbol}";
+        var hamsterKingValue = await _cacheProvider.GetAsync(key);
+        if (hamsterKingValue.IsNull)
         {
             var tokenInfo = await _contractProvider.GetTokenInfo(symbol, GetDefaultChainId());
             var info = new HamsterPassInfoDto()
@@ -110,24 +110,7 @@ public class RewardAppService : IRewardAppService, ISingletonDependency
             return info;
         }
 
-        return SerializeHelper.Deserialize<HamsterPassInfoDto>(beanPassValue);
-    }
-
-    public async Task<HamsterPassClaimableDto> IsHamsterPassClaimableAsync(string caAddress, int weekNum)
-    {
-        var passValue = await _cacheProvider.GetAsync($"{_hamsterPassCacheKeyPrefix}{caAddress}_{weekNum}");
-        if (!passValue.IsNull)
-            return new HamsterPassClaimableDto
-            {
-                Claimable = false,
-                Reason = ClaimHamsterNftStatus.DoubleClaim.ToString()
-            };
-
-        return new HamsterPassClaimableDto
-        {
-            Claimable = true,
-            Reason = string.Empty
-        };
+        return SerializeHelper.Deserialize<HamsterPassInfoDto>(hamsterKingValue);
     }
 
     private string GetDefaultChainId()

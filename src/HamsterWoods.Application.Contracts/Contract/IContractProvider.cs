@@ -22,4 +22,7 @@ public interface IContractProvider
     Task<T> CallTransactionAsync<T>(string chainId, string contractAddress, string methodName,
         IMessage param
     ) where T : class, IMessage<T>, new();
+
+    Task<SendTransactionOutput> SendHamsterKingAsync(string symbol, string amount, string address,
+        string chainId);
 }

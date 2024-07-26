@@ -13,3 +13,8 @@ public class HamsterPassResultDto : HamsterPassInfoDto
     public bool Owned { get; set; }
     public bool UsingBeanPass { get; set; }
 }
+
+public class HamsterKingInfoDto : HamsterPassInfoDto
+{
+    
+}

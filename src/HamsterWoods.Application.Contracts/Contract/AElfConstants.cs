@@ -8,4 +8,5 @@ public class AElfConstants
     public const string GetTokenInfo = "GetTokenInfo";
     public const string GetCurrentRaceInfo = "GetCurrentRaceInfo";
     public const string GetReserves = "GetReserves";
+    public const string Issue = "Issue";
 }
