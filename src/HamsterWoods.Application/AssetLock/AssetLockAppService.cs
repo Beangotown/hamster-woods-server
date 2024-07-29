@@ -47,14 +47,14 @@ public class AssetLockAppService : HamsterWoodsBaseService, IAssetLockAppService
         };
         var weekInfo = await _rankProvider.GetCurrentRaceInfoAsync();
 
+        var maxUnlockWeekNum = 0;
         var unlockRecords = await _assetLockProvider.GetUnlockRecordsAsync(0, input.CaAddress,
             CommonConstant.DefaultSkipCount, CommonConstant.DefaultMaxResultCount);
-        if (unlockRecords.UnLockRecordList.IsNullOrEmpty())
+        if (!unlockRecords.UnLockRecordList.IsNullOrEmpty())
         {
-            return resultDto;
+            maxUnlockWeekNum = unlockRecords.UnLockRecordList.Max(t => t.WeekNum);
         }
-
-        var maxUnlockWeekNum = unlockRecords.UnLockRecordList.Max(t => t.WeekNum);
+        
         var weekNums = new List<int>();
         for (var i = maxUnlockWeekNum + 1; i < weekInfo.WeekNum; i++)
         {
@@ -109,7 +109,7 @@ public class AssetLockAppService : HamsterWoodsBaseService, IAssetLockAppService
         var mustQuery = new List<Func<QueryContainerDescriptor<RaceInfoConfigIndex>, QueryContainer>>();
         mustQuery.Add(q => q.Terms(i => i.Field(f => f.WeekNum).Terms(weekNums)));
         QueryContainer Filter(QueryContainerDescriptor<RaceInfoConfigIndex> f) => f.Bool(b => b.Must(mustQuery));
-        
+
         var result = await _raceInfoRepository.GetListAsync(Filter);
         return result.Item2;
     }
