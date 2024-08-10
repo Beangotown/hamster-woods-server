@@ -3,13 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AElf.Indexing.Elasticsearch;
-using HamsterWoods.Commons;
+using HamsterWoods.Common;
 using HamsterWoods.Contract;
 using HamsterWoods.NFT;
 using HamsterWoods.Options;
 using HamsterWoods.Rank.Provider;
 using HamsterWoods.Reward.Provider;
-using HamsterWoods.Trace;
 using Microsoft.Extensions.Options;
 using Nest;
 using Volo.Abp;
@@ -22,54 +21,40 @@ namespace HamsterWoods.Rank;
 public class RankService : HamsterWoodsBaseService, IRankService
 {
     private readonly INESTRepository<UserWeekRankRecordIndex, string> _userRankWeekRepository;
-    private readonly INESTRepository<UserActionIndex, string> _userActionRepository;
     private readonly IRankProvider _rankProvider;
     private readonly IObjectMapper _objectMapper;
     private readonly ChainOptions _chainOptions;
-    private readonly RaceOptions _raceOptions;
     private readonly RewardNftInfoOptions _rewardNftInfoOptions;
-
-    private const int QueryOnceLimit = 1000;
-    private const string DateFormat = "yyyy-MM-dd";
-    private const string StartTime = "00:00:00";
+    private readonly IWeekNumProvider _weekNumProvider;
     private readonly IRewardProvider _rewardProvider;
 
     public RankService(INESTRepository<UserWeekRankRecordIndex, string> userRankWeekRepository,
-        INESTRepository<UserActionIndex, string> userActionRepository,
         IRankProvider rankProvider,
         IObjectMapper objectMapper,
         IOptionsSnapshot<ChainOptions> chainOptions,
-        IOptionsSnapshot<RaceOptions> raceOptions,
         IOptionsSnapshot<RewardNftInfoOptions> rewardNftInfoOptions,
-        IRewardProvider rewardProvider)
+        IRewardProvider rewardProvider, IWeekNumProvider weekNumProvider)
     {
         _userRankWeekRepository = userRankWeekRepository;
-        _userActionRepository = userActionRepository;
         _objectMapper = objectMapper;
         _rewardProvider = rewardProvider;
+        _weekNumProvider = weekNumProvider;
         _rankProvider = rankProvider;
         _chainOptions = chainOptions.Value;
-        _raceOptions = raceOptions.Value;
         _rewardNftInfoOptions = rewardNftInfoOptions.Value;
     }
     
     public async Task<WeekRankResultDto> GetWeekRankAsync(GetRankDto getRankDto)
     {
         var weekInfo = await _rankProvider.GetCurrentRaceInfoAsync();
-        var weekNum = weekInfo.WeekNum;
-        var dayOfWeek = DateTime.UtcNow.DayOfWeek;
-
-        var isSettleDay = _raceOptions.SettleDayOfWeeks.Contains((int)dayOfWeek);
-        if (isSettleDay)
-        {
-            weekNum = weekNum - 1;
-        }
+        var weekNumInfo = await _weekNumProvider.GetWeekNumInfoAsync();
+        var weekNum = weekNumInfo.WeekNum;
 
         var rankInfos = await _rankProvider.GetWeekRankAsync(weekNum, getRankDto.CaAddress, getRankDto.SkipCount,
             getRankDto.MaxResultCount);
 
         rankInfos.WeekNum = weekNum;
-        if (!isSettleDay)
+        if (!weekNumInfo.IsSettleDay)
         {
             rankInfos.EndDate = weekInfo.CurrentRaceTimeInfo.EndTime.AddDays(-1).ToString("yyyy-MM-dd");
             return rankInfos;
@@ -168,70 +153,6 @@ public class RankService : HamsterWoodsBaseService, IRankService
             : new List<UserWeekRankDto>();
     }
 
-    public async Task SyncGameDataAsync()
-    {
-        var chainId = GetDefaultChainId();
-        var userActionList = new List<UserActionIndex>();
-        var goRecords = await _rankProvider.GetGoRecordsAsync();
-        foreach (var record in goRecords)
-        {
-            var userActionIndex = new UserActionIndex();
-            userActionIndex.CaAddress = AddressHelper.ToShortAddress(record.CaAddress);
-            userActionIndex.ChainId = chainId;
-            userActionIndex.Timestamp = record.TriggerTime;
-            userActionIndex.Id =
-                $"{userActionIndex.CaAddress}_{userActionIndex.ChainId}_{DateTimeHelper.ToUnixTimeMilliseconds(userActionIndex.Timestamp)}";
-            userActionIndex.ActionType = UserActionType.Register;
-            userActionList.Add(userActionIndex);
-            if (userActionList.Count == QueryOnceLimit)
-            {
-                await _userActionRepository.BulkAddOrUpdateAsync(userActionList);
-                userActionList.Clear();
-            }
-        }
-
-        if (userActionList.Count > 0 && userActionList.Count < QueryOnceLimit)
-        {
-            await _userActionRepository.BulkAddOrUpdateAsync(userActionList);
-            userActionList.Clear();
-        }
-
-        var startDate =
-            DateTimeHelper.DatetimeToString(DateTime.UtcNow.AddDays(-Convert.ToInt32(DateTime.UtcNow.DayOfWeek) - 6),
-                DateFormat);
-
-        var dto = new GetGameHistoryDto();
-        dto.BeginTime = DateTimeHelper.ParseDateTimeByStr($"{startDate} {StartTime}").AddHours(-8);
-        dto.EndTime = DateTime.UtcNow.AddHours(1);
-        dto.SkipCount = 0;
-        dto.MaxResultCount = QueryOnceLimit;
-        var historyRecords = new GameHisResultDto();
-        do
-        {
-            historyRecords = await _rankProvider.GetGameHistoryListAsync(dto);
-            if (historyRecords == null || historyRecords.GameList.IsNullOrEmpty()) break;
-
-            foreach (var gameDto in historyRecords.GameList)
-            {
-                if (gameDto.BingoTransactionInfo == null || goRecords.Exists(r =>
-                        r.CaAddress == gameDto.CaAddress && r.TriggerTime == gameDto.BingoTransactionInfo.TriggerTime))
-                    continue;
-                var userActionIndex = new UserActionIndex();
-                userActionIndex.CaAddress = AddressHelper.ToShortAddress(gameDto.CaAddress);
-                userActionIndex.ChainId = chainId;
-                userActionIndex.Timestamp = gameDto.BingoTransactionInfo.TriggerTime;
-                userActionIndex.Id =
-                    $"{userActionIndex.CaAddress}_{userActionIndex.ChainId}_{DateTimeHelper.ToUnixTimeMilliseconds(userActionIndex.Timestamp)}";
-                userActionIndex.ActionType = UserActionType.Login;
-                userActionList.Add(userActionIndex);
-            }
-
-            await _userActionRepository.BulkAddOrUpdateAsync(userActionList);
-            userActionList.Clear();
-            dto.SkipCount += QueryOnceLimit;
-        } while (historyRecords.GameList.Count >= QueryOnceLimit);
-    }
-
     public async Task<List<GetHistoryDto>> GetHistoryAsync(GetRankDto input)
     {
         var result = new List<GetHistoryDto>();
@@ -242,8 +163,6 @@ public class RankService : HamsterWoodsBaseService, IRankService
         {
             return result;
         }
-
-        // not sync last?
         
         var raceInfoList = await _rankProvider.GetRaceInfoAsync();
         var showCount = 0;

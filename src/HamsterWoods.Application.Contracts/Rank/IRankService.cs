@@ -5,7 +5,6 @@ namespace HamsterWoods.Rank;
 
 public interface IRankService
 {
-    public Task<WeekRankResultDto> GetWeekRankAsync(GetRankDto getRankDto);
-    public Task SyncGameDataAsync();
+    Task<WeekRankResultDto> GetWeekRankAsync(GetRankDto getRankDto);
     Task<List<GetHistoryDto>> GetHistoryAsync(GetRankDto input);
 }
