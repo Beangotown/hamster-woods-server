@@ -18,6 +18,7 @@ public static class CommonConstant
     public const string DataPriceCacheKey = "DataPriceCache";
     public const int DefaultSkipCount = 0;
     public const int DefaultMaxResultCount = 100;
+    public const int DefaultQueryMaxResultCount = 1000;
     
     public const string TradeRepeated = "TradeRepeated";
 }

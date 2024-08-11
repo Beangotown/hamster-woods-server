@@ -52,7 +52,7 @@ public class PointSettleService : IPointSettleService, ISingletonDependency
         AssertHelper.NotNull(chainInfo, "Invalid chainInfo.");
         var userPoints = dto.UserPointsInfos
             .Where(item => item.PointAmount > 0)
-            .Select(item => new UserPoints
+            .Select(item => new Contracts.HamsterWoods.UserPoints
             {
                 UserAddress = Address.FromBase58(item.Address),
                 UserPoints_ = DecimalHelper.ConvertToLong(item.PointAmount, 0)
