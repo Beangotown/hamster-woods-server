@@ -1,7 +1,10 @@
 ﻿using AutoMapper;
 using HamsterWoods.Cache;
+using HamsterWoods.Grains.Grain.Points;
 using HamsterWoods.NFT;
 using HamsterWoods.Options;
+using HamsterWoods.Points;
+using HamsterWoods.Points.Etos;
 using HamsterWoods.Rank;
 using HamsterWoods.SyncData.Dtos;
 using HamsterWoods.TokenLock;
@@ -28,5 +31,10 @@ public class HamsterWoodsApplicationAutoMapperProfile : Profile
             .ForMember(t => t.ElfInUsd, opt => opt.MapFrom(f => f.ElfToUsd))
             .ForMember(t => t.AcornsInElf, opt => opt.MapFrom(f => f.AcornsToElf))
             .ForMember(t => t.AcornsInUsd, opt => opt.MapFrom(f => f.AcornsToUsd));
+        
+        
+        CreateMap<ContractInvokeIndex, ContractInvokeEto>();
+        CreateMap<ContractInvokeEto, ContractInvokeGrainDto>().ReverseMap();
     }
+    
 }

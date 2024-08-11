@@ -111,6 +111,46 @@ namespace Contracts.HamsterWoods {
     }
   }
 
+  public partial class Joined : aelf::IEvent<Joined>
+  {
+    public global::System.Collections.Generic.IEnumerable<Joined> GetIndexed()
+    {
+      return new List<Joined>
+      {
+      };
+    }
+
+    public Joined GetNonIndexed()
+    {
+      return new Joined
+      {
+        Domain = Domain,
+        Registrant = Registrant,
+      };
+    }
+  }
+
+  public partial class ReferralAccepted : aelf::IEvent<ReferralAccepted>
+  {
+    public global::System.Collections.Generic.IEnumerable<ReferralAccepted> GetIndexed()
+    {
+      return new List<ReferralAccepted>
+      {
+      };
+    }
+
+    public ReferralAccepted GetNonIndexed()
+    {
+      return new ReferralAccepted
+      {
+        DappId = DappId,
+        Domain = Domain,
+        Referrer = Referrer,
+        Invitee = Invitee,
+      };
+    }
+  }
+
   #endregion
   public static partial class HamsterWoodsContractContainer
   {
@@ -133,6 +173,12 @@ namespace Contracts.HamsterWoods {
     static readonly aelf::Marshaller<global::Contracts.HamsterWoods.BoutInformation> __Marshaller_BoutInformation = aelf::Marshallers.Create((arg) => global::Google.Protobuf.MessageExtensions.ToByteArray(arg), global::Contracts.HamsterWoods.BoutInformation.Parser.ParseFrom);
     static readonly aelf::Marshaller<global::Contracts.HamsterWoods.LockedAcornsInfoList> __Marshaller_LockedAcornsInfoList = aelf::Marshallers.Create((arg) => global::Google.Protobuf.MessageExtensions.ToByteArray(arg), global::Contracts.HamsterWoods.LockedAcornsInfoList.Parser.ParseFrom);
     static readonly aelf::Marshaller<global::Contracts.HamsterWoods.CurrentRaceInfo> __Marshaller_CurrentRaceInfo = aelf::Marshallers.Create((arg) => global::Google.Protobuf.MessageExtensions.ToByteArray(arg), global::Contracts.HamsterWoods.CurrentRaceInfo.Parser.ParseFrom);
+    static readonly aelf::Marshaller<global::Contracts.HamsterWoods.JoinInput> __Marshaller_JoinInput = aelf::Marshallers.Create((arg) => global::Google.Protobuf.MessageExtensions.ToByteArray(arg), global::Contracts.HamsterWoods.JoinInput.Parser.ParseFrom);
+    static readonly aelf::Marshaller<global::Contracts.HamsterWoods.AcceptReferralInput> __Marshaller_AcceptReferralInput = aelf::Marshallers.Create((arg) => global::Google.Protobuf.MessageExtensions.ToByteArray(arg), global::Contracts.HamsterWoods.AcceptReferralInput.Parser.ParseFrom);
+    static readonly aelf::Marshaller<global::Contracts.HamsterWoods.SettleInput> __Marshaller_SettleInput = aelf::Marshallers.Create((arg) => global::Google.Protobuf.MessageExtensions.ToByteArray(arg), global::Contracts.HamsterWoods.SettleInput.Parser.ParseFrom);
+    static readonly aelf::Marshaller<global::Contracts.HamsterWoods.BatchSettleInput> __Marshaller_BatchSettleInput = aelf::Marshallers.Create((arg) => global::Google.Protobuf.MessageExtensions.ToByteArray(arg), global::Contracts.HamsterWoods.BatchSettleInput.Parser.ParseFrom);
+    static readonly aelf::Marshaller<global::Contracts.HamsterWoods.PonitConfigInput> __Marshaller_PonitConfigInput = aelf::Marshallers.Create((arg) => global::Google.Protobuf.MessageExtensions.ToByteArray(arg), global::Contracts.HamsterWoods.PonitConfigInput.Parser.ParseFrom);
+    static readonly aelf::Marshaller<global::Contracts.HamsterWoods.PointConfig> __Marshaller_PointConfig = aelf::Marshallers.Create((arg) => global::Google.Protobuf.MessageExtensions.ToByteArray(arg), global::Contracts.HamsterWoods.PointConfig.Parser.ParseFrom);
     #endregion
 
     #region Methods
@@ -303,6 +349,55 @@ namespace Contracts.HamsterWoods {
         "GetCurrentRaceInfo",
         __Marshaller_google_protobuf_Empty,
         __Marshaller_CurrentRaceInfo);
+
+    static readonly aelf::Method<global::Contracts.HamsterWoods.JoinInput, global::Google.Protobuf.WellKnownTypes.Empty> __Method_Join = new aelf::Method<global::Contracts.HamsterWoods.JoinInput, global::Google.Protobuf.WellKnownTypes.Empty>(
+        aelf::MethodType.Action,
+        __ServiceName,
+        "Join",
+        __Marshaller_JoinInput,
+        __Marshaller_google_protobuf_Empty);
+
+    static readonly aelf::Method<global::Contracts.HamsterWoods.AcceptReferralInput, global::Google.Protobuf.WellKnownTypes.Empty> __Method_AcceptReferral = new aelf::Method<global::Contracts.HamsterWoods.AcceptReferralInput, global::Google.Protobuf.WellKnownTypes.Empty>(
+        aelf::MethodType.Action,
+        __ServiceName,
+        "AcceptReferral",
+        __Marshaller_AcceptReferralInput,
+        __Marshaller_google_protobuf_Empty);
+
+    static readonly aelf::Method<global::Contracts.HamsterWoods.SettleInput, global::Google.Protobuf.WellKnownTypes.Empty> __Method_Settle = new aelf::Method<global::Contracts.HamsterWoods.SettleInput, global::Google.Protobuf.WellKnownTypes.Empty>(
+        aelf::MethodType.Action,
+        __ServiceName,
+        "Settle",
+        __Marshaller_SettleInput,
+        __Marshaller_google_protobuf_Empty);
+
+    static readonly aelf::Method<global::Contracts.HamsterWoods.BatchSettleInput, global::Google.Protobuf.WellKnownTypes.Empty> __Method_BatchSettle = new aelf::Method<global::Contracts.HamsterWoods.BatchSettleInput, global::Google.Protobuf.WellKnownTypes.Empty>(
+        aelf::MethodType.Action,
+        __ServiceName,
+        "BatchSettle",
+        __Marshaller_BatchSettleInput,
+        __Marshaller_google_protobuf_Empty);
+
+    static readonly aelf::Method<global::Contracts.HamsterWoods.PonitConfigInput, global::Google.Protobuf.WellKnownTypes.Empty> __Method_SetPointConfig = new aelf::Method<global::Contracts.HamsterWoods.PonitConfigInput, global::Google.Protobuf.WellKnownTypes.Empty>(
+        aelf::MethodType.Action,
+        __ServiceName,
+        "SetPointConfig",
+        __Marshaller_PonitConfigInput,
+        __Marshaller_google_protobuf_Empty);
+
+    static readonly aelf::Method<global::Google.Protobuf.WellKnownTypes.Empty, global::Contracts.HamsterWoods.PointConfig> __Method_GetPointConfig = new aelf::Method<global::Google.Protobuf.WellKnownTypes.Empty, global::Contracts.HamsterWoods.PointConfig>(
+        aelf::MethodType.View,
+        __ServiceName,
+        "GetPointConfig",
+        __Marshaller_google_protobuf_Empty,
+        __Marshaller_PointConfig);
+
+    static readonly aelf::Method<global::AElf.Types.Address, global::Google.Protobuf.WellKnownTypes.BoolValue> __Method_GetJoinRecord = new aelf::Method<global::AElf.Types.Address, global::Google.Protobuf.WellKnownTypes.BoolValue>(
+        aelf::MethodType.View,
+        __ServiceName,
+        "GetJoinRecord",
+        __Marshaller_aelf_Address,
+        __Marshaller_google_protobuf_BoolValue);
 
     #endregion
 

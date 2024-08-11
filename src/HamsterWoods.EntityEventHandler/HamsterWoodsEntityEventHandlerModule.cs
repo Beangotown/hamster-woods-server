@@ -184,12 +184,12 @@ public class HamsterWoodsEntityEventHandlerModule : AbpModule
 
     public override void OnPreApplicationInitialization(ApplicationInitializationContext context)
     {
-        //StartOrleans(context.ServiceProvider);
+        StartOrleans(context.ServiceProvider);
     }
 
     public override void OnApplicationShutdown(ApplicationShutdownContext context)
     {
-        //StopOrleans(context.ServiceProvider);
+        StopOrleans(context.ServiceProvider);
     }
     
     private static void InitRecurringJob(IServiceProvider serviceProvider)

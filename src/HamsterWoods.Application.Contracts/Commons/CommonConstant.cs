@@ -18,4 +18,13 @@ public static class CommonConstant
     public const string DataPriceCacheKey = "DataPriceCache";
     public const int DefaultSkipCount = 0;
     public const int DefaultMaxResultCount = 100;
+    
+    public const string TradeRepeated = "TradeRepeated";
+}
+
+public static class ContractConstant
+{
+    public const string Mined = "MINED";
+    public const string Pending = "PENDING";
+    public const string Notexisted = "NOTEXISTED";
 }
