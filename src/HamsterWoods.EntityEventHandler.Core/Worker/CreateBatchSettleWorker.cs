@@ -13,12 +13,12 @@ using Volo.Abp.Threading;
 
 namespace HamsterWoods.EntityEventHandler.Core.Worker;
 
-public class SendHopPointWorker : AsyncPeriodicBackgroundWorkerBase
+public class CreateBatchSettleWorker : AsyncPeriodicBackgroundWorkerBase
 {
     private readonly INESTRepository<PointsInfoIndex, string> _pointsInfoRepository;
     private readonly IPointSettleService _pointSettleService;
 
-    public SendHopPointWorker(AbpAsyncTimer timer, IServiceScopeFactory serviceScopeFactory,
+    public CreateBatchSettleWorker(AbpAsyncTimer timer, IServiceScopeFactory serviceScopeFactory,
         INESTRepository<PointsInfoIndex, string> pointsInfoRepository, IPointSettleService pointSettleService) : base(
         timer, serviceScopeFactory)
     {

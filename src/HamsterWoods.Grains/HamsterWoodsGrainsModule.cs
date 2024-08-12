@@ -1,4 +1,5 @@
 using HamsterWoods;
+using HamsterWoods.Contract;
 using Microsoft.Extensions.DependencyInjection;
 using Volo.Abp.AutoMapper;
 using Volo.Abp.Modularity;
@@ -14,6 +15,6 @@ public class HamsterWoodsGrainsModule : AbpModule
         Configure<AbpAutoMapperOptions>(options => { options.AddMaps<HamsterWoodsGrainsModule>(); });
 
         var configuration = context.Services.GetConfiguration();
-        var connStr = configuration["GraphQL:Configuration"];
+        Configure<ChainOptions>(configuration.GetSection("Chains"));
     }
 }

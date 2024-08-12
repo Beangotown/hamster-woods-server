@@ -7,6 +7,7 @@ using GraphQL;
 using HamsterWoods.Common;
 using HamsterWoods.Commons;
 using HamsterWoods.Enums;
+using HamsterWoods.Grains.Grain.Points;
 using HamsterWoods.Grains.Grain.UserPoints;
 using HamsterWoods.Points;
 using HamsterWoods.Trace;
@@ -46,7 +47,7 @@ public class SyncHopRecordService : ISyncHopRecordService, ISingletonDependency
 
     public async Task SyncHopRecordAsync()
     {
-        var beginTime = DateTime.UtcNow.AddHours(-1);
+        var beginTime = DateTime.UtcNow.AddHours(-3);
         var endTime = DateTime.UtcNow;
         _logger.LogInformation("[SyncHopRecord] start, beginTime:{beginTime}, endTime:{endTime}", beginTime, endTime);
 
@@ -92,17 +93,18 @@ public class SyncHopRecordService : ISyncHopRecordService, ISingletonDependency
                 var currentCount = countInfo.CurrentCount;
                 var amount = GetAmount(countInfo.LastCount, countInfo.CurrentCount);
                 //var count = countInfo.CurrentCount - countInfo.LastCount;
-
-                // create order
-                await _pointsInfoRepository.AddOrUpdateAsync(new PointsInfoIndex()
+                
+                var grainId = Guid.NewGuid().ToString();
+                var pointsInfoGrain = _clusterClient.GetGrain<IPointsInfoGrain>(grainId);
+                var grainDto = await pointsInfoGrain.Create(new PointsInfoGrainDto()
                 {
-                    Id = Guid.NewGuid().ToString(),
                     Address = AddressHelper.ToShortAddress(hopGroup.Key),
                     Amount = amount * 100000000,
-                    ContractInvokeStatus = "None",
-                    PointType = PointType.Hop.ToString(),
-                    CreateTime = DateTime.UtcNow
+                    PointType = PointType.Hop
                 });
+
+                await _pointsInfoRepository.AddOrUpdateAsync(
+                    _objectMapper.Map<PointsInfoGrainDto, PointsInfoIndex>(grainDto.Data));
             }
             catch (Exception e)
             {
