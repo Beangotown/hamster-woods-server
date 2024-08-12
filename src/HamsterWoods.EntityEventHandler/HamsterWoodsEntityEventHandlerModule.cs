@@ -60,6 +60,7 @@ public class HamsterWoodsEntityEventHandlerModule : AbpModule
         ConfigureOrleans(context, configuration);
         ConfigureHangfire(context, configuration);
         Configure<SyncPriceDataOptions>(configuration.GetSection("SyncPrice"));
+        Configure<PointJobOptions>(configuration.GetSection("PointJob"));
     }
 
     private void ConfigureHangfire(ServiceConfigurationContext context, IConfiguration configuration)
@@ -177,6 +178,7 @@ public class HamsterWoodsEntityEventHandlerModule : AbpModule
     {
         // context.AddBackgroundWorkerAsync<SyncRankRecordWorker>();
         context.AddBackgroundWorkerAsync<SyncPriceWorker>();
+        context.AddBackgroundWorkerAsync<SyncHopRecordWorker>();
 
         InitRecurringJob(context.ServiceProvider);
         ConfigurationProvidersHelper.DisplayConfigurationProviders(context);

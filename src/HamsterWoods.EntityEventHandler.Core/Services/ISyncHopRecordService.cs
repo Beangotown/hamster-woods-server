@@ -208,12 +208,11 @@ public class SyncHopRecordService : ISyncHopRecordService, ISingletonDependency
         var graphQLResponse = await _graphQlHelper.QueryAsync<GameHistoryResultDto>(new GraphQLRequest
         {
             Query = @"
-			    query($beginTime:DateTime!,$endTime:DateTime!,$caAddress:String,$skipCount:Int!,$maxResultCount:Int!) {
-                  getGameHistoryList(getGameHistoryDto:{beginTime:$beginTime,endTime:$endTime,caAddress:$caAddress,skipCount:$skipCount,maxResultCount:$maxResultCount}){
+			    query($beginTime:DateTime!,$endTime:DateTime!,$skipCount:Int!,$maxResultCount:Int!) {
+                  getGameHistoryList(getGameHistoryDto:{beginTime:$beginTime,endTime:$endTime,skipCount:$skipCount,maxResultCount:$maxResultCount}){
                     gameList{
                       id
                       caAddress
-                      chainId
                       bingoTransactionInfo{
                         triggerTime,
                         transactionId
