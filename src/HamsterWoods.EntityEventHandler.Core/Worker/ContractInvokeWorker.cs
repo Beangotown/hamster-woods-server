@@ -13,7 +13,8 @@ public class ContractInvokeWorker : AsyncPeriodicBackgroundWorkerBase
     private readonly IContractInvokeService _contractInvokeService;
 
 
-    public ContractInvokeWorker(AbpAsyncTimer timer, IServiceScopeFactory serviceScopeFactory, IContractInvokeService contractInvokeService) : base(timer, serviceScopeFactory)
+    public ContractInvokeWorker(AbpAsyncTimer timer, IServiceScopeFactory serviceScopeFactory,
+        IContractInvokeService contractInvokeService) : base(timer, serviceScopeFactory)
     {
         _contractInvokeService = contractInvokeService;
         Timer.Period = 10 * 1000;
@@ -26,9 +27,10 @@ public class ContractInvokeWorker : AsyncPeriodicBackgroundWorkerBase
         var tasks = new List<Task>();
         foreach (var bizId in bizIds)
         {
-            tasks.Add(Task.Run(() => { _contractInvokeService.ExecuteJobAsync(bizId); }));
+            await _contractInvokeService.ExecuteJobAsync(bizId);
+            //tasks.Add(Task.Run(() => { _contractInvokeService.ExecuteJobAsync(bizId); }));
         }
 
-        await Task.WhenAll(tasks);
+        //await Task.WhenAll(tasks);
     }
 }

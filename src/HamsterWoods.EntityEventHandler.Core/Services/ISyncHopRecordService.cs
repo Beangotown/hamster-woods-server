@@ -47,7 +47,7 @@ public class SyncHopRecordService : ISyncHopRecordService, ISingletonDependency
 
     public async Task SyncHopRecordAsync()
     {
-        var beginTime = DateTime.UtcNow.AddHours(-3);
+        var beginTime = DateTime.UtcNow.AddHours(-7);
         var endTime = DateTime.UtcNow;
         _logger.LogInformation("[SyncHopRecord] start, beginTime:{beginTime}, endTime:{endTime}", beginTime, endTime);
 
@@ -93,13 +93,14 @@ public class SyncHopRecordService : ISyncHopRecordService, ISingletonDependency
                 var currentCount = countInfo.CurrentCount;
                 var amount = GetAmount(countInfo.LastCount, countInfo.CurrentCount);
                 //var count = countInfo.CurrentCount - countInfo.LastCount;
-                
+
                 var grainId = Guid.NewGuid().ToString();
+                var pointAmount = AmountHelper.GetAmount(amount, 8);
                 var pointsInfoGrain = _clusterClient.GetGrain<IPointsInfoGrain>(grainId);
                 var grainDto = await pointsInfoGrain.Create(new PointsInfoGrainDto()
                 {
                     Address = AddressHelper.ToShortAddress(hopGroup.Key),
-                    Amount = amount * 100000000,
+                    Amount = pointAmount,
                     PointType = PointType.Hop
                 });
 

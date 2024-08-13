@@ -177,9 +177,10 @@ public class HamsterWoodsEntityEventHandlerModule : AbpModule
     public override void OnApplicationInitialization(ApplicationInitializationContext context)
     {
         // context.AddBackgroundWorkerAsync<SyncRankRecordWorker>();
-        context.AddBackgroundWorkerAsync<SyncPriceWorker>();
-        context.AddBackgroundWorkerAsync<SyncHopRecordWorker>();
-        context.AddBackgroundWorkerAsync<CreateBatchSettleWorker>();
+        //context.AddBackgroundWorkerAsync<SyncPriceWorker>();
+        //context.AddBackgroundWorkerAsync<SyncHopRecordWorker>();
+        //context.AddBackgroundWorkerAsync<CreateBatchSettleWorker>();
+        context.AddBackgroundWorkerAsync<ContractInvokeWorker>();
 
         InitRecurringJob(context.ServiceProvider);
         ConfigurationProvidersHelper.DisplayConfigurationProviders(context);

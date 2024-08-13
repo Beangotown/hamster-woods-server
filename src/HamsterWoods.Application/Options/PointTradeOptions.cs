@@ -4,20 +4,16 @@ namespace HamsterWoods.Options;
 
 public class PointTradeOptions
 {
-    public int MaxBatchSize { get; set; } = 10;
-    
-    public string BaseCoin { get; set; } = "SGR-1";
-    
-    public string[] BlackPointAddressList { get; set; }
-    
-    public Dictionary<string, ChainInfo> ChainInfos { get; set; } = new();
+    public int MaxBatchSize { get; set; } = 20;
+
+    public Dictionary<string, ContractInfo> ContractInfos { get; set; } = new();
 
     //key is point name
     public Dictionary<string, PointInfo> PointMapping { get; set; } = new();
     
-    public ChainInfo GetChainInfo(string chainId)
+    public ContractInfo GetContractInfo(string chainId)
     {
-        return ChainInfos.TryGetValue(chainId, out var chainInfo) ? chainInfo : null;
+        return ContractInfos.TryGetValue(chainId, out var chainInfo) ? chainInfo : null;
     }
     
     public string GetActionName(string pointName)
@@ -26,11 +22,11 @@ public class PointTradeOptions
     }
 }
 
-public class ChainInfo
+public class ContractInfo
 {
-    public string SchrodingerContractAddress { get; set; }
+    public string HamsterWoodsAddress { get; set; }
 
-    public string ContractMethod { get; set; }
+    public string MethodName { get; set; }
 }
 
 public class PointInfo

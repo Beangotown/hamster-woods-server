@@ -34,6 +34,7 @@ public class PointsInfoGrain : Grain<PointsInfoState>, IPointsInfoGrain
         }
 
         State = _objectMapper.Map<PointsInfoGrainDto, PointsInfoState>(grainDto);
+        State.Amount = grainDto.Amount;
         State.Id = this.GetPrimaryKeyString();
         State.ContractInvokeStatus = ContractInvokeStatus.None;
         State.CreateTime = DateTime.UtcNow;
@@ -45,9 +46,10 @@ public class PointsInfoGrain : Grain<PointsInfoState>, IPointsInfoGrain
     {
         if (!State.BizId.IsNullOrEmpty())
         {
-            return GetResultDto();
+            var result = GetResultDto(false, "bizId already exists.");
+            result.Data = _objectMapper.Map<PointsInfoState, PointsInfoGrainDto>(State);
         }
-        
+
         State.BizId = bizId;
         State.ContractInvokeStatus = ContractInvokeStatus.ToBeCreated;
         await WriteStateAsync();

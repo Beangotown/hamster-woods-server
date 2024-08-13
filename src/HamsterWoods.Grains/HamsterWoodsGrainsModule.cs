@@ -1,4 +1,5 @@
-using HamsterWoods;
+using AElf.Client.Service;
+using HamsterWoods.Commons;
 using HamsterWoods.Contract;
 using Microsoft.Extensions.DependencyInjection;
 using Volo.Abp.AutoMapper;
@@ -16,5 +17,6 @@ public class HamsterWoodsGrainsModule : AbpModule
 
         var configuration = context.Services.GetConfiguration();
         Configure<ChainOptions>(configuration.GetSection("Chains"));
+        context.Services.AddSingleton<IBlockchainClientFactory<AElfClient>, AElfClientFactory>();
     }
 }

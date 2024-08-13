@@ -2,6 +2,7 @@ using AutoMapper;
 using HamsterWoods.EntityEventHandler.Core.Services.Dtos;
 using HamsterWoods.Grains.Grain.Points;
 using HamsterWoods.Points;
+using HamsterWoods.Points.Etos;
 using HamsterWoods.Rank;
 using HamsterWoods.Trace;
 
@@ -21,5 +22,7 @@ public class HamsterWoodsEventHandlerAutoMapperProfile : Profile
         CreateMap<PointsInfoGrainDto, PointsInfoIndex>()
             .ForMember(t => t.PointType, f => f.MapFrom(m => m.PointType.ToString()))
             .ForMember(t => t.ContractInvokeStatus, f => f.MapFrom(m => m.ContractInvokeStatus.ToString()));
+        
+        CreateMap<ContractInvokeEto, ContractInvokeIndex>();
     }
 }

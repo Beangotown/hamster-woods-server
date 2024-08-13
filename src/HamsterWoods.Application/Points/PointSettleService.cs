@@ -48,14 +48,14 @@ public class PointSettleService : IPointSettleService, ISingletonDependency
         _logger.LogInformation("[BatchSettle] bizId:{bizId}", dto.BizId);
         var actionName = _pointTradeOptions.CurrentValue.GetActionName(dto.PointName);
         AssertHelper.NotEmpty(actionName, "Invalid actionName.");
-        var chainInfo = _pointTradeOptions.CurrentValue.GetChainInfo(dto.ChainId);
-        AssertHelper.NotNull(chainInfo, "Invalid chainInfo.");
+        var chainInfo = _pointTradeOptions.CurrentValue.GetContractInfo(dto.ChainId);
+        AssertHelper.NotNull(chainInfo, "Invalid contractInfo.");
         var userPoints = dto.UserPointsInfos
             .Where(item => item.PointAmount > 0)
             .Select(item => new Contracts.HamsterWoods.UserPoints
             {
                 UserAddress = Address.FromBase58(item.Address),
-                UserPoints_ = DecimalHelper.ConvertToLong(item.PointAmount, 0)
+                UserPointsValue = DecimalHelper.ConvertToLong(item.PointAmount, 0)
             }).ToList();
         var batchSettleInput = new BatchSettleInput()
         {
@@ -67,8 +67,8 @@ public class PointSettleService : IPointSettleService, ISingletonDependency
             ChainId = dto.ChainId,
             BizId = dto.BizId,
             BizType = dto.PointName,
-            ContractAddress = chainInfo.SchrodingerContractAddress,
-            ContractMethod = chainInfo.ContractMethod,
+            ContractAddress = chainInfo.HamsterWoodsAddress,
+            ContractMethod = chainInfo.MethodName,
             Param = batchSettleInput.ToByteString().ToBase64()
         };
         var contractInvokeGrain = _clusterClient.GetGrain<IContractInvokeGrain>(dto.BizId);

@@ -21,19 +21,17 @@ public class ContractInvokeGrain : Grain<ContractInvokeState>, IContractInvokeGr
     private readonly IObjectMapper _objectMapper;
     private readonly ChainOptions _options;
     private readonly ILogger<ContractInvokeGrain> _logger;
-    private readonly IContractProvider _contractProvider;
     private readonly IBlockchainClientFactory<AElfClient> _blockchainClientFactory;
     private readonly PointsOptions _pointsOptions;
 
     public ContractInvokeGrain(IObjectMapper objectMapper, ILogger<ContractInvokeGrain> logger,
-        IBlockchainClientFactory<AElfClient> blockchainClientFactory, IContractProvider contractProvider,
+        IBlockchainClientFactory<AElfClient> blockchainClientFactory, 
         IOptionsSnapshot<ChainOptions> options,
         IOptionsSnapshot<PointsOptions> pointsOptions)
     {
         _objectMapper = objectMapper;
         _logger = logger;
         _blockchainClientFactory = blockchainClientFactory;
-        _contractProvider = contractProvider;
         _options = options.Value;
         _pointsOptions = pointsOptions.Value;
     }
