@@ -17,7 +17,7 @@ public class CreateBatchSettleWorker : AsyncPeriodicBackgroundWorkerBase
         timer, serviceScopeFactory)
     {
         _createBatchSettleService = createBatchSettleService;
-        timer.RunOnStart = true;
+        timer.RunOnStart = false;
         timer.Period = options.CurrentValue.CreateSettlePeriod * 1000;
     }
 
