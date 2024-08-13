@@ -4,12 +4,14 @@ using System.Linq;
 using System.Threading.Tasks;
 using AElf.Indexing.Elasticsearch;
 using GraphQL;
+using HamsterWoods.Cache;
 using HamsterWoods.Common;
 using HamsterWoods.Commons;
 using HamsterWoods.Enums;
 using HamsterWoods.Grains.Grain.Points;
 using HamsterWoods.Grains.Grain.UserPoints;
 using HamsterWoods.Points;
+using HamsterWoods.Points.Dtos;
 using HamsterWoods.Trace;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -32,10 +34,12 @@ public class SyncHopRecordService : ISyncHopRecordService, ISingletonDependency
     private readonly INESTRepository<HopRecordIndex, string> _repository;
     private readonly INESTRepository<PointsInfoIndex, string> _pointsInfoRepository;
     private readonly IClusterClient _clusterClient;
+    private readonly ICacheProvider _cacheProvider;
+    private const string HopEndTimeCacheKey = "HopEndTime";
 
     public SyncHopRecordService(IGraphQLHelper graphQlHelper, ILogger<SyncHopRecordService> logger,
         IObjectMapper objectMapper, INESTRepository<HopRecordIndex, string> repository, IClusterClient clusterClient,
-        INESTRepository<PointsInfoIndex, string> pointsInfoRepository)
+        INESTRepository<PointsInfoIndex, string> pointsInfoRepository, ICacheProvider cacheProvider)
     {
         _graphQlHelper = graphQlHelper;
         _logger = logger;
@@ -43,12 +47,14 @@ public class SyncHopRecordService : ISyncHopRecordService, ISingletonDependency
         _repository = repository;
         _clusterClient = clusterClient;
         _pointsInfoRepository = pointsInfoRepository;
+        _cacheProvider = cacheProvider;
     }
 
     public async Task SyncHopRecordAsync()
     {
-        var beginTime = DateTime.UtcNow.AddHours(-7);
-        var endTime = DateTime.UtcNow;
+        var queryTime = await GeQueryTimeAsync();
+        var beginTime = queryTime.Item1;
+        var endTime = queryTime.Item2;
         _logger.LogInformation("[SyncHopRecord] start, beginTime:{beginTime}, endTime:{endTime}", beginTime, endTime);
 
         var records = new List<GameResultDto>();
@@ -115,8 +121,31 @@ public class SyncHopRecordService : ISyncHopRecordService, ISingletonDependency
         }
 
         await _repository.BulkAddOrUpdateAsync(hopRecordIndices);
+        await _cacheProvider.Set(HopEndTimeCacheKey, new SyncRecordTimeCache()
+        {
+            LastSyncTime = endTime
+        }, null);
         _logger.LogInformation("[SyncHopRecord] end, beginTime:{beginTime}, endTime:{endTime}, syncCount:{syncCount}",
             beginTime, endTime, hopRecordIndices.Count);
+    }
+
+    private async Task<Tuple<DateTime, DateTime>> GeQueryTimeAsync()
+    {
+        var timeInfo = await _cacheProvider.Get<SyncRecordTimeCache>(HopEndTimeCacheKey);
+        var startTime = DateTime.UtcNow.Date;
+        if (timeInfo != null)
+        {
+            startTime = timeInfo.LastSyncTime;
+        }
+
+        var endTime = DateTime.UtcNow;
+
+        if (startTime.Date < endTime.Date)
+        {
+            endTime = DateTime.Now.Date;
+        }
+
+        return new Tuple<DateTime, DateTime>(startTime, endTime);
     }
 
     private int GetAmount(int lastCount, int currentCount)
