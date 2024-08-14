@@ -12,6 +12,7 @@ public class Hop
 {
     public string PointName { get; set; }
     public string ImageUrl { get; set; }
+    public string ActionName { get; set; }
     public List<HopConfig> HopConfigs { get; set; } = new();
 }
 public class HopConfig
@@ -25,6 +26,7 @@ public class Chance
 {
     public string PointName { get; set; }
     public string ImageUrl { get; set; }
+    public string ActionName { get; set; }
     public List<ChanceConfig> ChanceConfigs { get; set; } = new();
 }
 
