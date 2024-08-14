@@ -10,10 +10,12 @@ using HamsterWoods.Commons;
 using HamsterWoods.Enums;
 using HamsterWoods.Grains.Grain.Points;
 using HamsterWoods.Grains.Grain.UserPoints;
+using HamsterWoods.Options;
 using HamsterWoods.Points;
 using HamsterWoods.Points.Dtos;
 using HamsterWoods.Trace;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Orleans;
 using Volo.Abp.DependencyInjection;
@@ -36,10 +38,12 @@ public class SyncHopRecordService : ISyncHopRecordService, ISingletonDependency
     private readonly IClusterClient _clusterClient;
     private readonly ICacheProvider _cacheProvider;
     private const string HopEndTimeCacheKey = "HopEndTime";
+    private readonly IOptionsMonitor<PointsTaskOptions> _options;
 
     public SyncHopRecordService(IGraphQLHelper graphQlHelper, ILogger<SyncHopRecordService> logger,
         IObjectMapper objectMapper, INESTRepository<HopRecordIndex, string> repository, IClusterClient clusterClient,
-        INESTRepository<PointsInfoIndex, string> pointsInfoRepository, ICacheProvider cacheProvider)
+        INESTRepository<PointsInfoIndex, string> pointsInfoRepository, ICacheProvider cacheProvider,
+        IOptionsMonitor<PointsTaskOptions> options)
     {
         _graphQlHelper = graphQlHelper;
         _logger = logger;
@@ -48,6 +52,7 @@ public class SyncHopRecordService : ISyncHopRecordService, ISingletonDependency
         _clusterClient = clusterClient;
         _pointsInfoRepository = pointsInfoRepository;
         _cacheProvider = cacheProvider;
+        _options = options;
     }
 
     public async Task SyncHopRecordAsync()
@@ -79,6 +84,7 @@ public class SyncHopRecordService : ISyncHopRecordService, ISingletonDependency
             }
         }
 
+        var cacheEndTime = hopRecordIndices.Max(t => t.TriggerTime);
         foreach (var hopGroup in hopRecordIndices.GroupBy(t => t.CaAddress))
         {
             try
@@ -96,9 +102,11 @@ public class SyncHopRecordService : ISyncHopRecordService, ISingletonDependency
                 var countInfo = resultDto.Data;
                 if (countInfo.LastCount == countInfo.CurrentCount) continue;
 
-                var currentCount = countInfo.CurrentCount;
                 var amount = GetAmount(countInfo.LastCount, countInfo.CurrentCount);
-                //var count = countInfo.CurrentCount - countInfo.LastCount;
+                _logger.LogInformation(
+                    "[SyncHopRecord] address:{address}, lastCount:{lastCount}, currentCount:{currentCount}, amount:{amount}",
+                    hopGroup.Key, countInfo.LastCount, countInfo.CurrentCount, amount);
+                if (amount == 0) continue;
 
                 var grainId = Guid.NewGuid().ToString();
                 var pointAmount = AmountHelper.GetAmount(amount, 8);
@@ -123,10 +131,11 @@ public class SyncHopRecordService : ISyncHopRecordService, ISingletonDependency
         await _repository.BulkAddOrUpdateAsync(hopRecordIndices);
         await _cacheProvider.Set(HopEndTimeCacheKey, new SyncRecordTimeCache()
         {
-            LastSyncTime = endTime
+            LastSyncTime = cacheEndTime.AddMilliseconds(1)
         }, null);
-        _logger.LogInformation("[SyncHopRecord] end, beginTime:{beginTime}, endTime:{endTime}, syncCount:{syncCount}",
-            beginTime, endTime, hopRecordIndices.Count);
+        _logger.LogInformation(
+            "[SyncHopRecord] end, beginTime:{beginTime}, endTime:{endTime}, syncCount:{syncCount}, cacheEndTime:{cacheEndTime}",
+            beginTime, endTime, hopRecordIndices.Count, cacheEndTime);
     }
 
     private async Task<Tuple<DateTime, DateTime>> GeQueryTimeAsync()
@@ -150,85 +159,108 @@ public class SyncHopRecordService : ISyncHopRecordService, ISingletonDependency
 
     private int GetAmount(int lastCount, int currentCount)
     {
+        var lastAmount = GetAmount(lastCount);
+        var currentAmount = GetAmount(currentCount);
+        return currentAmount - lastAmount;
+        // var amount = 0;
+        // if (lastCount < 1)
+        // {
+        //     if (currentCount >= 1)
+        //     {
+        //         amount += 3;
+        //     }
+        //
+        //     if (currentCount >= 5)
+        //     {
+        //         amount += 20;
+        //     }
+        //
+        //     if (currentCount >= 7)
+        //     {
+        //         amount += 35;
+        //     }
+        //
+        //     if (currentCount >= 10)
+        //     {
+        //         amount += 60;
+        //     }
+        //
+        //     if (currentCount >= 15)
+        //     {
+        //         amount += 100;
+        //     }
+        // }
+        //
+        // else if (lastCount < 5)
+        // {
+        //     if (currentCount >= 5)
+        //     {
+        //         amount += 20;
+        //     }
+        //
+        //     if (currentCount >= 7)
+        //     {
+        //         amount += 35;
+        //     }
+        //
+        //     if (currentCount >= 10)
+        //     {
+        //         amount += 60;
+        //     }
+        //
+        //     if (currentCount >= 15)
+        //     {
+        //         amount += 100;
+        //     }
+        // }
+        // else if (lastCount < 7)
+        // {
+        //     if (currentCount >= 7)
+        //     {
+        //         amount += 35;
+        //     }
+        //
+        //     if (currentCount >= 10)
+        //     {
+        //         amount += 60;
+        //     }
+        //
+        //     if (currentCount >= 15)
+        //     {
+        //         amount += 100;
+        //     }
+        // }
+        // else if (lastCount < 10)
+        // {
+        //     if (currentCount >= 10)
+        //     {
+        //         amount += 60;
+        //     }
+        //
+        //     if (currentCount >= 15)
+        //     {
+        //         amount += 100;
+        //     }
+        // }
+        //
+        // return amount;
+    }
+
+    private int GetAmount(int hopCount)
+    {
         var amount = 0;
-        if (lastCount < 1)
+        var configs = _options.CurrentValue.Hop.HopConfigs;
+        foreach (var config in configs.OrderBy(t => t.HopCount))
         {
-            if (currentCount >= 1)
+            if (hopCount < config.HopCount) break;
+
+            if (config.IsOverHop)
             {
-                amount += 3;
+                amount += config.PointAmount * (hopCount - config.HopCount);
+                continue;
             }
 
-            if (currentCount >= 5)
-            {
-                amount += 20;
-            }
-
-            if (currentCount >= 7)
-            {
-                amount += 35;
-            }
-
-            if (currentCount >= 10)
-            {
-                amount += 60;
-            }
-
-            if (currentCount >= 15)
-            {
-                amount += 100;
-            }
-        }
-
-        else if (lastCount < 5)
-        {
-            if (currentCount >= 5)
-            {
-                amount += 20;
-            }
-
-            if (currentCount >= 7)
-            {
-                amount += 35;
-            }
-
-            if (currentCount >= 10)
-            {
-                amount += 60;
-            }
-
-            if (currentCount >= 15)
-            {
-                amount += 100;
-            }
-        }
-        else if (lastCount < 7)
-        {
-            if (currentCount >= 7)
-            {
-                amount += 35;
-            }
-
-            if (currentCount >= 10)
-            {
-                amount += 60;
-            }
-
-            if (currentCount >= 15)
-            {
-                amount += 100;
-            }
-        }
-        else if (lastCount < 10)
-        {
-            if (currentCount >= 10)
-            {
-                amount += 60;
-            }
-
-            if (currentCount >= 15)
-            {
-                amount += 100;
-            }
+            amount += config.PointAmount;
         }
 
         return amount;

@@ -178,7 +178,7 @@ public class HamsterWoodsEntityEventHandlerModule : AbpModule
     {
         //context.AddBackgroundWorkerAsync<SyncRankRecordWorker>();
         context.AddBackgroundWorkerAsync<SyncPriceWorker>();
-        //context.AddBackgroundWorkerAsync<SyncHopRecordWorker>();
+        context.AddBackgroundWorkerAsync<SyncHopRecordWorker>();
         context.AddBackgroundWorkerAsync<CreateBatchSettleWorker>();
         context.AddBackgroundWorkerAsync<ContractInvokeWorker>();
 
