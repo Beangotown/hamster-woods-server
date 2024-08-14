@@ -7,6 +7,5 @@ namespace HamsterWoods.Points;
 public interface IPointHubService
 {
     Task RequestPointsList(PointsListRequestDto request);
-    Task<GetPointsSumBySymbolResultDto> GetPointsSumBySymbolAsync(List<string> addressList, int skipCount,
-        int maxResultCount);
+    Task<List<FluxPointsDto>> GetFluxPointsAsync(string address);
 }

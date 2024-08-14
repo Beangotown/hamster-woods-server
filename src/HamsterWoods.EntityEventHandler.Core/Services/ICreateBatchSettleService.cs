@@ -50,7 +50,27 @@ public class CreateBatchSettleService : ICreateBatchSettleService, ISingletonDep
     public async Task CreateBatchSettleAsync()
     {
         _logger.LogInformation("[CreateBatchSettle] begin CreateBatchSettle.");
-        var pointsInfoList = await GetPointsInfoListAsync(ContractInvokeStatus.None.ToString(),
+        var pointTypes = new List<PointType> { PointType.Hop, PointType.PurchaseCount };
+        foreach (var pointType in pointTypes)
+        {
+            try
+            {
+                await CreateBatchSettleAsync(pointType);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "[CreateBatchSettle] error, pointType:{pointType}.", pointType.ToString());
+            }
+        }
+
+        _logger.LogInformation("[CreateBatchSettle] end CreateBatchSettle.");
+    }
+
+    private async Task CreateBatchSettleAsync(PointType pointType)
+    {
+        _logger.LogInformation("[CreateBatchSettle] begin handle {pointType}.",
+            pointType.ToString());
+        var pointsInfoList = await GetPointsInfoListAsync(pointType, ContractInvokeStatus.None.ToString(),
             CommonConstant.DefaultSkipCount,
             _options.CreateSettleLimit);
 
@@ -62,15 +82,16 @@ public class CreateBatchSettleService : ICreateBatchSettleService, ISingletonDep
 
         while (!list.IsNullOrEmpty())
         {
-            await BatchSettleAsync(list);
+            await BatchSettleAsync(list, pointType);
             skipCount += settleCount;
             list = pointsInfoList.Skip(skipCount).Take(settleCount).ToList();
         }
 
-        _logger.LogInformation("[CreateBatchSettle] end CreateBatchSettle.");
+        _logger.LogInformation("[CreateBatchSettle] end handle {pointType}.",
+            pointType.ToString());
     }
 
-    private async Task BatchSettleAsync(List<PointsInfoIndex> pointsInfoList)
+    private async Task BatchSettleAsync(List<PointsInfoIndex> pointsInfoList, PointType pointType)
     {
         var bizId = Guid.NewGuid().ToString();
         var userPointInfos = new List<UserPointInfo>();
@@ -95,16 +116,16 @@ public class CreateBatchSettleService : ICreateBatchSettleService, ISingletonDep
 
         await _pointsInfoRepository.BulkAddOrUpdateAsync(pointsInfoList);
         if (userPointInfos.IsNullOrEmpty()) return;
-        await BatchSettleAsync(bizId, userPointInfos);
+        await BatchSettleAsync(bizId, userPointInfos, pointType);
     }
 
-    private async Task BatchSettleAsync(string bizId, List<UserPointInfo> userPointInfos)
+    private async Task BatchSettleAsync(string bizId, List<UserPointInfo> userPointInfos, PointType pointType)
     {
         var pointSettleDto = new PointSettleDto
         {
             ChainId = _chainOptions.ChainInfos.Keys.First(),
             BizId = bizId,
-            PointName = "ACORNS point-2"
+            PointName = _pointTradeOptions.CurrentValue.ActionMapping[pointType.ToString()]
         };
 
         pointSettleDto.UserPointsInfos = userPointInfos;
@@ -112,11 +133,13 @@ public class CreateBatchSettleService : ICreateBatchSettleService, ISingletonDep
         _logger.LogInformation("[CreateBatchSettle] finish, bizId:{bizId}", bizId);
     }
 
-    private async Task<List<PointsInfoIndex>> GetPointsInfoListAsync(string contractInvokeStatus, int skipCount,
+    private async Task<List<PointsInfoIndex>> GetPointsInfoListAsync(PointType pointType, string contractInvokeStatus,
+        int skipCount,
         int maxResultCount)
     {
         var mustQuery = new List<Func<QueryContainerDescriptor<PointsInfoIndex>, QueryContainer>>();
         mustQuery.Add(q => q.Term(i => i.Field(f => f.ContractInvokeStatus).Value(contractInvokeStatus)));
+        mustQuery.Add(q => q.Term(i => i.Field(f => f.PointType).Value(pointType.ToString())));
 
         QueryContainer Filter(QueryContainerDescriptor<PointsInfoIndex> f)
         {
