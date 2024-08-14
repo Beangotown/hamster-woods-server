@@ -48,6 +48,6 @@ public class InfoController : HamsterWoodsBaseController
     [Route("get-points")]
     public async Task<object> GetPointsAsync(string address)
     {
-        return await _pointHubService.GetPointsSumBySymbolAsync(new List<string>() { address }, 0, 100);
+        return await _pointHubService.GetFluxPointsAsync(address);
     }
 }

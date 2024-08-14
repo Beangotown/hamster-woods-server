@@ -17,7 +17,7 @@ public class GetPointsSumBySymbolDto
 {
     public string Address { get; set; }
     public string Domain { get; set; }
-    public string FirstSymbolAmount { get; set; }
-    public string SecondSymbolAmount { get; set; }
-    public string ThirdSymbolAmount { get; set; }
+    public long FirstSymbolAmount { get; set; }
+    public long SecondSymbolAmount { get; set; }
+    public long ThirdSymbolAmount { get; set; }
 }

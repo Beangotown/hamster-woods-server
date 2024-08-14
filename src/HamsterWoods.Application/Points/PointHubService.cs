@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Threading;
+using System.Linq;
 using System.Threading.Tasks;
 using GraphQL;
 using GraphQL.Client.Abstractions;
@@ -8,8 +8,10 @@ using GraphQL.Client.Http;
 using GraphQL.Client.Serializer.Newtonsoft;
 using HamsterWoods.Commons;
 using HamsterWoods.Hubs;
+using HamsterWoods.Options;
 using HamsterWoods.Points.Dtos;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Volo.Abp.DependencyInjection;
 
 namespace HamsterWoods.Points;
@@ -20,16 +22,18 @@ public class PointHubService : IPointHubService, ISingletonDependency
     private readonly IFluxPointsHubProvider _pointsHubProvider;
     private readonly IConnectionProvider _connectionProvider;
     private readonly IGraphQLClient _graphQlClient;
+    private readonly IOptionsMonitor<FluxPointsOptions> _options;
 
     public PointHubService(IFluxPointsHubProvider pointsHubProvider, ILogger<PointHubService> logger,
-        IConnectionProvider connectionProvider)
+        IConnectionProvider connectionProvider, IOptionsMonitor<FluxPointsOptions> options)
     {
         _pointsHubProvider = pointsHubProvider;
         _logger = logger;
         _connectionProvider = connectionProvider;
+        _options = options;
         _graphQlClient =
             new GraphQLHttpClient(
-                "https://test-indexer.pixiepoints.io/AElfIndexer_Points/PointsIndexerPluginSchema/graphql",
+                options.CurrentValue.Graphql,
                 new NewtonsoftJsonSerializer());
     }
 
@@ -48,38 +52,63 @@ public class PointHubService : IPointHubService, ISingletonDependency
                     break;
                 }
 
-                //query from proxi 
-                // var result =
-                //     await GetPointsSumBySymbolAsync(
-                //         new List<string> { AddressHelper.ToShortAddress(request.CaAddress) }, 0, 20);
-                // if (result.Data.IsNullOrEmpty())
-                // {
-                //     continue;
-                // }
-
-                var dto = new List<FluxPointsDto>();
-                dto.Add(new FluxPointsDto()
+                var fluxPointsList = await GetFluxPointsAsync(request.CaAddress);
+                if (fluxPointsList.IsNullOrEmpty())
                 {
-                    Behavior = "Participate Daily HOP tasks",
-                    PointAmount = 29,
-                    PointName = "ACORNS Point-2"
-                });
-                await _pointsHubProvider.SendAsync<List<FluxPointsDto>>(dto, connectionInfo.ConnectionId,
+                    await Task.Delay(_options.CurrentValue.Period);
+                    continue;
+                }
+
+                await _pointsHubProvider.SendAsync(fluxPointsList, connectionInfo.ConnectionId,
                     "pointsListChange");
-                // _logger.LogInformation("Get third-part order {OrderId} {CallbackMethod}  success",
-                //     orderId, callbackMethod);
-                await Task.Delay(3000);
+
+                _logger.LogInformation("Get flux points success, address:{address}", request.CaAddress);
+                await Task.Delay(_options.CurrentValue.Period);
             }
             catch (Exception e)
             {
                 _logger.LogError(e,
-                    "An exception occurred during query flux points, clientId:{clientId}", request.TargetClientId);
+                    "An exception occurred during query flux points, clientId:{clientId}, address:{address}",
+                    request.TargetClientId, request.CaAddress);
                 break;
             }
         }
     }
 
-    public async Task<GetPointsSumBySymbolResultDto> GetPointsSumBySymbolAsync(List<string> addressList, int skipCount,
+    public async Task<List<FluxPointsDto>> GetFluxPointsAsync(string address)
+    {
+        var fluxPointsList = new List<FluxPointsDto>();
+        var result =
+            await GetPointsSumBySymbolAsync(
+                new List<string> { AddressHelper.ToShortAddress(address) }, 0, 20);
+
+        var pointsInfo = result?.Data?.FirstOrDefault();
+        if (pointsInfo == null)
+        {
+            return fluxPointsList;
+        }
+        
+        var secondInfo = _options.CurrentValue.PointsInfos.GetOrDefault(nameof(pointsInfo.SecondSymbolAmount));
+        fluxPointsList.Add(new FluxPointsDto()
+        {
+            Behavior = secondInfo?.Behavior,
+            PointAmount = (int)(pointsInfo.SecondSymbolAmount / Math.Pow(10, 8)),
+            PointName = secondInfo?.PointName
+        });
+
+        var thirdInfo = _options.CurrentValue.PointsInfos.GetOrDefault(nameof(pointsInfo.ThirdSymbolAmount));
+        fluxPointsList.Add(new FluxPointsDto()
+        {
+            Behavior = thirdInfo.Behavior,
+            PointAmount = (int)(pointsInfo.ThirdSymbolAmount / Math.Pow(10, 8)),
+            PointName = thirdInfo?.PointName
+        });
+
+        return fluxPointsList;
+    }
+
+    // todo: dappName how to set.
+    private async Task<GetPointsSumBySymbolResultDto> GetPointsSumBySymbolAsync(List<string> addressList, int skipCount,
         int maxResultCount)
     {
         var graphQLResponse = await QueryAsync<GetPointsSumBySymbolResultGqlDto>(new GraphQLRequest
@@ -109,7 +138,7 @@ public class PointHubService : IPointHubService, ISingletonDependency
         return graphQLResponse?.GetPointsSumBySymbol;
     }
 
-    public async Task<T> QueryAsync<T>(GraphQLRequest request)
+    private async Task<T> QueryAsync<T>(GraphQLRequest request)
     {
         var graphQlResponse = await _graphQlClient.SendQueryAsync<T>(request);
         if (graphQlResponse.Errors is not { Length: > 0 }) return graphQlResponse.Data;
