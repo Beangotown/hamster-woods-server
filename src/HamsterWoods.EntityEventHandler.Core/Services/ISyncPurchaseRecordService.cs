@@ -111,7 +111,7 @@ public class SyncPurchaseRecordService : ISyncPurchaseRecordService, ISingletonD
                 var countInfo = resultDto.Data;
                 if (countInfo.LastCount == countInfo.CurrentCount) continue;
 
-                var amount = 0; //GetAmount(countInfo.LastCount, countInfo.CurrentCount);
+                var amount = GetAmount(countInfo.LastCount, countInfo.CurrentCount);
                 _logger.LogInformation(
                     "[SyncHopRecord] address:{address}, lastCount:{lastCount}, currentCount:{currentCount}, amount:{amount}",
                     group.Key, countInfo.LastCount, countInfo.CurrentCount, amount);
