@@ -65,5 +65,53 @@ public class UserPointsGrain : Grain<UserPointsState>, IUserPointsGrain
         });
     }
 
+    public async Task<GrainResultDto<SetPurchaseDto>> SePurchase(int weekNum, List<ChanceInfo> chanceInfos)
+    {
+        if (State.Id.IsNullOrEmpty())
+        {
+            State.Id = this.GetPrimaryKeyString();
+            State.Address = AddressHelper.ToShortAddress(this.GetPrimaryKeyString());
+            State.ChainId = _options.ChainInfos.Keys.First();
+        }
+
+        if (!State.ChanceInfo.ContainsKey(weekNum))
+        {
+            State.ChanceInfo.Add(weekNum, new List<ChanceInfo>());
+        }
+
+        var chanceInfoList = State.ChanceInfo[weekNum];
+        var lastCount = GetCurrentChanceCount(weekNum);
+
+        foreach (var item in chanceInfos)
+        {
+            var info = chanceInfoList.FirstOrDefault(t => t.Id == item.Id);
+            if (info != null) continue;
+            chanceInfoList.Add(new ChanceInfo()
+            {
+                Id = item.Id,
+                ChanceCount = item.ChanceCount
+            });
+        }
+
+        await WriteStateAsync();
+        return new GrainResultDto<SetPurchaseDto>(new SetPurchaseDto
+        {
+            CurrentCount = GetCurrentChanceCount(weekNum),
+            LastCount = lastCount
+        });
+    }
+
+    private int GetCurrentChanceCount(int weekNum)
+    {
+        var chanceInfoList = State.ChanceInfo[weekNum];
+        var count = 0;
+        if (!chanceInfoList.IsNullOrEmpty())
+        {
+            count = chanceInfoList.Select(t => t.ChanceCount).Sum();
+        }
+
+        return count;
+    }
+
     private string GetHopKey() => DateTime.UtcNow.ToString("yyyy-MM-dd");
 }

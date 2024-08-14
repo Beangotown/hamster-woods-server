@@ -18,6 +18,12 @@ public class HamsterWoodsEventHandlerAutoMapperProfile : Profile
             f => f.MapFrom(m => m.BingoTransactionInfo.TransactionId))
             .ForMember(t => t.TriggerTime,
                 f => f.MapFrom(m => m.BingoTransactionInfo.TriggerTime));
+        
+        CreateMap<PurchaseResultDto, PurchaseRecordIndex>()
+            .ForMember(t => t.TransactionId,
+                f => f.MapFrom(m => m.TransactionInfo.TransactionId))
+            .ForMember(t => t.TriggerTime,
+                f => f.MapFrom(m => m.TransactionInfo.TriggerTime));
 
         CreateMap<PointsInfoGrainDto, PointsInfoIndex>()
             .ForMember(t => t.PointType, f => f.MapFrom(m => m.PointType.ToString()))

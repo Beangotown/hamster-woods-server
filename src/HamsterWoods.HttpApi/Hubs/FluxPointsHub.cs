@@ -7,7 +7,7 @@ using Volo.Abp.AspNetCore.SignalR;
 
 namespace HamsterWoods.Hubs;
 
-[HubRoute("points")]
+[HubRoute("api/app/fluxPoints")]
 public class FluxPointsHub : AbpHub
 {
     private readonly ILogger<FluxPointsHub> _logger;
