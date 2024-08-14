@@ -40,7 +40,13 @@ public class PointHubService : IPointHubService, ISingletonDependency
 
                 //query from proxi 
                 var dto = new List<FluxPointsDto>();
-                await _pointsHubProvider.SendAsync<List<FluxPointsDto>>(dto, connectionInfo.ConnectionId, "receiveFluxPoints");
+                dto.Add(new FluxPointsDto()
+                {
+                    Behavior = "Participate Daily HOP tasks",
+                    PointAmount = 29,
+                    PointName = "ACORNS Point-2"
+                });
+                await _pointsHubProvider.SendAsync<List<FluxPointsDto>>(dto, connectionInfo.ConnectionId, "pointsListChange");
                 // _logger.LogInformation("Get third-part order {OrderId} {CallbackMethod}  success",
                 //     orderId, callbackMethod);
                 await Task.Delay(3000);
