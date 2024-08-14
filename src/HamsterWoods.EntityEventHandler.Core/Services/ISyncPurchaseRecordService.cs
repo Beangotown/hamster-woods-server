@@ -60,9 +60,12 @@ public class SyncPurchaseRecordService : ISyncPurchaseRecordService, ISingletonD
 
     public async Task SyncPurchaseRecordAsync()
     {
-        var queryTime = await GeQueryTimeAsync();
+        var raceInfo = await _rankProvider.GetCurrentRaceInfoAsync();
+        var queryTime = await GeQueryTimeAsync(raceInfo.CurrentRaceTimeInfo.BeginTime, raceInfo.WeekNum);
         var beginTime = queryTime.Item1;
         var endTime = queryTime.Item2;
+        var weekNum = queryTime.Item3;
+
         _logger.LogInformation("[SyncPurchaseRecord] start, beginTime:{beginTime}, endTime:{endTime}", beginTime,
             endTime);
 
@@ -88,11 +91,7 @@ public class SyncPurchaseRecordService : ISyncPurchaseRecordService, ISingletonD
         }
 
         var cacheEndTime = recordIndices.Max(t => t.TriggerTime);
-        
-        var raceInfo = await _rankProvider.GetCurrentRaceInfoAsync();
-        var weekNum = raceInfo.WeekNum;
-        // todo: handle last weeknum record.
-        
+
         foreach (var group in recordIndices.GroupBy(t => t.CaAddress))
         {
             try
@@ -106,14 +105,13 @@ public class SyncPurchaseRecordService : ISyncPurchaseRecordService, ISingletonD
                     _logger.LogError("[SyncPurchaseRecord] set chance info success, message:{message}, data:{data}",
                         resultDto.Message, JsonConvert.SerializeObject(group));
                 }
-
-                // cal amount
+                
                 var countInfo = resultDto.Data;
                 if (countInfo.LastCount == countInfo.CurrentCount) continue;
 
                 var amount = GetAmount(countInfo.LastCount, countInfo.CurrentCount);
                 _logger.LogInformation(
-                    "[SyncHopRecord] address:{address}, lastCount:{lastCount}, currentCount:{currentCount}, amount:{amount}",
+                    "[SyncPurchaseRecord] address:{address}, lastCount:{lastCount}, currentCount:{currentCount}, amount:{amount}",
                     group.Key, countInfo.LastCount, countInfo.CurrentCount, amount);
                 if (amount == 0) continue;
 
@@ -132,12 +130,21 @@ public class SyncPurchaseRecordService : ISyncPurchaseRecordService, ISingletonD
             }
             catch (Exception e)
             {
-                _logger.LogError(e, "[SyncHopRecord] set hop and cal error, data:{data}",
+                _logger.LogError(e, "[SyncPurchaseRecord] set purchase chance and cal error, data:{data}",
                     JsonConvert.SerializeObject(group));
             }
         }
+        
+        await _repository.BulkAddOrUpdateAsync(recordIndices);
+        await _cacheProvider.Set(PurchaseEndTimeCacheKey, new SyncRecordTimeCache()
+        {
+            LastSyncTime = cacheEndTime.AddMilliseconds(1)
+        }, null);
+        _logger.LogInformation(
+            "[SyncPurchaseRecord] end, beginTime:{beginTime}, endTime:{endTime}, syncCount:{syncCount}, cacheEndTime:{cacheEndTime}",
+            beginTime, endTime, recordIndices.Count, cacheEndTime);
     }
-    
+
     private int GetAmount(int lastCount, int currentCount)
     {
         var lastAmount = GetAmount(lastCount);
@@ -145,47 +152,43 @@ public class SyncPurchaseRecordService : ISyncPurchaseRecordService, ISingletonD
         return currentAmount - lastAmount;
     }
 
-    private int GetAmount(int hopCount)
+    private int GetAmount(int chanceCount)
     {
         var amount = 0;
         var configs = _options.CurrentValue.Chance.ChanceConfigs;
         foreach (var config in configs.OrderBy(t => t.FromCount))
         {
-            if (hopCount < config.FromCount) break;
+            if (chanceCount < config.FromCount) break;
 
-            // if (hopCount <= config.ToCount)
-            // {
-            //     
-            // }
-            // if (config.IsOverHop)
-            // {
-            //     amount += config.PointAmount * (hopCount - config.HopCount);
-            //     continue;
-            // }
+            if (chanceCount <= config.ToCount)
+            {
+                amount += config.PointAmount * (chanceCount - config.FromCount + 1);
+                continue;
+            }
 
-            amount += config.PointAmount;
+            amount += config.PointAmount * (config.ToCount - config.FromCount + 1);
         }
 
         return amount;
     }
 
-    private async Task<Tuple<DateTime, DateTime>> GeQueryTimeAsync()
+    private async Task<Tuple<DateTime, DateTime, int>> GeQueryTimeAsync(DateTime raceStartTime, int weekNum)
     {
         var timeInfo = await _cacheProvider.Get<SyncRecordTimeCache>(PurchaseEndTimeCacheKey);
-        var startTime = DateTime.UtcNow.Date.AddDays(-2);
+        var startTime = raceStartTime;
         if (timeInfo != null)
         {
             startTime = timeInfo.LastSyncTime;
         }
 
         var endTime = DateTime.UtcNow;
-
-        if (startTime.Date < endTime.Date)
+        if (timeInfo != null && timeInfo.LastSyncTime.Date < raceStartTime.Date)
         {
-            endTime = DateTime.Now.Date; // end date need to modify
+            endTime = raceStartTime.Date;
+            weekNum -= 1;
         }
 
-        return new Tuple<DateTime, DateTime>(startTime, endTime);
+        return new Tuple<DateTime, DateTime, int>(startTime, endTime, weekNum);
     }
 
 

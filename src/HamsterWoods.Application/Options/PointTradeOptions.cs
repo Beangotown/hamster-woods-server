@@ -10,6 +10,7 @@ public class PointTradeOptions
 
     //key is point name
     public Dictionary<string, PointInfo> PointMapping { get; set; } = new();
+    public Dictionary<string, string> ActionMapping { get; set; } = new();
     
     public ContractInfo GetContractInfo(string chainId)
     {

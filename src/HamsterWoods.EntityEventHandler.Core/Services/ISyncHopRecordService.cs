@@ -97,8 +97,7 @@ public class SyncHopRecordService : ISyncHopRecordService, ISingletonDependency
                     _logger.LogError("[SyncHopRecord] set hop not success, message:{message}, data:{data}",
                         resultDto.Message, JsonConvert.SerializeObject(hopGroup));
                 }
-
-                // cal amount
+                
                 var countInfo = resultDto.Data;
                 if (countInfo.LastCount == countInfo.CurrentCount) continue;
 
