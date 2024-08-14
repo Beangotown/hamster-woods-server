@@ -1,3 +1,5 @@
+using HamsterWoods.Grains.Grain.UserPoints;
+
 namespace HamsterWoods.Grains.State.UserPoints;
 
 public class UserPointsState
@@ -10,5 +12,5 @@ public class UserPointsState
     public Dictionary<string, List<string>> Hop { get; set; } = new();
     
     //key : weekNum, value: id
-    public Dictionary<int, List<string>> Purchase { get; set; } = new();
+    public Dictionary<int, List<ChanceInfo>> ChanceInfo { get; set; } = new();
 }
