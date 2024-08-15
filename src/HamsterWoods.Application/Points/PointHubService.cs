@@ -82,7 +82,7 @@ public class PointHubService : IPointHubService, ISingletonDependency
             await GetPointsSumBySymbolAsync(
                 new List<string> { AddressHelper.ToShortAddress(address) }, 0, 20);
 
-        var pointsInfo = result?.Data?.FirstOrDefault();
+        var pointsInfo = result?.Data?.LastOrDefault();
         if (pointsInfo == null)
         {
             return fluxPointsList;

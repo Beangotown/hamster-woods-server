@@ -73,6 +73,7 @@ public class NFTService : HamsterWoodsBaseService, INFTService
             DateTime.UtcNow.ToTimestamp().ToString(),
             null);
         _logger.LogInformation("ClaimBeanPassAsync success {TransactionId}", sendTransactionOutput.TransactionId);
+        _ = JoinAsync(AddressHelper.ToShortAddress(input.CaAddress), input.Domain);
         var info = await GetHamsterPassInfoAsync(symbol);
         return new HamsterPassDto
         {
@@ -199,5 +200,39 @@ public class NFTService : HamsterWoodsBaseService, INFTService
     private string GetDefaultChainId()
     {
         return _chainOptions.ChainInfos.Keys.First();
+    }
+
+    private async Task JoinAsync(string address, string domain)
+    {
+        try
+        {
+            _logger.LogInformation("[JoinAsync] begin, address:{address}, domain:{domain}", address, domain ?? "-");
+            var output = await _contractProvider.JoinAsync(GetDefaultChainId(), address, domain);
+
+            await Task.Delay(3000);
+            var transactionResult =
+                await _contractProvider.GetTransactionResultAsync(GetDefaultChainId(), output.TransactionId);
+            _logger.LogInformation(
+                "[TransactionStatus] address:{address}, domain:{domain}, transactionId:{transactionId}, status:{status}",
+                address, domain ?? "-", output.TransactionId, transactionResult.Status);
+
+            var retryCount = 0;
+            while ((transactionResult.Status == ContractConstant.Pending ||
+                    transactionResult.Status == ContractConstant.Notexisted) && retryCount < 10)
+            {
+                await Task.Delay(3000);
+                ++retryCount;
+                transactionResult =
+                    await _contractProvider.GetTransactionResultAsync(GetDefaultChainId(), output.TransactionId);
+
+                _logger.LogInformation(
+                    "[TransactionStatus] address:{address}, domain:{domain}, transactionId:{transactionId}, status:{status}, retryCount:{retryCount}",
+                    address, domain ?? "-", output.TransactionId, transactionResult.Status, retryCount);
+            }
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "[Join] error, address:{address}, domain:{domain}", address, domain ?? "-");
+        }
     }
 }

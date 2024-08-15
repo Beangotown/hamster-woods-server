@@ -25,4 +25,10 @@ public interface IContractProvider
 
     Task<SendTransactionOutput> SendHamsterKingAsync(string symbol, string amount, string address,
         string chainId);
+
+    Task<SendTransactionOutput> SendTransactionAsync(string chainId, string contractAddress,
+        string method, IMessage param);
+    
+    public Task<SendTransactionOutput> JoinAsync(string chainId, string address, string domain);
+    Task<TransactionResultDto> GetTransactionResultAsync(string chainId, string transactionId);
 }
