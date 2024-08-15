@@ -7,5 +7,5 @@ namespace HamsterWoods.Points;
 public interface IPointHubService
 {
     Task RequestPointsList(PointsListRequestDto request);
-    Task<FluxPointResultDto> GetFluxPointsAsync(string address);
+    Task<FluxPointResultDto> GetFluxPointsAsync(string address, string connectionId);
 }

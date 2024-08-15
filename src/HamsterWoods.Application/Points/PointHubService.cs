@@ -54,7 +54,7 @@ public class PointHubService : IPointHubService, ISingletonDependency
                     break;
                 }
 
-                var fluxPointResultDto = await GetFluxPointsAsync(request.CaAddress);
+                var fluxPointResultDto = await GetFluxPointsAsync(request.CaAddress, connectionInfo.ConnectionId);
                 if (fluxPointResultDto.FluxPointsList.IsNullOrEmpty() || !fluxPointResultDto.IsChange)
                 {
                     await Task.Delay(_options.CurrentValue.Period);
@@ -77,7 +77,7 @@ public class PointHubService : IPointHubService, ISingletonDependency
         }
     }
 
-    public async Task<FluxPointResultDto> GetFluxPointsAsync(string address)
+    public async Task<FluxPointResultDto> GetFluxPointsAsync(string address, string connectionId)
     {
         var resultDto = new FluxPointResultDto();
         var fluxPointsList = new List<FluxPointsDto>();
@@ -106,28 +106,34 @@ public class PointHubService : IPointHubService, ISingletonDependency
             PointAmount = (int)(pointsInfo.ThirdSymbolAmount / Math.Pow(10, 8)),
             PointName = thirdInfo?.PointName
         });
-        var compare = await CompareAsync(pointsInfo);
+        var compare = await CompareAsync(pointsInfo, connectionId);
 
         if (!compare)
         {
-            await SaveChangeAsync(pointsInfo);
+            await SaveChangeAsync(pointsInfo, connectionId);
         }
-        
+
         resultDto.FluxPointsList = fluxPointsList;
         resultDto.IsChange = !compare;
         return resultDto;
     }
 
-    private async Task SaveChangeAsync(GetPointsSumBySymbolDto symbolDto)
+    private async Task SaveChangeAsync(GetPointsSumBySymbolDto symbolDto, string connectionId)
     {
         var pointAmountEto = _mapper.Map<GetPointsSumBySymbolDto, PointAmountEto>(symbolDto);
+        pointAmountEto.ConnectionId = connectionId;
         await _distributedEventBus.PublishAsync(pointAmountEto, false, false);
     }
 
-    private async Task<bool> CompareAsync(GetPointsSumBySymbolDto symbolDto)
+    private async Task<bool> CompareAsync(GetPointsSumBySymbolDto symbolDto, string connectionId)
     {
+        if (connectionId.IsNullOrEmpty())
+        {
+            return true;
+        }
+
         var amountInfo = await _pointHubProvider.GetPointAmountAsync(symbolDto.Address);
-        if (amountInfo == null)
+        if (amountInfo == null || amountInfo.ConnectionId != connectionId)
         {
             return false;
         }

@@ -4,6 +4,7 @@ public class PointAmountEto
 {
     public string Id { get; set; }
     public string Address { get; set; }
+    public string ConnectionId { get; set; }
     public long FirstSymbolAmount { get; set; }
     public long SecondSymbolAmount { get; set; }
     public long ThirdSymbolAmount { get; set; }
