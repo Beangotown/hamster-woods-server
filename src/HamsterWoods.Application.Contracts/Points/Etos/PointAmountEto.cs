@@ -1,22 +1,9 @@
-using System.Collections.Generic;
+namespace HamsterWoods.Points.Etos;
 
-namespace HamsterWoods.Points.Dtos;
-
-public class GetPointsSumBySymbolResultGqlDto
+public class PointAmountEto
 {
-    public GetPointsSumBySymbolResultDto GetPointsSumBySymbol { get; set; }
-}
-
-public class GetPointsSumBySymbolResultDto
-{
-    public List<GetPointsSumBySymbolDto> Data { get; set; }
-    public long TotalRecordCount { get; set; }
-}
-
-public class GetPointsSumBySymbolDto
-{
+    public string Id { get; set; }
     public string Address { get; set; }
-    public string Domain { get; set; }
     public long FirstSymbolAmount { get; set; }
     public long SecondSymbolAmount { get; set; }
     public long ThirdSymbolAmount { get; set; }

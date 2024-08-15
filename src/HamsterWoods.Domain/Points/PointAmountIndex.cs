@@ -1,22 +1,13 @@
-using System.Collections.Generic;
+using AElf.Indexing.Elasticsearch;
+using HamsterWoods.Entities.Es;
+using Nest;
 
-namespace HamsterWoods.Points.Dtos;
+namespace HamsterWoods.Points;
 
-public class GetPointsSumBySymbolResultGqlDto
+public class PointAmountIndex : HamsterWoodsEsEntity<string>, IIndexBuild
 {
-    public GetPointsSumBySymbolResultDto GetPointsSumBySymbol { get; set; }
-}
-
-public class GetPointsSumBySymbolResultDto
-{
-    public List<GetPointsSumBySymbolDto> Data { get; set; }
-    public long TotalRecordCount { get; set; }
-}
-
-public class GetPointsSumBySymbolDto
-{
-    public string Address { get; set; }
-    public string Domain { get; set; }
+    [Keyword] public override string Id { get; set; }
+    [Keyword] public string Address { get; set; }
     public long FirstSymbolAmount { get; set; }
     public long SecondSymbolAmount { get; set; }
     public long ThirdSymbolAmount { get; set; }
