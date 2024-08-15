@@ -58,7 +58,7 @@ public class PointsAppService : IPointsAppService, ISingletonDependency
             weeklyDto.PointName = _options.CurrentValue.Chance.PointName;
             weeklyDto.ImageUrl = _options.CurrentValue.Chance.ImageUrl;
             weeklyDto.CurrentPurchaseCount = (int)chanceCount.PurchaseCount;
-            weeklyDto.IsComplete = weeklyDto.FromCount <= chanceCount.PurchaseCount;
+            weeklyDto.IsComplete = weeklyDto.ToCount <= chanceCount.PurchaseCount;
         }
 
         return weeklyDtoList;
