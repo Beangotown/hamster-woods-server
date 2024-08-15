@@ -172,6 +172,7 @@ public class SyncPurchaseRecordService : ISyncPurchaseRecordService, ISingletonD
         return amount;
     }
 
+    // todo: handle endtime.
     private async Task<Tuple<DateTime, DateTime, int>> GeQueryTimeAsync(DateTime raceStartTime, int weekNum)
     {
         var timeInfo = await _cacheProvider.Get<SyncRecordTimeCache>(PurchaseEndTimeCacheKey);
@@ -182,11 +183,11 @@ public class SyncPurchaseRecordService : ISyncPurchaseRecordService, ISingletonD
         }
 
         var endTime = DateTime.UtcNow;
-        if (timeInfo != null && timeInfo.LastSyncTime.Date < raceStartTime.Date)
-        {
-            endTime = raceStartTime.Date;
-            weekNum -= 1;
-        }
+        // if (timeInfo != null && timeInfo.LastSyncTime.Date < raceStartTime.Date)
+        // {
+        //     endTime = raceStartTime.Date;
+        //     weekNum -= 1;
+        // }
 
         return new Tuple<DateTime, DateTime, int>(startTime, endTime, weekNum);
     }
