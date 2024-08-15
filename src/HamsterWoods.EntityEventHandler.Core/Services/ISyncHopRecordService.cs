@@ -148,10 +148,10 @@ public class SyncHopRecordService : ISyncHopRecordService, ISingletonDependency
 
         var endTime = DateTime.UtcNow;
 
-        if (startTime.Date < endTime.Date)
-        {
-            endTime = DateTime.Now.Date;
-        }
+        // if (startTime.Date < endTime.Date)
+        // {
+        //     endTime = DateTime.Now.Date;
+        // }
 
         return new Tuple<DateTime, DateTime>(startTime, endTime);
     }
