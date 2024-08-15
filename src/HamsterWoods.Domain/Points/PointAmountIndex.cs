@@ -8,6 +8,7 @@ public class PointAmountIndex : HamsterWoodsEsEntity<string>, IIndexBuild
 {
     [Keyword] public override string Id { get; set; }
     [Keyword] public string Address { get; set; }
+    [Keyword] public string ConnectionId { get; set; }
     public long FirstSymbolAmount { get; set; }
     public long SecondSymbolAmount { get; set; }
     public long ThirdSymbolAmount { get; set; }

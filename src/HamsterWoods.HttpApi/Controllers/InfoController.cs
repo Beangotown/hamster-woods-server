@@ -46,8 +46,8 @@ public class InfoController : HamsterWoodsBaseController
 
     [HttpGet]
     [Route("get-points")]
-    public async Task<object> GetPointsAsync(string address)
+    public async Task<object> GetPointsAsync(string address, string connectionId)
     {
-        return await _pointHubService.GetFluxPointsAsync(address);
+        return await _pointHubService.GetFluxPointsAsync(address, connectionId);
     }
 }
