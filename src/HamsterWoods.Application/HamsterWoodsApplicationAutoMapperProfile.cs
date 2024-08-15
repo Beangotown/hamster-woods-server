@@ -38,5 +38,7 @@ public class HamsterWoodsApplicationAutoMapperProfile : Profile
         CreateMap<ContractInvokeEto, ContractInvokeGrainDto>().ReverseMap();
         CreateMap<HopConfig, DailyDto>();
         CreateMap<ChanceConfig, WeeklyDto>();
+        CreateMap<GetPointsSumBySymbolDto, PointAmountEto>()
+            .ForMember(t => t.Id, f => f.MapFrom(m => m.Address));
     }
 }

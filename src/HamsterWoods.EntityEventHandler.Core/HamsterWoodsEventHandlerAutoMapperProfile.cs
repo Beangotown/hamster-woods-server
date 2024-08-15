@@ -30,5 +30,6 @@ public class HamsterWoodsEventHandlerAutoMapperProfile : Profile
             .ForMember(t => t.ContractInvokeStatus, f => f.MapFrom(m => m.ContractInvokeStatus.ToString()));
         
         CreateMap<ContractInvokeEto, ContractInvokeIndex>();
+        CreateMap<PointAmountEto, PointAmountIndex>();
     }
 }
