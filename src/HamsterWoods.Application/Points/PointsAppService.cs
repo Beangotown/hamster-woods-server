@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using HamsterWoods.Info;
 using HamsterWoods.Options;
@@ -41,7 +42,8 @@ public class PointsAppService : IPointsAppService, ISingletonDependency
             dailyDto.IsComplete = dailyDto.HopCount <= hopCount.HopCount;
         }
 
-        return dailyDtoList;
+        return dailyDtoList.OrderByDescending(t => !t.IsComplete).ThenBy(m => m.HopCount)
+            .ToList();
     }
 
     public async Task<List<WeeklyDto>> GetWeeklyListAsync(string caAddress)
@@ -49,7 +51,7 @@ public class PointsAppService : IPointsAppService, ISingletonDependency
         var currentRaceInfo = await _infoAppService.GetCurrentRaceInfoAsync();
         var chanceCount = await _pointsProvider.GetPurchaseCountAsync(currentRaceInfo.CurrentRaceTimeInfo.BeginTime,
             currentRaceInfo.CurrentRaceTimeInfo.EndTime, caAddress);
-        
+
         var weeklyDtoList =
             _mapper.Map<List<ChanceConfig>, List<WeeklyDto>>(_options.CurrentValue.Chance.ChanceConfigs);
 
@@ -61,6 +63,6 @@ public class PointsAppService : IPointsAppService, ISingletonDependency
             weeklyDto.IsComplete = weeklyDto.ToCount <= chanceCount.PurchaseCount;
         }
 
-        return weeklyDtoList;
+        return weeklyDtoList.OrderByDescending(t => !t.IsComplete).ThenBy(t => t.ToCount).ToList();
     }
 }
