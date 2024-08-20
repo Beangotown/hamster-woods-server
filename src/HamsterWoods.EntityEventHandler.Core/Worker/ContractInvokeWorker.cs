@@ -1,8 +1,10 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using HamsterWoods.EntityEventHandler.Core.Services;
+using HamsterWoods.Options;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Volo.Abp.BackgroundWorkers;
 using Volo.Abp.Threading;
 
@@ -14,10 +16,10 @@ public class ContractInvokeWorker : AsyncPeriodicBackgroundWorkerBase
 
 
     public ContractInvokeWorker(AbpAsyncTimer timer, IServiceScopeFactory serviceScopeFactory,
-        IContractInvokeService contractInvokeService) : base(timer, serviceScopeFactory)
+        IOptionsMonitor<PointJobOptions> options, IContractInvokeService contractInvokeService) : base(timer, serviceScopeFactory)
     {
         _contractInvokeService = contractInvokeService;
-        Timer.Period = 10 * 1000;
+        Timer.Period = options.CurrentValue.ContractInvokePeriod * 1000;
     }
 
     protected override async Task DoWorkAsync(PeriodicBackgroundWorkerContext workerContext)
@@ -27,10 +29,9 @@ public class ContractInvokeWorker : AsyncPeriodicBackgroundWorkerBase
         var tasks = new List<Task>();
         foreach (var bizId in bizIds)
         {
-            await _contractInvokeService.ExecuteJobAsync(bizId);
-            //tasks.Add(Task.Run(() => { _contractInvokeService.ExecuteJobAsync(bizId); }));
+            tasks.Add(Task.Run(() => { _contractInvokeService.ExecuteJobAsync(bizId); }));
         }
 
-        //await Task.WhenAll(tasks);
+        await Task.WhenAll(tasks);
     }
 }

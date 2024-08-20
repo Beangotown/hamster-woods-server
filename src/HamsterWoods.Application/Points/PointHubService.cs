@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using HamsterWoods.Commons;
+using HamsterWoods.Enums;
 using HamsterWoods.Hubs;
 using HamsterWoods.Options;
 using HamsterWoods.Points.Dtos;
@@ -83,9 +84,9 @@ public class PointHubService : IPointHubService, ISingletonDependency
         var fluxPointsList = new List<FluxPointsDto>();
         var result =
             await _pointHubProvider.GetPointsSumBySymbolAsync(
-                new List<string> { AddressHelper.ToShortAddress(address) }, _options.CurrentValue.DappId, 0, 1);
+                new List<string> { AddressHelper.ToShortAddress(address) }, _options.CurrentValue.DappId, 0, 100);
 
-        var pointsInfo = result?.Data?.FirstOrDefault();
+        var pointsInfo = result?.Data?.FirstOrDefault(t => t.Role == PointRoleType.USER.ToString());
         if (pointsInfo == null)
         {
             return resultDto;
