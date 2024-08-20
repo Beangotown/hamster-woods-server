@@ -87,16 +87,16 @@ public class PointHubService : IPointHubService, ISingletonDependency
                 new List<string> { AddressHelper.ToShortAddress(address) }, _options.CurrentValue.DappId, 0, 100);
 
         var pointsInfo = result?.Data?.FirstOrDefault(t => t.Role == PointRoleType.USER.ToString());
-        if (pointsInfo == null)
-        {
-            return resultDto;
-        }
+        // if (pointsInfo == null)
+        // {
+        //     return resultDto;
+        // }
 
         var secondInfo = _options.CurrentValue.PointsInfos.GetOrDefault(nameof(pointsInfo.SecondSymbolAmount));
         fluxPointsList.Add(new FluxPointsDto()
         {
             Behavior = secondInfo?.Behavior,
-            PointAmount = (int)(pointsInfo.SecondSymbolAmount / Math.Pow(10, 8)),
+            PointAmount = (int)(pointsInfo?.SecondSymbolAmount ?? 0 / Math.Pow(10, 8)),
             PointName = secondInfo?.PointName
         });
 
@@ -104,10 +104,10 @@ public class PointHubService : IPointHubService, ISingletonDependency
         fluxPointsList.Add(new FluxPointsDto()
         {
             Behavior = thirdInfo.Behavior,
-            PointAmount = (int)(pointsInfo.ThirdSymbolAmount / Math.Pow(10, 8)),
+            PointAmount = (int)(pointsInfo?.ThirdSymbolAmount ?? 0 / Math.Pow(10, 8)),
             PointName = thirdInfo?.PointName
         });
-        var compare = await CompareAsync(pointsInfo, connectionId);
+        var compare = await CompareAsync(pointsInfo, AddressHelper.ToShortAddress(address), connectionId);
 
         if (!compare)
         {
@@ -126,14 +126,15 @@ public class PointHubService : IPointHubService, ISingletonDependency
         await _distributedEventBus.PublishAsync(pointAmountEto, false, false);
     }
 
-    private async Task<bool> CompareAsync(GetPointsSumBySymbolDto symbolDto, string connectionId)
+    private async Task<bool> CompareAsync(GetPointsSumBySymbolDto symbolDto, string address, string connectionId)
     {
+        symbolDto ??= new GetPointsSumBySymbolDto();
         if (connectionId.IsNullOrEmpty())
         {
             return true;
         }
 
-        var amountInfo = await _pointHubProvider.GetPointAmountAsync(symbolDto.Address);
+        var amountInfo = await _pointHubProvider.GetPointAmountAsync(address);
         if (amountInfo == null || amountInfo.ConnectionId != connectionId)
         {
             return false;
