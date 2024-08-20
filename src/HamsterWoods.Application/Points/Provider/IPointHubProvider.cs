@@ -54,6 +54,7 @@ public class PointHubProvider : IPointHubProvider, ISingletonDependency
                  data {
                     address
                     domain
+                    role
                     firstSymbolAmount
                     secondSymbolAmount
                     thirdSymbolAmount
