@@ -47,11 +47,10 @@ public class ContractInvokeService : IContractInvokeService, ISingletonDependenc
     {
         var mustNotQuery = new List<Func<QueryContainerDescriptor<ContractInvokeIndex>, QueryContainer>>()
         {
-            q => q.Match(m 
+            q => q.Match(m
                 => m.Field(f => f.Status).Query(ContractInvokeStatus.Success.ToString())),
-            q => q.Match(m 
+            q => q.Match(m
                 => m.Field(f => f.Status).Query(ContractInvokeStatus.FinalFailed.ToString()))
-
         };
 
         QueryContainer Filter(QueryContainerDescriptor<ContractInvokeIndex> f) =>
@@ -70,10 +69,11 @@ public class ContractInvokeService : IContractInvokeService, ISingletonDependenc
 
     public async Task ExecuteJobAsync(string bizId)
     {
+        _logger.LogInformation(
+            "[PointProcessTrace] begin execute, bizId:{bizId}", bizId);
         var syncTxEsData = await SearchContractInvokeTxByIdAsync(bizId);
-
         var contractInvokeGrain = _clusterClient.GetGrain<IContractInvokeGrain>(bizId);
-        
+
         var result = await contractInvokeGrain.ExecuteJobAsync(
             _objectMapper.Map<ContractInvokeEto, ContractInvokeGrainDto>(syncTxEsData));
 
@@ -81,12 +81,17 @@ public class ContractInvokeService : IContractInvokeService, ISingletonDependenc
             "Execute transaction job in grain successfully, ready to update {bizId} {status}", bizId,
             result.Data.Status);
 
+        _logger.LogInformation(
+            "[PointProcessTrace] end execute, bizId:{bizId}, transactionId:{transactionId}, transactionStatus:{transactionStatus}, status:{status}",
+            bizId,
+            result.Data.TransactionId ?? "-", result.Data.TransactionStatus ?? "-", result.Data.Status);
+        
         if (syncTxEsData.Status == result.Data.Status)
         {
             return;
         }
 
-        var syncTxEtoData =  _objectMapper.Map<ContractInvokeGrainDto, ContractInvokeEto>(result.Data);
+        var syncTxEtoData = _objectMapper.Map<ContractInvokeGrainDto, ContractInvokeEto>(result.Data);
 
         await _distributedEventBus.PublishAsync(syncTxEtoData);
     }

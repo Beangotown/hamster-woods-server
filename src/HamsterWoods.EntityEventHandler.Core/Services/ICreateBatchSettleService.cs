@@ -97,6 +97,9 @@ public class CreateBatchSettleService : ICreateBatchSettleService, ISingletonDep
         var userPointInfos = new List<UserPointInfo>();
         foreach (var item in pointsInfoList)
         {
+            _logger.LogInformation(
+                "[PointProcessTrace] address:{address}, type:{type}, begin create batch settle, bizId:{bizId}",
+                AddressHelper.ToShortAddress(item.Id), item.PointType, bizId);
             var pointsInfoGrain = _clusterClient.GetGrain<IPointsInfoGrain>(item.Id);
             var resultDto = await pointsInfoGrain.UpdateBizInfo(bizId);
             item.BizId = resultDto.Data.BizId;
@@ -112,6 +115,10 @@ public class CreateBatchSettleService : ICreateBatchSettleService, ISingletonDep
                 Address = item.Address,
                 PointAmount = item.Amount
             });
+
+            _logger.LogInformation(
+                "[PointProcessTrace] address:{address}, type:{type}, status updated, create batch settle, bizId:{bizId}",
+                AddressHelper.ToShortAddress(item.Id), item.PointType, bizId);
         }
 
         await _pointsInfoRepository.BulkAddOrUpdateAsync(pointsInfoList);
@@ -131,6 +138,8 @@ public class CreateBatchSettleService : ICreateBatchSettleService, ISingletonDep
         pointSettleDto.UserPointsInfos = userPointInfos;
         await _pointSettleService.BatchSettleAsync(pointSettleDto);
         _logger.LogInformation("[CreateBatchSettle] finish, bizId:{bizId}", bizId);
+        _logger.LogInformation(
+            "[PointProcessTrace] end create batch settle, bizId:{bizId}", bizId);
     }
 
     private async Task<List<PointsInfoIndex>> GetPointsInfoListAsync(PointType pointType, string contractInvokeStatus,
