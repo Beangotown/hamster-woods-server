@@ -44,6 +44,9 @@ public class HamsterWoodsApplicationModule : AbpModule
         Configure<RaceOptions>(configuration.GetSection("Race"));
         Configure<RewardNftInfoOptions>(configuration.GetSection("RewardNftInfo"));
         Configure<BackgroundJobOptions>(configuration.GetSection("BackgroundJob"));
+        Configure<PointTradeOptions>(configuration.GetSection("PointTrade"));
+        Configure<PointsTaskOptions>(configuration.GetSection("PointsTask"));
+        Configure<FluxPointsOptions>(configuration.GetSection("FluxPoints"));
         context.Services.AddSingleton<ISearchService, UserWeekRankRecordSearchService>();
         context.Services.AddSingleton<ISearchService, RaceInfoConfigSearchService>();
     }

@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading.Tasks;
 using AElf;
 using AElf.Client.Dto;
@@ -11,6 +12,7 @@ using HamsterWoods.Monitor;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Volo.Abp.DependencyInjection;
+using AddressHelper = HamsterWoods.Commons.AddressHelper;
 
 namespace HamsterWoods.Contract;
 
@@ -98,7 +100,7 @@ public class ContractProvider : IContractProvider, ISingletonDependency
         return await SendTransactionAsync(chainId, _chainOptions.ChainInfos[chainId].TokenContractAddress,
             AElfConstants.Transfer, transferParam);
     }
-    
+
     public async Task<SendTransactionOutput> SendHamsterKingAsync(string symbol, string amount, string address,
         string chainId)
     {
@@ -146,7 +148,7 @@ public class ContractProvider : IContractProvider, ISingletonDependency
 
         return value;
     }
-    
+
     private async Task<SendTransactionOutput> SendKingMasterTransactionAsync(string chainId, string contractAddress,
         string method, IMessage param)
     {
@@ -176,7 +178,7 @@ public class ContractProvider : IContractProvider, ISingletonDependency
         return result;
     }
 
-    private async Task<SendTransactionOutput> SendTransactionAsync(string chainId, string contractAddress,
+    public async Task<SendTransactionOutput> SendTransactionAsync(string chainId, string contractAddress,
         string method, IMessage param)
     {
         var key = _chainOptions.ChainInfos[chainId].PrivateKey;
@@ -203,6 +205,19 @@ public class ContractProvider : IContractProvider, ISingletonDependency
         _indicatorScope.End(interIndicator);
 
         return result;
+    }
+
+    public async Task<SendTransactionOutput> JoinAsync(string chainId, string address, string domain)
+    {
+        var input = new Contracts.HamsterWoods.JoinInput()
+        {
+            Domain = domain,
+            Address = Address.FromBase58(AddressHelper.ToShortAddress(address))
+        };
+        
+        return await SendTransactionAsync(_chainOptions.ChainInfos.Keys.First(),
+            _chainOptions.ChainInfos[chainId].HamsterWoodsAddress,
+            AElfConstants.Join, input);
     }
 
 

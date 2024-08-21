@@ -27,6 +27,7 @@ using Volo.Abp;
 using Volo.Abp.AspNetCore.Mvc;
 using Volo.Abp.AspNetCore.Mvc.UI.MultiTenancy;
 using Volo.Abp.AspNetCore.Serilog;
+using Volo.Abp.AspNetCore.SignalR;
 using Volo.Abp.Auditing;
 using Volo.Abp.Autofac;
 using Volo.Abp.Caching;
@@ -49,7 +50,8 @@ namespace HamsterWoods;
     typeof(HamsterWoodsApplicationModule),
     typeof(HamsterWoodsPushMongoDbModule),
     typeof(AbpAspNetCoreSerilogModule),
-    typeof(AbpSwashbuckleModule)
+    typeof(AbpSwashbuckleModule),
+    typeof(AbpAspNetCoreSignalRModule)
 )]
 public class HamsterWoodsHttpApiHostModule : AbpModule
 {

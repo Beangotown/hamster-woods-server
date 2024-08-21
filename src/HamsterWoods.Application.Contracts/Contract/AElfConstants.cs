@@ -9,4 +9,5 @@ public class AElfConstants
     public const string GetCurrentRaceInfo = "GetCurrentRaceInfo";
     public const string GetReserves = "GetReserves";
     public const string Issue = "Issue";
+    public const string Join = "Join";
 }

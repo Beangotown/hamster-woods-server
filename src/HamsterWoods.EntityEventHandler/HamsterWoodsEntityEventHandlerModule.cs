@@ -60,6 +60,7 @@ public class HamsterWoodsEntityEventHandlerModule : AbpModule
         ConfigureOrleans(context, configuration);
         ConfigureHangfire(context, configuration);
         Configure<SyncPriceDataOptions>(configuration.GetSection("SyncPrice"));
+        Configure<PointJobOptions>(configuration.GetSection("PointJob"));
     }
 
     private void ConfigureHangfire(ServiceConfigurationContext context, IConfiguration configuration)
@@ -175,8 +176,12 @@ public class HamsterWoodsEntityEventHandlerModule : AbpModule
 
     public override void OnApplicationInitialization(ApplicationInitializationContext context)
     {
-        // context.AddBackgroundWorkerAsync<SyncRankRecordWorker>();
+        //context.AddBackgroundWorkerAsync<SyncRankRecordWorker>();
         context.AddBackgroundWorkerAsync<SyncPriceWorker>();
+        context.AddBackgroundWorkerAsync<SyncHopRecordWorker>();
+        context.AddBackgroundWorkerAsync<CreateBatchSettleWorker>();
+        context.AddBackgroundWorkerAsync<ContractInvokeWorker>();
+        context.AddBackgroundWorkerAsync<SyncPurchaseRecordWorker>();
 
         InitRecurringJob(context.ServiceProvider);
         ConfigurationProvidersHelper.DisplayConfigurationProviders(context);
@@ -184,14 +189,14 @@ public class HamsterWoodsEntityEventHandlerModule : AbpModule
 
     public override void OnPreApplicationInitialization(ApplicationInitializationContext context)
     {
-        //StartOrleans(context.ServiceProvider);
+        StartOrleans(context.ServiceProvider);
     }
 
     public override void OnApplicationShutdown(ApplicationShutdownContext context)
     {
-        //StopOrleans(context.ServiceProvider);
+        StopOrleans(context.ServiceProvider);
     }
-    
+
     private static void InitRecurringJob(IServiceProvider serviceProvider)
     {
         var jobsService = serviceProvider.GetRequiredService<IInitJobsService>();

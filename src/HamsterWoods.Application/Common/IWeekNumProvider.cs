@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using HamsterWoods.Cache;
 using HamsterWoods.Contract;
-using HamsterWoods.Options;
 using HamsterWoods.Rank;
 using Microsoft.Extensions.Options;
 using Volo.Abp.DependencyInjection;
@@ -12,7 +11,7 @@ namespace HamsterWoods.Common;
 
 public interface IWeekNumProvider
 {
-    Task<int> GetWeekNumAsync(int weekNum);
+    Task<WeekNumInfo> GetWeekNumInfoAsync();
     Task<CurrentRaceInfoCache> GetCurrentRaceInfoAsync();
 }
 
@@ -30,16 +29,18 @@ public class WeekNumProvider : IWeekNumProvider, ISingletonDependency
         _chainOptions = chainOptions.Value;
     }
 
-    public async Task<int> GetWeekNumAsync(int weekNum)
+    public async Task<WeekNumInfo> GetWeekNumInfoAsync()
     {
+        var weekNumInfo = new WeekNumInfo();
         var weekInfo = await GetCurrentRaceInfoAsync();
-        var currentNum = weekInfo.WeekNum;
-        if (weekNum == 0)
+        weekNumInfo.WeekNum = weekInfo.WeekNum;
+        if (weekInfo.CurrentRaceTimeInfo.BeginTime.Date == DateTime.UtcNow.Date && weekInfo.WeekNum > 1) //settle day
         {
-            weekNum = currentNum - 1;
+            weekNumInfo.IsSettleDay = true;
+            weekNumInfo.WeekNum -= 1;
         }
 
-        return weekNum;
+        return weekNumInfo;
     }
     
     public async Task<CurrentRaceInfoCache> GetCurrentRaceInfoAsync()
