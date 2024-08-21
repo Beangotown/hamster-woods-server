@@ -90,7 +90,7 @@ public class SyncHopRecordService : ISyncHopRecordService, ISingletonDependency
             try
             {
                 _logger.LogInformation("[PointProcessTrace] address:{address}, type:{type}, begin handle",
-                    AddressHelper.ToShortAddress(hopGroup.Key), PointType.PurchaseCount.ToString());
+                    AddressHelper.ToShortAddress(hopGroup.Key), PointType.Hop.ToString());
                 var grain = _clusterClient.GetGrain<IUserPointsGrain>(AddressHelper.ToShortAddress(hopGroup.Key));
                 var ids = hopGroup.Select(item => item.Id).ToList();
                 var resultDto = await grain.SetHop(ids);
@@ -122,7 +122,7 @@ public class SyncHopRecordService : ISyncHopRecordService, ISingletonDependency
                 await _pointsInfoRepository.AddOrUpdateAsync(
                     _objectMapper.Map<PointsInfoGrainDto, PointsInfoIndex>(grainDto.Data));
                 _logger.LogInformation("[PointProcessTrace] address:{address}, type:{type}, create pointsInfo",
-                    AddressHelper.ToShortAddress(hopGroup.Key), PointType.PurchaseCount.ToString());
+                    AddressHelper.ToShortAddress(hopGroup.Key), PointType.Hop.ToString());
             }
             catch (Exception e)
             {

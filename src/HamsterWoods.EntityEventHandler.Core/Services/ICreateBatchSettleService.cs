@@ -99,7 +99,7 @@ public class CreateBatchSettleService : ICreateBatchSettleService, ISingletonDep
         {
             _logger.LogInformation(
                 "[PointProcessTrace] address:{address}, type:{type}, begin create batch settle, bizId:{bizId}",
-                AddressHelper.ToShortAddress(item.Id), item.PointType, bizId);
+                item.Address, item.PointType, bizId);
             var pointsInfoGrain = _clusterClient.GetGrain<IPointsInfoGrain>(item.Id);
             var resultDto = await pointsInfoGrain.UpdateBizInfo(bizId);
             item.BizId = resultDto.Data.BizId;
@@ -118,7 +118,7 @@ public class CreateBatchSettleService : ICreateBatchSettleService, ISingletonDep
 
             _logger.LogInformation(
                 "[PointProcessTrace] address:{address}, type:{type}, status updated, create batch settle, bizId:{bizId}",
-                AddressHelper.ToShortAddress(item.Id), item.PointType, bizId);
+                item.Address, item.PointType, bizId);
         }
 
         await _pointsInfoRepository.BulkAddOrUpdateAsync(pointsInfoList);
