@@ -96,6 +96,8 @@ public class SyncPurchaseRecordService : ISyncPurchaseRecordService, ISingletonD
         {
             try
             {
+                _logger.LogInformation("[PointProcessTrace] address:{address}, type:{type}, begin handle",
+                    AddressHelper.ToShortAddress(group.Key), PointType.PurchaseCount.ToString());
                 var grain = _clusterClient.GetGrain<IUserPointsGrain>(AddressHelper.ToShortAddress(group.Key));
                 var chanceInfos = group.Select(item => new ChanceInfo { Id = item.Id, ChanceCount = item.Chance })
                     .ToList();
@@ -105,7 +107,7 @@ public class SyncPurchaseRecordService : ISyncPurchaseRecordService, ISingletonD
                     _logger.LogError("[SyncPurchaseRecord] set chance info success, message:{message}, data:{data}",
                         resultDto.Message, JsonConvert.SerializeObject(group));
                 }
-                
+
                 var countInfo = resultDto.Data;
                 if (countInfo.LastCount == countInfo.CurrentCount) continue;
 
@@ -127,6 +129,8 @@ public class SyncPurchaseRecordService : ISyncPurchaseRecordService, ISingletonD
 
                 await _pointsInfoRepository.AddOrUpdateAsync(
                     _objectMapper.Map<PointsInfoGrainDto, PointsInfoIndex>(grainDto.Data));
+                _logger.LogInformation("[PointProcessTrace] address:{address}, type:{type}, create pointsInfo",
+                    AddressHelper.ToShortAddress(group.Key), PointType.PurchaseCount.ToString());
             }
             catch (Exception e)
             {
@@ -134,7 +138,7 @@ public class SyncPurchaseRecordService : ISyncPurchaseRecordService, ISingletonD
                     JsonConvert.SerializeObject(group));
             }
         }
-        
+
         await _repository.BulkAddOrUpdateAsync(recordIndices);
         await _cacheProvider.Set(PurchaseEndTimeCacheKey, new SyncRecordTimeCache()
         {
