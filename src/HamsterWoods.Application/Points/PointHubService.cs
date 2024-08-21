@@ -90,7 +90,7 @@ public class PointHubService : IPointHubService, ISingletonDependency
 
         pointsInfo ??= new GetPointsSumBySymbolDto()
         {
-            Address = address
+            Address = AddressHelper.ToShortAddress(address)
         };
         var secondInfo = _options.CurrentValue.PointsInfos.GetOrDefault(nameof(pointsInfo.SecondSymbolAmount));
         fluxPointsList.Add(new FluxPointsDto()
