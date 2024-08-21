@@ -88,7 +88,10 @@ public class PointHubService : IPointHubService, ISingletonDependency
 
         var pointsInfo = result?.Data?.FirstOrDefault(t => t.Role == PointRoleType.USER.ToString());
 
-        pointsInfo ??= new GetPointsSumBySymbolDto();
+        pointsInfo ??= new GetPointsSumBySymbolDto()
+        {
+            Address = address
+        };
         var secondInfo = _options.CurrentValue.PointsInfos.GetOrDefault(nameof(pointsInfo.SecondSymbolAmount));
         fluxPointsList.Add(new FluxPointsDto()
         {
