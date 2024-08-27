@@ -39,7 +39,8 @@ public class UnlockAcornsProvider : IUnlockAcornsProvider, ISingletonDependency
         mustQuery.Add(q => q.Term(i => i.Field(f => f.WeekNum).Value(weekNum)));
         QueryContainer Filter(QueryContainerDescriptor<UserWeekRankRecordIndex> f) => f.Bool(b => b.Must(mustQuery));
 
-        var result = await _userRecordRepository.GetSortListAsync(Filter, skip: skip, limit: limit);
+        var result = await _userRecordRepository.GetSortListAsync(Filter, null,
+            sortFunc: s => s.Ascending(a => a.Rank), skip: skip, limit: limit);
         return result.Item2;
     }
 }

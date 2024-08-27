@@ -73,7 +73,7 @@ public class UnlockService : IUnlockService, ISingletonDependency
             throw new UserFriendlyException($"Create Contract Invoke fail, bizId: {dto.BizId}.");
         }
 
-        _logger.LogError(
+        _logger.LogInformation(
             "[BatchUnlock] Create Contract Invoke success, bizId: {dto.BizId}.", dto.BizId);
         await _distributedEventBus.PublishAsync(
             _objectMapper.Map<ContractInvokeGrainDto, ContractInvokeEto>(result.Data));
