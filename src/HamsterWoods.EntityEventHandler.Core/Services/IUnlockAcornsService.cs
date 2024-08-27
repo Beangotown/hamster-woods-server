@@ -103,17 +103,20 @@ public class UnlockAcornsService : IUnlockAcornsService, ISingletonDependency
 
         while (!sendRecords.IsNullOrEmpty())
         {
+            skip += limit;
             var addressGrainDto = await addressGrain.SetAddresses(weekNum,
                 sendRecords.Select(t => AddressHelper.ToShortAddress(t.CaAddress)).ToList());
             if (!addressGrainDto.Success)
             {
                 _logger.LogError("[UnlockAcorns] addressGrainDto fail, message:{message}", addressGrainDto.Message);
+                sendRecords = GetRecords(records, skip, limit);
                 continue;
             }
 
             if (addressGrainDto.Data.IsNullOrEmpty())
             {
                 _logger.LogWarning("[UnlockAcorns] addressGrainDto return list is empty.");
+                sendRecords = GetRecords(records, skip, limit);
                 continue;
             }
 
@@ -129,16 +132,23 @@ public class UnlockAcornsService : IUnlockAcornsService, ISingletonDependency
             if (!grainDto.Success)
             {
                 _logger.LogError("[UnlockAcorns] addressGrainDto fail, message:{message}", addressGrainDto.Message);
+                sendRecords = GetRecords(records, skip, limit);
                 continue;
             }
 
             await _distributedEvent.PublishAsync(_objectMapper.Map<UnlockInfoGrainDto, UnlockInfoEto>(grainDto.Data));
             await _unlockService.BatchUnlockAsync(grainDto.Data);
-            skip += limit;
-            sendRecords = records.Skip(skip).Take(limit).ToList();
-            _logger.LogInformation(
-                "[UnlockAcorns] next handle address count:{count}, currentSkipCount:{currentSkipCount}, limit:{limit}",
-                sendRecords.Count, skip, limit);
+            sendRecords = GetRecords(records, skip, limit);
         }
+    }
+
+    private List<UserWeekRankRecordIndex> GetRecords(List<UserWeekRankRecordIndex> records, int skip, int limit)
+    {
+        var sendRecords = records.Skip(skip).Take(limit).ToList();
+        _logger.LogInformation(
+            "[UnlockAcorns] next handle address count:{count}, currentSkipCount:{currentSkipCount}, limit:{limit}",
+            sendRecords.Count, skip, limit);
+        
+        return sendRecords;
     }
 }
