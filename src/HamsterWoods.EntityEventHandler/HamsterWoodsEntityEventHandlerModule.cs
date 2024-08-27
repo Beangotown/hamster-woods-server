@@ -182,8 +182,6 @@ public class HamsterWoodsEntityEventHandlerModule : AbpModule
         context.AddBackgroundWorkerAsync<ContractInvokeWorker>();
         context.AddBackgroundWorkerAsync<SyncPurchaseRecordWorker>();
         
-        context.AddBackgroundWorkerAsync<TestWorker>();
-
         InitRecurringJob(context.ServiceProvider);
         ConfigurationProvidersHelper.DisplayConfigurationProviders(context);
     }
