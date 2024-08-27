@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using AElf.Indexing.Elasticsearch;
+using HamsterWoods.Commons;
 using HamsterWoods.EntityEventHandler.Core.Services;
 using HamsterWoods.Enums;
 using HamsterWoods.Points;
@@ -40,11 +41,13 @@ public class ContractInvokeHandler : IDistributedEventHandler<ContractInvokeEto>
             _logger.LogInformation("HandleEventAsync ContractInvokeEto success, id:{id},bizId:{bizId}", eventData.Id,
                 eventData.BizId);
 
-            if (eventData.Status == ContractInvokeStatus.ToBeCreated.ToString())
+            // unlock acorns does not need to be sent immediately
+            if (eventData.Status == ContractInvokeStatus.ToBeCreated.ToString() &&
+                eventData.BizType != CommonConstant.BatchUnlockAcorns)
             {
                 BackgroundJob.Enqueue(() =>
                     _contractInvokeService.ExecuteJobAsync(eventData.BizId));
-            
+
                 _logger.LogInformation("Enqueue ContractInvokeEto success, ,bizId:{bizId}", eventData.BizId);
             }
         }

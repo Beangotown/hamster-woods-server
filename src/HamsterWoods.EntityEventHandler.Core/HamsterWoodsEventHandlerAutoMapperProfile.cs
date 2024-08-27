@@ -4,7 +4,9 @@ using HamsterWoods.Grains.Grain.Points;
 using HamsterWoods.Points;
 using HamsterWoods.Points.Etos;
 using HamsterWoods.Rank;
+using HamsterWoods.TokenLock;
 using HamsterWoods.Trace;
+using HamsterWoods.Unlock.Etos;
 
 namespace HamsterWoods.EntityEventHandler.Core;
 
@@ -31,5 +33,6 @@ public class HamsterWoodsEventHandlerAutoMapperProfile : Profile
         
         CreateMap<ContractInvokeEto, ContractInvokeIndex>();
         CreateMap<PointAmountEto, PointAmountIndex>();
+        CreateMap<UnlockInfoEto, UnlockInfoIndex>();
     }
 }

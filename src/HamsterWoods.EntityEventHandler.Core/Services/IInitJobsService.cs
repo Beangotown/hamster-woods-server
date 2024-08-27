@@ -25,5 +25,8 @@ public class InitJobsService : IInitJobsService, ISingletonDependency
     {
         _recurringJobs.AddOrUpdate<ISyncRankRecordService>("SyncRankRecordService",
             x => x.SyncRankRecordAsync(), _options.SyncRecordCorn);
+        
+        _recurringJobs.AddOrUpdate<IUnlockAcornsService>("UnlockAcornsService",
+            x => x.HandleAsync(), _options.SyncRecordCorn);
     }
 }

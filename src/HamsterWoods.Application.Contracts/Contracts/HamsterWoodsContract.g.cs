@@ -114,67 +114,70 @@ namespace Contracts.HamsterWoods {
             "dGVlGAMgASgLMg0uYWVsZi5BZGRyZXNzIoYBChBSZWZlcnJhbEFjY2VwdGVk",
             "EhsKB2RhcHBfaWQYASABKAsyCi5hZWxmLkhhc2gSDgoGZG9tYWluGAIgASgJ",
             "Eh8KCHJlZmVycmVyGAMgASgLMg0uYWVsZi5BZGRyZXNzEh4KB2ludml0ZWUY",
-            "BCABKAsyDS5hZWxmLkFkZHJlc3M6BKC7GAEiXgoQUG9uaXRDb25maWdJbnB1",
+            "BCABKAsyDS5hZWxmLkFkZHJlc3M6BKC7GAEidwoQUG9uaXRDb25maWdJbnB1",
             "dBIbCgdkYXBwX2lkGAEgASgLMgouYWVsZi5IYXNoEi0KFnBvaW50X2NvbnRy",
-            "YWN0X2FkZHJlc3MYAiABKAsyDS5hZWxmLkFkZHJlc3MiWQoLUG9pbnRDb25m",
-            "aWcSGwoHZGFwcF9pZBgBIAEoCzIKLmFlbGYuSGFzaBItChZwb2ludF9jb250",
-            "cmFjdF9hZGRyZXNzGAIgASgLMg0uYWVsZi5BZGRyZXNzIqcBCgtTZXR0bGVJ",
-            "bnB1dBIjCgx1c2VyX2FkZHJlc3MYASABKAsyDS5hZWxmLkFkZHJlc3MSEwoL",
-            "YWN0aW9uX25hbWUYAiABKAkSGwoHZGFwcF9pZBgDIAEoCzIKLmFlbGYuSGFz",
-            "aBITCgt1c2VyX3BvaW50cxgEIAEoAxIsChF1c2VyX3BvaW50c192YWx1ZRgF",
-            "IAEoCzIRLmFlbGYuQmlnSW50VmFsdWUiTgoQQmF0Y2hTZXR0bGVJbnB1dBIT",
-            "CgthY3Rpb25fbmFtZRgBIAEoCRIlChB1c2VyX3BvaW50c19saXN0GAIgAygL",
-            "MgsuVXNlclBvaW50cyJ0CgpVc2VyUG9pbnRzEiMKDHVzZXJfYWRkcmVzcxgB",
-            "IAEoCzINLmFlbGYuQWRkcmVzcxITCgt1c2VyX3BvaW50cxgCIAEoAxIsChF1",
-            "c2VyX3BvaW50c192YWx1ZRgDIAEoCzIRLmFlbGYuQmlnSW50VmFsdWUqJwoI",
-            "R3JpZFR5cGUSCAoEQmx1ZRAAEgcKA1JlZBABEggKBEdvbGQQAjKTEAoUSGFt",
-            "c3Rlcldvb2RzQ29udHJhY3QSLAoEUGxheRIKLlBsYXlJbnB1dBoWLmdvb2ds",
-            "ZS5wcm90b2J1Zi5FbXB0eSIAEkcKDlB1cmNoYXNlQ2hhbmNlEhsuZ29vZ2xl",
-            "LnByb3RvYnVmLkludDMyVmFsdWUaFi5nb29nbGUucHJvdG9idWYuRW1wdHki",
-            "ABJEChRTZXRHYW1lTGltaXRTZXR0aW5ncxISLkdhbWVMaW1pdFNldHRpbmdz",
-            "GhYuZ29vZ2xlLnByb3RvYnVmLkVtcHR5IgASPgoKSW5pdGlhbGl6ZRIWLmdv",
-            "b2dsZS5wcm90b2J1Zi5FbXB0eRoWLmdvb2dsZS5wcm90b2J1Zi5FbXB0eSIA",
-            "EjYKC0NoYW5nZUFkbWluEg0uYWVsZi5BZGRyZXNzGhYuZ29vZ2xlLnByb3Rv",
-            "YnVmLkVtcHR5IgASNAoMU2V0R2FtZVJ1bGVzEgouR2FtZVJ1bGVzGhYuZ29v",
-            "Z2xlLnByb3RvYnVmLkVtcHR5IgASOgoPU2V0UmFua2luZ1J1bGVzEg0uUmFu",
-            "a2luZ1J1bGVzGhYuZ29vZ2xlLnByb3RvYnVmLkVtcHR5IgASSgoXU2V0UHVy",
-            "Y2hhc2VDaGFuY2VDb25maWcSFS5QdXJjaGFzZUNoYW5jZUNvbmZpZxoWLmdv",
-            "b2dsZS5wcm90b2J1Zi5FbXB0eSIAEjsKEFNldFVubG9ja01hbmFnZXISDS5h",
-            "ZWxmLkFkZHJlc3MaFi5nb29nbGUucHJvdG9idWYuRW1wdHkiABJBChFCYXRj",
-            "aFVubG9ja0Fjb3JucxISLlVubG9ja0Fjb3Juc0lucHV0GhYuZ29vZ2xlLnBy",
-            "b3RvYnVmLkVtcHR5IgASPQoJU3RhcnRSYWNlEhYuZ29vZ2xlLnByb3RvYnVm",
-            "LkVtcHR5GhYuZ29vZ2xlLnByb3RvYnVmLkVtcHR5IgASPAoIU3RvcFJhY2US",
-            "Fi5nb29nbGUucHJvdG9idWYuRW1wdHkaFi5nb29nbGUucHJvdG9idWYuRW1w",
-            "dHkiABI2Cg1TZXRSYWNlQ29uZmlnEgsuUmFjZUNvbmZpZxoWLmdvb2dsZS5w",
-            "cm90b2J1Zi5FbXB0eSIAEkQKEENoZWNrSGFtc3RlclBhc3MSDS5hZWxmLkFk",
-            "ZHJlc3MaGi5nb29nbGUucHJvdG9idWYuQm9vbFZhbHVlIgWIifcBARJAChRH",
-            "ZXRQbGF5ZXJJbmZvcm1hdGlvbhINLmFlbGYuQWRkcmVzcxoSLlBsYXllcklu",
-            "Zm9ybWF0aW9uIgWIifcBARJHChJHZXRCb3V0SW5mb3JtYXRpb24SGC5HZXRC",
-            "b3V0SW5mb3JtYXRpb25JbnB1dBoQLkJvdXRJbmZvcm1hdGlvbiIFiIn3AQES",
-            "OAoIR2V0QWRtaW4SFi5nb29nbGUucHJvdG9idWYuRW1wdHkaDS5hZWxmLkFk",
-            "ZHJlc3MiBYiJ9wEBEkkKFEdldEdhbWVMaW1pdFNldHRpbmdzEhYuZ29vZ2xl",
-            "LnByb3RvYnVmLkVtcHR5GhIuR2FtZUxpbWl0U2V0dGluZ3MiBYiJ9wEBEjkK",
-            "DEdldEdhbWVSdWxlcxIWLmdvb2dsZS5wcm90b2J1Zi5FbXB0eRoKLkdhbWVS",
-            "dWxlcyIFiIn3AQESPwoPR2V0UmFua2luZ1J1bGVzEhYuZ29vZ2xlLnByb3Rv",
-            "YnVmLkVtcHR5Gg0uUmFua2luZ1J1bGVzIgWIifcBARJPChdHZXRQdXJjaGFz",
-            "ZUNoYW5jZUNvbmZpZxIWLmdvb2dsZS5wcm90b2J1Zi5FbXB0eRoVLlB1cmNo",
-            "YXNlQ2hhbmNlQ29uZmlnIgWIifcBARI7Cg1HZXRSYWNlQ29uZmlnEhYuZ29v",
-            "Z2xlLnByb3RvYnVmLkVtcHR5GgsuUmFjZUNvbmZpZyIFiIn3AQESRgoXR2V0",
-            "TG9ja2VkQWNvcm5zSW5mb0xpc3QSDS5hZWxmLkFkZHJlc3MaFS5Mb2NrZWRB",
-            "Y29ybnNJbmZvTGlzdCIFiIn3AQESRQoSR2V0Q3VycmVudFJhY2VJbmZvEhYu",
-            "Z29vZ2xlLnByb3RvYnVmLkVtcHR5GhAuQ3VycmVudFJhY2VJbmZvIgWIifcB",
-            "ARIsCgRKb2luEgouSm9pbklucHV0GhYuZ29vZ2xlLnByb3RvYnVmLkVtcHR5",
-            "IgASQAoOQWNjZXB0UmVmZXJyYWwSFC5BY2NlcHRSZWZlcnJhbElucHV0GhYu",
-            "Z29vZ2xlLnByb3RvYnVmLkVtcHR5IgASMAoGU2V0dGxlEgwuU2V0dGxlSW5w",
-            "dXQaFi5nb29nbGUucHJvdG9idWYuRW1wdHkiABI6CgtCYXRjaFNldHRsZRIR",
-            "LkJhdGNoU2V0dGxlSW5wdXQaFi5nb29nbGUucHJvdG9idWYuRW1wdHkiABI9",
-            "Cg5TZXRQb2ludENvbmZpZxIRLlBvbml0Q29uZmlnSW5wdXQaFi5nb29nbGUu",
-            "cHJvdG9idWYuRW1wdHkiABI9Cg5HZXRQb2ludENvbmZpZxIWLmdvb2dsZS5w",
-            "cm90b2J1Zi5FbXB0eRoMLlBvaW50Q29uZmlnIgWIifcBARJBCg1HZXRKb2lu",
-            "UmVjb3JkEg0uYWVsZi5BZGRyZXNzGhouZ29vZ2xlLnByb3RvYnVmLkJvb2xW",
-            "YWx1ZSIFiIn3AQEaRbLM9gEwQ29udHJhY3RzLkhhbXN0ZXJXb29kcy5IYW1z",
-            "dGVyV29vZHNDb250cmFjdFN0YXRlysr2AQthY3MxMi5wcm90b0IZqgIWQ29u",
-            "dHJhY3RzLkhhbXN0ZXJXb29kc2IGcHJvdG8z"));
+            "YWN0X2FkZHJlc3MYAiABKAsyDS5hZWxmLkFkZHJlc3MSFwoPb2ZmaWNpYWxf",
+            "ZG9tYWluGAMgASgJInIKC1BvaW50Q29uZmlnEhsKB2RhcHBfaWQYASABKAsy",
+            "Ci5hZWxmLkhhc2gSLQoWcG9pbnRfY29udHJhY3RfYWRkcmVzcxgCIAEoCzIN",
+            "LmFlbGYuQWRkcmVzcxIXCg9vZmZpY2lhbF9kb21haW4YAyABKAkipwEKC1Nl",
+            "dHRsZUlucHV0EiMKDHVzZXJfYWRkcmVzcxgBIAEoCzINLmFlbGYuQWRkcmVz",
+            "cxITCgthY3Rpb25fbmFtZRgCIAEoCRIbCgdkYXBwX2lkGAMgASgLMgouYWVs",
+            "Zi5IYXNoEhMKC3VzZXJfcG9pbnRzGAQgASgDEiwKEXVzZXJfcG9pbnRzX3Zh",
+            "bHVlGAUgASgLMhEuYWVsZi5CaWdJbnRWYWx1ZSJOChBCYXRjaFNldHRsZUlu",
+            "cHV0EhMKC2FjdGlvbl9uYW1lGAEgASgJEiUKEHVzZXJfcG9pbnRzX2xpc3QY",
+            "AiADKAsyCy5Vc2VyUG9pbnRzInQKClVzZXJQb2ludHMSIwoMdXNlcl9hZGRy",
+            "ZXNzGAEgASgLMg0uYWVsZi5BZGRyZXNzEhMKC3VzZXJfcG9pbnRzGAIgASgD",
+            "EiwKEXVzZXJfcG9pbnRzX3ZhbHVlGAMgASgLMhEuYWVsZi5CaWdJbnRWYWx1",
+            "ZSonCghHcmlkVHlwZRIICgRCbHVlEAASBwoDUmVkEAESCAoER29sZBACMs8Q",
+            "ChRIYW1zdGVyV29vZHNDb250cmFjdBIsCgRQbGF5EgouUGxheUlucHV0GhYu",
+            "Z29vZ2xlLnByb3RvYnVmLkVtcHR5IgASRwoOUHVyY2hhc2VDaGFuY2USGy5n",
+            "b29nbGUucHJvdG9idWYuSW50MzJWYWx1ZRoWLmdvb2dsZS5wcm90b2J1Zi5F",
+            "bXB0eSIAEkQKFFNldEdhbWVMaW1pdFNldHRpbmdzEhIuR2FtZUxpbWl0U2V0",
+            "dGluZ3MaFi5nb29nbGUucHJvdG9idWYuRW1wdHkiABI+CgpJbml0aWFsaXpl",
+            "EhYuZ29vZ2xlLnByb3RvYnVmLkVtcHR5GhYuZ29vZ2xlLnByb3RvYnVmLkVt",
+            "cHR5IgASNgoLQ2hhbmdlQWRtaW4SDS5hZWxmLkFkZHJlc3MaFi5nb29nbGUu",
+            "cHJvdG9idWYuRW1wdHkiABI0CgxTZXRHYW1lUnVsZXMSCi5HYW1lUnVsZXMa",
+            "Fi5nb29nbGUucHJvdG9idWYuRW1wdHkiABI6Cg9TZXRSYW5raW5nUnVsZXMS",
+            "DS5SYW5raW5nUnVsZXMaFi5nb29nbGUucHJvdG9idWYuRW1wdHkiABJKChdT",
+            "ZXRQdXJjaGFzZUNoYW5jZUNvbmZpZxIVLlB1cmNoYXNlQ2hhbmNlQ29uZmln",
+            "GhYuZ29vZ2xlLnByb3RvYnVmLkVtcHR5IgASOwoQU2V0VW5sb2NrTWFuYWdl",
+            "chINLmFlbGYuQWRkcmVzcxoWLmdvb2dsZS5wcm90b2J1Zi5FbXB0eSIAEkEK",
+            "EUJhdGNoVW5sb2NrQWNvcm5zEhIuVW5sb2NrQWNvcm5zSW5wdXQaFi5nb29n",
+            "bGUucHJvdG9idWYuRW1wdHkiABI9CglTdGFydFJhY2USFi5nb29nbGUucHJv",
+            "dG9idWYuRW1wdHkaFi5nb29nbGUucHJvdG9idWYuRW1wdHkiABI8CghTdG9w",
+            "UmFjZRIWLmdvb2dsZS5wcm90b2J1Zi5FbXB0eRoWLmdvb2dsZS5wcm90b2J1",
+            "Zi5FbXB0eSIAEjYKDVNldFJhY2VDb25maWcSCy5SYWNlQ29uZmlnGhYuZ29v",
+            "Z2xlLnByb3RvYnVmLkVtcHR5IgASRAoQQ2hlY2tIYW1zdGVyUGFzcxINLmFl",
+            "bGYuQWRkcmVzcxoaLmdvb2dsZS5wcm90b2J1Zi5Cb29sVmFsdWUiBYiJ9wEB",
+            "EkAKFEdldFBsYXllckluZm9ybWF0aW9uEg0uYWVsZi5BZGRyZXNzGhIuUGxh",
+            "eWVySW5mb3JtYXRpb24iBYiJ9wEBEkcKEkdldEJvdXRJbmZvcm1hdGlvbhIY",
+            "LkdldEJvdXRJbmZvcm1hdGlvbklucHV0GhAuQm91dEluZm9ybWF0aW9uIgWI",
+            "ifcBARI4CghHZXRBZG1pbhIWLmdvb2dsZS5wcm90b2J1Zi5FbXB0eRoNLmFl",
+            "bGYuQWRkcmVzcyIFiIn3AQESSQoUR2V0R2FtZUxpbWl0U2V0dGluZ3MSFi5n",
+            "b29nbGUucHJvdG9idWYuRW1wdHkaEi5HYW1lTGltaXRTZXR0aW5ncyIFiIn3",
+            "AQESOQoMR2V0R2FtZVJ1bGVzEhYuZ29vZ2xlLnByb3RvYnVmLkVtcHR5Ggou",
+            "R2FtZVJ1bGVzIgWIifcBARI/Cg9HZXRSYW5raW5nUnVsZXMSFi5nb29nbGUu",
+            "cHJvdG9idWYuRW1wdHkaDS5SYW5raW5nUnVsZXMiBYiJ9wEBEk8KF0dldFB1",
+            "cmNoYXNlQ2hhbmNlQ29uZmlnEhYuZ29vZ2xlLnByb3RvYnVmLkVtcHR5GhUu",
+            "UHVyY2hhc2VDaGFuY2VDb25maWciBYiJ9wEBEjsKDUdldFJhY2VDb25maWcS",
+            "Fi5nb29nbGUucHJvdG9idWYuRW1wdHkaCy5SYWNlQ29uZmlnIgWIifcBARJG",
+            "ChdHZXRMb2NrZWRBY29ybnNJbmZvTGlzdBINLmFlbGYuQWRkcmVzcxoVLkxv",
+            "Y2tlZEFjb3Juc0luZm9MaXN0IgWIifcBARJFChJHZXRDdXJyZW50UmFjZUlu",
+            "Zm8SFi5nb29nbGUucHJvdG9idWYuRW1wdHkaEC5DdXJyZW50UmFjZUluZm8i",
+            "BYiJ9wEBEjoKC0dldE1hbmFnZXJzEhYuZ29vZ2xlLnByb3RvYnVmLkVtcHR5",
+            "GgwuTWFuYWdlckxpc3QiBYiJ9wEBEiwKBEpvaW4SCi5Kb2luSW5wdXQaFi5n",
+            "b29nbGUucHJvdG9idWYuRW1wdHkiABJACg5BY2NlcHRSZWZlcnJhbBIULkFj",
+            "Y2VwdFJlZmVycmFsSW5wdXQaFi5nb29nbGUucHJvdG9idWYuRW1wdHkiABIw",
+            "CgZTZXR0bGUSDC5TZXR0bGVJbnB1dBoWLmdvb2dsZS5wcm90b2J1Zi5FbXB0",
+            "eSIAEjoKC0JhdGNoU2V0dGxlEhEuQmF0Y2hTZXR0bGVJbnB1dBoWLmdvb2ds",
+            "ZS5wcm90b2J1Zi5FbXB0eSIAEj0KDlNldFBvaW50Q29uZmlnEhEuUG9uaXRD",
+            "b25maWdJbnB1dBoWLmdvb2dsZS5wcm90b2J1Zi5FbXB0eSIAEj0KDkdldFBv",
+            "aW50Q29uZmlnEhYuZ29vZ2xlLnByb3RvYnVmLkVtcHR5GgwuUG9pbnRDb25m",
+            "aWciBYiJ9wEBEkEKDUdldEpvaW5SZWNvcmQSDS5hZWxmLkFkZHJlc3MaGi5n",
+            "b29nbGUucHJvdG9idWYuQm9vbFZhbHVlIgWIifcBARpFssz2ATBDb250cmFj",
+            "dHMuSGFtc3Rlcldvb2RzLkhhbXN0ZXJXb29kc0NvbnRyYWN0U3RhdGXKyvYB",
+            "C2FjczEyLnByb3RvQhmqAhZDb250cmFjdHMuSGFtc3Rlcldvb2RzYgZwcm90",
+            "bzM="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::AElf.Types.CoreReflection.Descriptor, global::AElf.OptionsReflection.Descriptor, global::Google.Protobuf.WellKnownTypes.EmptyReflection.Descriptor, global::Google.Protobuf.WellKnownTypes.WrappersReflection.Descriptor, global::Google.Protobuf.WellKnownTypes.TimestampReflection.Descriptor, global::AElf.Standards.ACS12.Acs12Reflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(new[] {typeof(global::Contracts.HamsterWoods.GridType), }, null, new pbr::GeneratedClrTypeInfo[] {
@@ -206,8 +209,8 @@ namespace Contracts.HamsterWoods {
             new pbr::GeneratedClrTypeInfo(typeof(global::Contracts.HamsterWoods.Joined), global::Contracts.HamsterWoods.Joined.Parser, new[]{ "Domain", "Registrant" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Contracts.HamsterWoods.AcceptReferralInput), global::Contracts.HamsterWoods.AcceptReferralInput.Parser, new[]{ "DappId", "Referrer", "Invitee" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Contracts.HamsterWoods.ReferralAccepted), global::Contracts.HamsterWoods.ReferralAccepted.Parser, new[]{ "DappId", "Domain", "Referrer", "Invitee" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Contracts.HamsterWoods.PonitConfigInput), global::Contracts.HamsterWoods.PonitConfigInput.Parser, new[]{ "DappId", "PointContractAddress" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::Contracts.HamsterWoods.PointConfig), global::Contracts.HamsterWoods.PointConfig.Parser, new[]{ "DappId", "PointContractAddress" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Contracts.HamsterWoods.PonitConfigInput), global::Contracts.HamsterWoods.PonitConfigInput.Parser, new[]{ "DappId", "PointContractAddress", "OfficialDomain" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::Contracts.HamsterWoods.PointConfig), global::Contracts.HamsterWoods.PointConfig.Parser, new[]{ "DappId", "PointContractAddress", "OfficialDomain" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Contracts.HamsterWoods.SettleInput), global::Contracts.HamsterWoods.SettleInput.Parser, new[]{ "UserAddress", "ActionName", "DappId", "UserPoints", "UserPointsValue" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Contracts.HamsterWoods.BatchSettleInput), global::Contracts.HamsterWoods.BatchSettleInput.Parser, new[]{ "ActionName", "UserPointsList" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::Contracts.HamsterWoods.UserPoints), global::Contracts.HamsterWoods.UserPoints.Parser, new[]{ "UserAddress", "UserPoints_", "UserPointsValue" }, null, null, null, null)
@@ -9073,6 +9076,7 @@ namespace Contracts.HamsterWoods {
     public PonitConfigInput(PonitConfigInput other) : this() {
       dappId_ = other.dappId_ != null ? other.dappId_.Clone() : null;
       pointContractAddress_ = other.pointContractAddress_ != null ? other.pointContractAddress_.Clone() : null;
+      officialDomain_ = other.officialDomain_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -9106,6 +9110,18 @@ namespace Contracts.HamsterWoods {
       }
     }
 
+    /// <summary>Field number for the "official_domain" field.</summary>
+    public const int OfficialDomainFieldNumber = 3;
+    private string officialDomain_ = "";
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public string OfficialDomain {
+      get { return officialDomain_; }
+      set {
+        officialDomain_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
@@ -9123,6 +9139,7 @@ namespace Contracts.HamsterWoods {
       }
       if (!object.Equals(DappId, other.DappId)) return false;
       if (!object.Equals(PointContractAddress, other.PointContractAddress)) return false;
+      if (OfficialDomain != other.OfficialDomain) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -9132,6 +9149,7 @@ namespace Contracts.HamsterWoods {
       int hash = 1;
       if (dappId_ != null) hash ^= DappId.GetHashCode();
       if (pointContractAddress_ != null) hash ^= PointContractAddress.GetHashCode();
+      if (OfficialDomain.Length != 0) hash ^= OfficialDomain.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -9158,6 +9176,10 @@ namespace Contracts.HamsterWoods {
         output.WriteRawTag(18);
         output.WriteMessage(PointContractAddress);
       }
+      if (OfficialDomain.Length != 0) {
+        output.WriteRawTag(26);
+        output.WriteString(OfficialDomain);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -9176,6 +9198,10 @@ namespace Contracts.HamsterWoods {
         output.WriteRawTag(18);
         output.WriteMessage(PointContractAddress);
       }
+      if (OfficialDomain.Length != 0) {
+        output.WriteRawTag(26);
+        output.WriteString(OfficialDomain);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
       }
@@ -9191,6 +9217,9 @@ namespace Contracts.HamsterWoods {
       }
       if (pointContractAddress_ != null) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(PointContractAddress);
+      }
+      if (OfficialDomain.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(OfficialDomain);
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -9215,6 +9244,9 @@ namespace Contracts.HamsterWoods {
           PointContractAddress = new global::AElf.Types.Address();
         }
         PointContractAddress.MergeFrom(other.PointContractAddress);
+      }
+      if (other.OfficialDomain.Length != 0) {
+        OfficialDomain = other.OfficialDomain;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
@@ -9245,6 +9277,10 @@ namespace Contracts.HamsterWoods {
             input.ReadMessage(PointContractAddress);
             break;
           }
+          case 26: {
+            OfficialDomain = input.ReadString();
+            break;
+          }
         }
       }
     #endif
@@ -9272,6 +9308,10 @@ namespace Contracts.HamsterWoods {
               PointContractAddress = new global::AElf.Types.Address();
             }
             input.ReadMessage(PointContractAddress);
+            break;
+          }
+          case 26: {
+            OfficialDomain = input.ReadString();
             break;
           }
         }
@@ -9317,6 +9357,7 @@ namespace Contracts.HamsterWoods {
     public PointConfig(PointConfig other) : this() {
       dappId_ = other.dappId_ != null ? other.dappId_.Clone() : null;
       pointContractAddress_ = other.pointContractAddress_ != null ? other.pointContractAddress_.Clone() : null;
+      officialDomain_ = other.officialDomain_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -9350,6 +9391,18 @@ namespace Contracts.HamsterWoods {
       }
     }
 
+    /// <summary>Field number for the "official_domain" field.</summary>
+    public const int OfficialDomainFieldNumber = 3;
+    private string officialDomain_ = "";
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public string OfficialDomain {
+      get { return officialDomain_; }
+      set {
+        officialDomain_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
@@ -9367,6 +9420,7 @@ namespace Contracts.HamsterWoods {
       }
       if (!object.Equals(DappId, other.DappId)) return false;
       if (!object.Equals(PointContractAddress, other.PointContractAddress)) return false;
+      if (OfficialDomain != other.OfficialDomain) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -9376,6 +9430,7 @@ namespace Contracts.HamsterWoods {
       int hash = 1;
       if (dappId_ != null) hash ^= DappId.GetHashCode();
       if (pointContractAddress_ != null) hash ^= PointContractAddress.GetHashCode();
+      if (OfficialDomain.Length != 0) hash ^= OfficialDomain.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -9402,6 +9457,10 @@ namespace Contracts.HamsterWoods {
         output.WriteRawTag(18);
         output.WriteMessage(PointContractAddress);
       }
+      if (OfficialDomain.Length != 0) {
+        output.WriteRawTag(26);
+        output.WriteString(OfficialDomain);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -9420,6 +9479,10 @@ namespace Contracts.HamsterWoods {
         output.WriteRawTag(18);
         output.WriteMessage(PointContractAddress);
       }
+      if (OfficialDomain.Length != 0) {
+        output.WriteRawTag(26);
+        output.WriteString(OfficialDomain);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
       }
@@ -9435,6 +9498,9 @@ namespace Contracts.HamsterWoods {
       }
       if (pointContractAddress_ != null) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(PointContractAddress);
+      }
+      if (OfficialDomain.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(OfficialDomain);
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -9459,6 +9525,9 @@ namespace Contracts.HamsterWoods {
           PointContractAddress = new global::AElf.Types.Address();
         }
         PointContractAddress.MergeFrom(other.PointContractAddress);
+      }
+      if (other.OfficialDomain.Length != 0) {
+        OfficialDomain = other.OfficialDomain;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
@@ -9489,6 +9558,10 @@ namespace Contracts.HamsterWoods {
             input.ReadMessage(PointContractAddress);
             break;
           }
+          case 26: {
+            OfficialDomain = input.ReadString();
+            break;
+          }
         }
       }
     #endif
@@ -9516,6 +9589,10 @@ namespace Contracts.HamsterWoods {
               PointContractAddress = new global::AElf.Types.Address();
             }
             input.ReadMessage(PointContractAddress);
+            break;
+          }
+          case 26: {
+            OfficialDomain = input.ReadString();
             break;
           }
         }
