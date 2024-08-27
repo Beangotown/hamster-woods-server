@@ -94,54 +94,62 @@ public class UnlockAcornsService : IUnlockAcornsService, ISingletonDependency
 
     private async Task BatchUnlockAsync(int weekNum, List<UserWeekRankRecordIndex> records)
     {
-        var skip = 0;
-        var limit = _unlockOptions.CurrentValue.BatchCount;
-        var sendRecords = records.Skip(skip).Take(limit).ToList();
-
-        var grainId = IdGenerateHelper.GenerateId(AddressGrainKeyPrefix, weekNum.ToString());
-        var addressGrain = _clusterClient.GetGrain<IUnlockAddressGrain>(grainId);
-
-        while (!sendRecords.IsNullOrEmpty())
+        try
         {
-            skip += limit;
-            var addressGrainDto = await addressGrain.SetAddresses(weekNum,
-                sendRecords.Select(t => AddressHelper.ToShortAddress(t.CaAddress)).ToList());
-            if (!addressGrainDto.Success)
+            var skip = 0;
+            var limit = _unlockOptions.CurrentValue.BatchCount;
+            var sendRecords = records.Skip(skip).Take(limit).ToList();
+
+            var grainId = IdGenerateHelper.GenerateId(AddressGrainKeyPrefix, weekNum.ToString());
+            var addressGrain = _clusterClient.GetGrain<IUnlockAddressGrain>(grainId);
+
+            while (!sendRecords.IsNullOrEmpty())
             {
-                _logger.LogError("[UnlockAcorns] addressGrainDto fail, message:{message}", addressGrainDto.Message);
+                skip += limit;
+                var addressGrainDto = await addressGrain.SetAddresses(weekNum,
+                    sendRecords.Select(t => AddressHelper.ToShortAddress(t.CaAddress)).ToList());
+                if (!addressGrainDto.Success)
+                {
+                    _logger.LogError("[UnlockAcorns] addressGrainDto fail, message:{message}", addressGrainDto.Message);
+                    sendRecords = GetRecords(records, skip, limit);
+                    continue;
+                }
+
+                // var addresses = addressGrainDto.Data; //todo: open.
+                var addresses = sendRecords.Select(t => AddressHelper.ToShortAddress(t.CaAddress)).ToList(); //for test
+
+                if (addresses.IsNullOrEmpty())
+                {
+                    _logger.LogWarning("[UnlockAcorns] addressGrainDto return list is empty.");
+                    sendRecords = GetRecords(records, skip, limit);
+                    continue;
+                }
+
+                var bizId = Guid.NewGuid().ToString();
+                var unlockInfoGrain = _clusterClient.GetGrain<IUnlockInfoGrain>(bizId);
+                var grainDto = await unlockInfoGrain.SetUnlockInfo(new UnlockInfoGrainDto()
+                {
+                    WeekNum = weekNum,
+                    BizId = bizId,
+                    Addresses = addresses
+                });
+
+                if (!grainDto.Success)
+                {
+                    _logger.LogError("[UnlockAcorns] addressGrainDto fail, message:{message}", addressGrainDto.Message);
+                    sendRecords = GetRecords(records, skip, limit);
+                    continue;
+                }
+
+                await _distributedEvent.PublishAsync(
+                    _objectMapper.Map<UnlockInfoGrainDto, UnlockInfoEto>(grainDto.Data));
+                await _unlockService.BatchUnlockAsync(grainDto.Data);
                 sendRecords = GetRecords(records, skip, limit);
-                continue;
             }
-
-           // var addresses = addressGrainDto.Data; //todo: open.
-            var addresses = sendRecords.Select(t => AddressHelper.ToShortAddress(t.CaAddress)).ToList(); //for test
-            
-            if (addresses.IsNullOrEmpty())
-            {
-                _logger.LogWarning("[UnlockAcorns] addressGrainDto return list is empty.");
-                sendRecords = GetRecords(records, skip, limit);
-                continue;
-            }
-
-            var bizId = Guid.NewGuid().ToString();
-            var unlockInfoGrain = _clusterClient.GetGrain<IUnlockInfoGrain>(bizId);
-            var grainDto = await unlockInfoGrain.SetUnlockInfo(new UnlockInfoGrainDto()
-            {
-                WeekNum = weekNum,
-                BizId = bizId,
-                Addresses = addresses
-            });
-
-            if (!grainDto.Success)
-            {
-                _logger.LogError("[UnlockAcorns] addressGrainDto fail, message:{message}", addressGrainDto.Message);
-                sendRecords = GetRecords(records, skip, limit);
-                continue;
-            }
-
-            await _distributedEvent.PublishAsync(_objectMapper.Map<UnlockInfoGrainDto, UnlockInfoEto>(grainDto.Data));
-            await _unlockService.BatchUnlockAsync(grainDto.Data);
-            sendRecords = GetRecords(records, skip, limit);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "[UnlockAcorns] error, message:{message},trace:{trace}", e.Message, e.StackTrace);
         }
     }
 
@@ -151,7 +159,7 @@ public class UnlockAcornsService : IUnlockAcornsService, ISingletonDependency
         _logger.LogInformation(
             "[UnlockAcorns] next handle address count:{count}, currentSkipCount:{currentSkipCount}, limit:{limit}",
             sendRecords.Count, skip, limit);
-        
+
         return sendRecords;
     }
 }
