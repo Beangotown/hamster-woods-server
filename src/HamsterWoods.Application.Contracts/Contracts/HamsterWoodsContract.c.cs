@@ -173,6 +173,7 @@ namespace Contracts.HamsterWoods {
     static readonly aelf::Marshaller<global::Contracts.HamsterWoods.BoutInformation> __Marshaller_BoutInformation = aelf::Marshallers.Create((arg) => global::Google.Protobuf.MessageExtensions.ToByteArray(arg), global::Contracts.HamsterWoods.BoutInformation.Parser.ParseFrom);
     static readonly aelf::Marshaller<global::Contracts.HamsterWoods.LockedAcornsInfoList> __Marshaller_LockedAcornsInfoList = aelf::Marshallers.Create((arg) => global::Google.Protobuf.MessageExtensions.ToByteArray(arg), global::Contracts.HamsterWoods.LockedAcornsInfoList.Parser.ParseFrom);
     static readonly aelf::Marshaller<global::Contracts.HamsterWoods.CurrentRaceInfo> __Marshaller_CurrentRaceInfo = aelf::Marshallers.Create((arg) => global::Google.Protobuf.MessageExtensions.ToByteArray(arg), global::Contracts.HamsterWoods.CurrentRaceInfo.Parser.ParseFrom);
+    static readonly aelf::Marshaller<global::Contracts.HamsterWoods.ManagerList> __Marshaller_ManagerList = aelf::Marshallers.Create((arg) => global::Google.Protobuf.MessageExtensions.ToByteArray(arg), global::Contracts.HamsterWoods.ManagerList.Parser.ParseFrom);
     static readonly aelf::Marshaller<global::Contracts.HamsterWoods.JoinInput> __Marshaller_JoinInput = aelf::Marshallers.Create((arg) => global::Google.Protobuf.MessageExtensions.ToByteArray(arg), global::Contracts.HamsterWoods.JoinInput.Parser.ParseFrom);
     static readonly aelf::Marshaller<global::Contracts.HamsterWoods.AcceptReferralInput> __Marshaller_AcceptReferralInput = aelf::Marshallers.Create((arg) => global::Google.Protobuf.MessageExtensions.ToByteArray(arg), global::Contracts.HamsterWoods.AcceptReferralInput.Parser.ParseFrom);
     static readonly aelf::Marshaller<global::Contracts.HamsterWoods.SettleInput> __Marshaller_SettleInput = aelf::Marshallers.Create((arg) => global::Google.Protobuf.MessageExtensions.ToByteArray(arg), global::Contracts.HamsterWoods.SettleInput.Parser.ParseFrom);
@@ -349,6 +350,13 @@ namespace Contracts.HamsterWoods {
         "GetCurrentRaceInfo",
         __Marshaller_google_protobuf_Empty,
         __Marshaller_CurrentRaceInfo);
+
+    static readonly aelf::Method<global::Google.Protobuf.WellKnownTypes.Empty, global::Contracts.HamsterWoods.ManagerList> __Method_GetManagers = new aelf::Method<global::Google.Protobuf.WellKnownTypes.Empty, global::Contracts.HamsterWoods.ManagerList>(
+        aelf::MethodType.View,
+        __ServiceName,
+        "GetManagers",
+        __Marshaller_google_protobuf_Empty,
+        __Marshaller_ManagerList);
 
     static readonly aelf::Method<global::Contracts.HamsterWoods.JoinInput, global::Google.Protobuf.WellKnownTypes.Empty> __Method_Join = new aelf::Method<global::Contracts.HamsterWoods.JoinInput, global::Google.Protobuf.WellKnownTypes.Empty>(
         aelf::MethodType.Action,

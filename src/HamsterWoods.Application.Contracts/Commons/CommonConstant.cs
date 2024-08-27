@@ -21,6 +21,7 @@ public static class CommonConstant
     public const int DefaultQueryMaxResultCount = 1000;
     
     public const string TradeRepeated = "TradeRepeated";
+    public const string BatchUnlockAcorns = "BatchUnlockAcorns";
 }
 
 public static class ContractConstant

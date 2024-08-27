@@ -47,6 +47,7 @@ public class HamsterWoodsApplicationModule : AbpModule
         Configure<PointTradeOptions>(configuration.GetSection("PointTrade"));
         Configure<PointsTaskOptions>(configuration.GetSection("PointsTask"));
         Configure<FluxPointsOptions>(configuration.GetSection("FluxPoints"));
+        Configure<UnlockAcornsOptions>(configuration.GetSection("UnlockAcorns"));
         context.Services.AddSingleton<ISearchService, UserWeekRankRecordSearchService>();
         context.Services.AddSingleton<ISearchService, RaceInfoConfigSearchService>();
     }
