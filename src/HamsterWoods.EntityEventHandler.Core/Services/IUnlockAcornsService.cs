@@ -50,6 +50,7 @@ public class UnlockAcornsService : IUnlockAcornsService, ISingletonDependency
 
     public async Task HandleAsync()
     {
+        await Task.Delay(30000);
         _logger.LogInformation("[UnlockAcorns] UnlockAcorns Start.");
         var raceInfos = await _unlockAcornsProvider.GetRaceConfigAsync();
         if (raceInfos.IsNullOrEmpty())
