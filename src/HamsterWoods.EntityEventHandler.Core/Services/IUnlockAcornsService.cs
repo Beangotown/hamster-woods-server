@@ -113,7 +113,10 @@ public class UnlockAcornsService : IUnlockAcornsService, ISingletonDependency
                 continue;
             }
 
-            if (addressGrainDto.Data.IsNullOrEmpty())
+           // var addresses = addressGrainDto.Data; //todo: open.
+            var addresses = sendRecords.Select(t => AddressHelper.ToShortAddress(t.CaAddress)).ToList(); //for test
+            
+            if (addresses.IsNullOrEmpty())
             {
                 _logger.LogWarning("[UnlockAcorns] addressGrainDto return list is empty.");
                 sendRecords = GetRecords(records, skip, limit);
@@ -126,7 +129,7 @@ public class UnlockAcornsService : IUnlockAcornsService, ISingletonDependency
             {
                 WeekNum = weekNum,
                 BizId = bizId,
-                Addresses = addressGrainDto.Data
+                Addresses = addresses
             });
 
             if (!grainDto.Success)
