@@ -10,4 +10,5 @@ public interface IInfoAppService
     Task<object> GetValAsync(string key);
     Task<object> SetValAsync(string key, string val);
     Task<string> GetDataAsync(GetIndexDataDto input, string indexName);
+    Task<string> SetBatchUnlockAsync();
 }

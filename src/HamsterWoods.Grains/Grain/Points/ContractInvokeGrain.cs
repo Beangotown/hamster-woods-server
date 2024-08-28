@@ -25,7 +25,7 @@ public class ContractInvokeGrain : Grain<ContractInvokeState>, IContractInvokeGr
     private readonly PointsOptions _pointsOptions;
 
     public ContractInvokeGrain(IObjectMapper objectMapper, ILogger<ContractInvokeGrain> logger,
-        IBlockchainClientFactory<AElfClient> blockchainClientFactory, 
+        IBlockchainClientFactory<AElfClient> blockchainClientFactory,
         IOptionsSnapshot<ChainOptions> options,
         IOptionsSnapshot<PointsOptions> pointsOptions)
     {
@@ -46,6 +46,27 @@ public class ContractInvokeGrain : Grain<ContractInvokeState>, IContractInvokeGr
     {
         await WriteStateAsync();
         await base.OnDeactivateAsync();
+    }
+
+    public async Task<GrainResultDto<ContractInvokeGrainDto>> ResetUnlock()
+    {
+        if (State.BizId.IsNullOrEmpty() || State.Status != ContractInvokeStatus.FinalFailed.ToString() ||
+            State.ContractMethod != CommonConstant.BatchUnlockAcorns)
+        {
+            _logger.LogInformation(
+                "[ResetUnlock] can not ResetUnlock bizId {bizId}, status:{status}, methodName:{methodName}",
+                State.BizId, State.Status, State.ContractMethod);
+            
+            return OfContractInvokeGrainResultDto(true);
+        }
+
+        State.RetryCount = 0;
+        State.Status = ContractInvokeStatus.Failed.ToString();
+        await WriteStateAsync();
+
+        _logger.LogInformation(
+            "[ResetUnlock] Contract bizId {bizId}.", State.BizId);
+        return OfContractInvokeGrainResultDto(true);
     }
 
     public async Task<GrainResultDto<ContractInvokeGrainDto>> CreateAsync(ContractInvokeGrainDto input)

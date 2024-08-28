@@ -69,12 +69,12 @@ public class UnlockService : IUnlockService, ISingletonDependency
         if (!result.Success)
         {
             _logger.LogError(
-                "[BatchUnlock] Create Contract Invoke fail, bizId: {dto.BizId}.", dto.BizId);
+                "[BatchUnlock] Create Contract Invoke fail, bizId: {bizId}.", dto.BizId);
             throw new UserFriendlyException($"Create Contract Invoke fail, bizId: {dto.BizId}.");
         }
 
         _logger.LogInformation(
-            "[BatchUnlock] Create Contract Invoke success, bizId: {dto.BizId}.", dto.BizId);
+            "[BatchUnlock] Create Contract Invoke success, bizId: {bizId}.", dto.BizId);
         await _distributedEventBus.PublishAsync(
             _objectMapper.Map<ContractInvokeGrainDto, ContractInvokeEto>(result.Data));
     }

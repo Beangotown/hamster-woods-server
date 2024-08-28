@@ -50,4 +50,10 @@ public class InfoController : HamsterWoodsBaseController
     {
         return await _pointHubService.GetFluxPointsAsync(address, connectionId);
     }
+    
+    [HttpPost("batch")]
+    public async Task<string> SetBatchUnlockAsync()
+    {
+        return await _infoAppService.SetBatchUnlockAsync();
+    }
 }
