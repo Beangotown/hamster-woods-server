@@ -46,7 +46,6 @@ public class TraceService : HamsterWoodsBaseService, ITraceService
         _chainOptions = chainOptions.Value;
     }
 
-
     public async Task CreateAsync(GetUserActionDto dto)
     {
         _logger.LogInformation("start tracking! caAddress: {caAddress}", dto.CaAddress);
