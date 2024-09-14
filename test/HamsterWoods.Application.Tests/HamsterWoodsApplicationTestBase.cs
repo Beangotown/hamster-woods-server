@@ -53,5 +53,4 @@ public abstract class HamsterWoodsApplicationTestBase : HamsterWoodsTestBase<Ham
 
         return mockLockProvider.Object;
     }
-    
 }
