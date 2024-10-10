@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Asp.Versioning;
 using HamsterWoods.Config;
 using HamsterWoods.NFT;
 using Microsoft.AspNetCore.Mvc;

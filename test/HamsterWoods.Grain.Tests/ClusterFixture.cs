@@ -81,7 +81,7 @@ public class ClusterFixture : IDisposable, ISingletonDependency
                         typeof(ICurrentTenant),
                         typeof(CurrentTenant)
                     );
-                    services.OnRegistred(UnitOfWorkInterceptorRegistrar.RegisterIfNeeded);
+                    //services.OnRegistred(UnitOfWorkInterceptorRegistrar.RegisterIfNeeded);
                     services.AddTransient(
                         typeof(IUnitOfWorkManager),
                         typeof(UnitOfWorkManager)
@@ -93,12 +93,12 @@ public class ClusterFixture : IDisposable, ISingletonDependency
                     services.OnExposing(onServiceExposingContext =>
                     {
                         //Register types for IObjectMapper<TSource, TDestination> if implements
-                        onServiceExposingContext.ExposedTypes.AddRange(
-                            ReflectionHelper.GetImplementedGenericTypes(
-                                onServiceExposingContext.ImplementationType,
-                                typeof(IObjectMapper<,>)
-                            )
-                        );
+                        // onServiceExposingContext.ExposedTypes.AddRange(
+                        //     ReflectionHelper.GetImplementedGenericTypes(
+                        //         onServiceExposingContext.ImplementationType,
+                        //         typeof(IObjectMapper<,>)
+                        //     )
+                        // );
                     });
                     services.AddTransient(
                         typeof(IObjectMapper<>),

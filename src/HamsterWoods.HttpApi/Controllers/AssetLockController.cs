@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Asp.Versioning;
 using HamsterWoods.AssetLock;
 using HamsterWoods.AssetLock.Dtos;
 using Microsoft.AspNetCore.Mvc;
