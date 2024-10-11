@@ -7,5 +7,4 @@ namespace HamsterWoods.Reward;
 public interface IRewardAppService
 {
     Task<KingHamsterClaimDto> ClaimHamsterKingAsync(HamsterPassInput input);
-    Task<KingHamsterClaimDto> SendAsync(HamsterPassInput input);
 }

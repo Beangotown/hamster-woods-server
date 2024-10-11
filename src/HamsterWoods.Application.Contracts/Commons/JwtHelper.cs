@@ -45,23 +45,17 @@ public static class JwtHelper
         {
             return relationId;
         }
+
         var tokenWithoutPrefix = token.StartsWith("Bearer ")
             ? token.Substring("Bearer ".Length)
             : token;
-        try
-        {
-            tokenHandler.ValidateToken(tokenWithoutPrefix, CreateTokenValidationParameters(), out var validatedToken);
+        tokenHandler.ValidateToken(tokenWithoutPrefix, CreateTokenValidationParameters(), out var validatedToken);
 
-            // Get claims from validated token
-            var claims = (JwtSecurityToken)validatedToken;
+        // Get claims from validated token
+        var claims = (JwtSecurityToken)validatedToken;
 
-            // Access individual claims
-            relationId = claims.Claims.FirstOrDefault(c => c.Type == "sub")?.Value;
-        }
-        catch (Exception e)
-        {
-        }
-
+        // Access individual claims
+        relationId = claims.Claims.FirstOrDefault(c => c.Type == "sub")?.Value;
         return relationId;
     }
 }

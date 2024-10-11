@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AElf.ExceptionHandler;
 using HamsterWoods.Commons;
 using HamsterWoods.NFT;
 using Microsoft.Extensions.Logging;
@@ -29,6 +30,9 @@ public class PortkeyProvider : IPortkeyProvider, ISingletonDependency
         _portkeyOptions = portkeyOptions.Value;
     }
 
+    [ExceptionHandler(typeof(Exception), TargetType = typeof(ExceptionHandlingService),
+        MethodName = nameof(ExceptionHandlingService.HandleGetCaHolderCreateTimeException),
+        Message = "GetCaHolderCreateTimeAsync error")]
     public async Task<long> GetCaHolderCreateTimeAsync(HamsterPassInput hamsterPassInput)
     {
         long timeStamp = 0;
@@ -37,20 +41,15 @@ public class PortkeyProvider : IPortkeyProvider, ISingletonDependency
             { "caAddress", hamsterPassInput.CaAddress }
         });
         var url = string.Concat(_portkeyOptions.BaseUrl, _getCaHolderCreateTimeUrl, "?", paramStr);
-        try
-        {
-            var result = await _httpClientProvider.GetAsync(null, url);
-            long.TryParse(result, out timeStamp);
-        }
-        catch (Exception e)
-        {
-            _logger.LogError(e, "GetCaHolderCreateTimeAsync error {CaAddress}", hamsterPassInput.CaAddress);
-            throw new UserFriendlyException(HamsterWoodsConstants.SyncingMessage, HamsterWoodsConstants.SyncingCode);
-        }
+        var result = await _httpClientProvider.GetAsync(null, url);
+        long.TryParse(result, out timeStamp);
 
         return timeStamp;
     }
 
+    [ExceptionHandler(typeof(Exception), TargetType = typeof(ExceptionHandlingService),
+        MethodName = nameof(ExceptionHandlingService.HandleGetHolderTokenInfoException),
+        Message = "GetHolderTokenInfoAsync error {CaAddress}")]
     public async Task<TokenInfoDto> GetHolderTokenInfoAsync(string chainId, string caAddress, string symbol)
     {
         var paramStr = BuildParamStr(new Dictionary<string, string>
@@ -61,16 +60,8 @@ public class PortkeyProvider : IPortkeyProvider, ISingletonDependency
         });
         var url = string.Concat(_portkeyOptions.BaseUrl, _tokenBalanceUrl, "?", paramStr);
 
-        try
-        {
-            var res = await _httpClientProvider.GetAsync(null, url);
-            return JsonConvert.DeserializeObject<TokenInfoDto>(res);
-        }
-        catch (Exception e)
-        {
-            _logger.LogError(e, "GetHolderTokenInfoAsync error {CaAddress}", caAddress);
-            return new TokenInfoDto();
-        }
+        var res = await _httpClientProvider.GetAsync(null, url);
+        return JsonConvert.DeserializeObject<TokenInfoDto>(res);
     }
 
     private static string BuildParamStr(Dictionary<string, string> paramDict)

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AElf.ExceptionHandler;
 using AElf.Indexing.Elasticsearch;
 using HamsterWoods.Commons;
 using HamsterWoods.Contract;
@@ -53,19 +54,15 @@ public class CreateBatchSettleService : ICreateBatchSettleService, ISingletonDep
         var pointTypes = new List<PointType> { PointType.Hop, PointType.PurchaseCount };
         foreach (var pointType in pointTypes)
         {
-            try
-            {
-                await CreateBatchSettleAsync(pointType);
-            }
-            catch (Exception e)
-            {
-                _logger.LogError(e, "[CreateBatchSettle] error, pointType:{pointType}.", pointType.ToString());
-            }
+            await CreateBatchSettleAsync(pointType);
         }
 
         _logger.LogInformation("[CreateBatchSettle] end CreateBatchSettle.");
     }
 
+    [ExceptionHandler(typeof(Exception), TargetType = typeof(ExceptionHandlingService),
+        MethodName = nameof(EventHandlerExceptionHandlingService.HandleCreateBatchSettleException),
+        Message = "[CreateBatchSettle] error, pointType:{pointType}")]
     private async Task CreateBatchSettleAsync(PointType pointType)
     {
         _logger.LogInformation("[CreateBatchSettle] begin handle {pointType}.",
