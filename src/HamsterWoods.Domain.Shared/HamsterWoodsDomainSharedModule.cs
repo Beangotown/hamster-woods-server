@@ -1,4 +1,5 @@
-﻿using HamsterWoods.Localization;
+﻿using AElf.ExceptionHandler;
+using HamsterWoods.Localization;
 using Volo.Abp.AuditLogging;
 using Volo.Abp.BackgroundJobs;
 using Volo.Abp.FeatureManagement;
@@ -23,7 +24,8 @@ namespace HamsterWoods;
     typeof(AbpOpenIddictDomainSharedModule),
     typeof(AbpPermissionManagementDomainSharedModule),
     typeof(AbpSettingManagementDomainSharedModule),
-    typeof(AbpTenantManagementDomainSharedModule)    
+    typeof(AbpTenantManagementDomainSharedModule),
+    typeof(AOPExceptionModule)
     )]
 public class HamsterWoodsDomainSharedModule : AbpModule
 {

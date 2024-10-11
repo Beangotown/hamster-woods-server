@@ -23,7 +23,7 @@ public static class OrleansHostExtensions
             var advertisedIP = IsRunningInKubernetes ?  Environment.GetEnvironmentVariable("POD_IP") :configSection.GetValue<string>("AdvertisedIP");
             var clusterId = IsRunningInKubernetes ? Environment.GetEnvironmentVariable("ORLEANS_CLUSTER_ID") : configSection.GetValue<string>("ClusterId");
             var serviceId = IsRunningInKubernetes ? Environment.GetEnvironmentVariable("ORLEANS_SERVICE_ID") : configSection.GetValue<string>("ServiceId");
-
+            
             //Configure OrleansSnapshot
             siloBuilder
                 //.ConfigureEndpoints(advertisedIP:IPAddress.Parse(configSection.GetValue<string>("AdvertisedIP")),siloPort: configSection.GetValue<int>("SiloPort"), gatewayPort: configSection.GetValue<int>("GatewayPort"), listenOnAnyHostAddress: true)
@@ -62,7 +62,7 @@ public static class OrleansHostExtensions
                     options.ServiceId = serviceId;
                 })
                // .AddMemoryGrainStorage("PubSubStore")
-                .ConfigureApplicationParts(parts => parts.AddFromApplicationBaseDirectory())
+                //.ConfigureApplicationParts(parts => parts.AddFromApplicationBaseDirectory()) need to remove in orleans 7.0.0
                 .UseDashboard(options => {
                     options.Username = configSection.GetValue<string>("DashboardUserName");
                     options.Password = configSection.GetValue<string>("DashboardPassword");
@@ -71,7 +71,7 @@ public static class OrleansHostExtensions
                     options.HostSelf = true;
                     options.CounterUpdateIntervalMs = configSection.GetValue<int>("DashboardCounterUpdateIntervalMs");
                 })
-                .UseLinuxEnvironmentStatistics()
+                //.UseLinuxEnvironmentStatistics()
                 .ConfigureLogging(logging => { logging.SetMinimumLevel(LogLevel.Debug).AddConsole(); });
         });
     }

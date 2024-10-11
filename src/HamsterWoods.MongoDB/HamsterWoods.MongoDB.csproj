@@ -9,7 +9,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\HamsterWoods.Domain\HamsterWoods.Domain.csproj" />
-    <PackageReference Include="Quartz" Version="3.8.1" />
     <PackageReference Include="Volo.Abp.PermissionManagement.MongoDB" Version="8.2.0" />
     <PackageReference Include="Volo.Abp.SettingManagement.MongoDB" Version="8.2.0" />
     <PackageReference Include="Volo.Abp.Identity.MongoDB" Version="8.2.0" />

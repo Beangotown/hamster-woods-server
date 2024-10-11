@@ -17,13 +17,13 @@
         <PackageReference Include="AElf.Sdk.CSharp" Version="1.2.3" />
         <PackageReference Include="AutoMapper" Version="13.0.1" />
         <PackageReference Include="FirebaseAdmin" Version="2.3.0" />
-        <PackageReference Include="Microsoft.Orleans.CodeGenerator.MSBuild" Version="3.6.5">
-            <PrivateAssets>all</PrivateAssets>
-            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageReference>
-        <PackageReference Include="Microsoft.Orleans.Core.Abstractions" Version="3.6.5" />
+<!--        <PackageReference Include="Microsoft.Orleans.CodeGenerator.MSBuild" Version="3.6.5">-->
+<!--            <PrivateAssets>all</PrivateAssets>-->
+<!--            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>-->
+<!--        </PackageReference>-->
+<!--        <PackageReference Include="Microsoft.Orleans.Core.Abstractions" Version="7.0.0" />-->
         <PackageReference Include="NEST" Version="7.17.1" />
-        <PackageReference Include="Orleans.Providers.MongoDB" Version="3.8.0" />
+        <PackageReference Include="Orleans.Providers.MongoDB" Version="7.0.0" />
         <PackageReference Include="AElf.Cryptography" Version="1.2.3" />
         <PackageReference Include="StackExchange.Redis" Version="2.2.4" />
         <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.1.2" />
@@ -40,6 +40,7 @@
         <PackageReference Include="Serilog.AspNetCore" Version="6.0.1" />
         <PackageReference Include="Serilog.Sinks.Async" Version="1.5.0" />
         <PackageReference Include="Serilog.Sinks.RollingFile" Version="3.3.0" />
+        <PackageReference Include="Microsoft.Orleans.Client" Version="7.0.0" />
     </ItemGroup>
     
 </Project>

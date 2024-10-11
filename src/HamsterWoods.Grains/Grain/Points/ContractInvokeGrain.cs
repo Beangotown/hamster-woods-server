@@ -25,7 +25,7 @@ public class ContractInvokeGrain : Grain<ContractInvokeState>, IContractInvokeGr
     private readonly PointsOptions _pointsOptions;
 
     public ContractInvokeGrain(IObjectMapper objectMapper, ILogger<ContractInvokeGrain> logger,
-        IBlockchainClientFactory<AElfClient> blockchainClientFactory, 
+        IBlockchainClientFactory<AElfClient> blockchainClientFactory,
         IOptionsSnapshot<ChainOptions> options,
         IOptionsSnapshot<PointsOptions> pointsOptions)
     {
@@ -36,16 +36,16 @@ public class ContractInvokeGrain : Grain<ContractInvokeState>, IContractInvokeGr
         _pointsOptions = pointsOptions.Value;
     }
 
-    public override async Task OnActivateAsync()
+    public override async Task OnActivateAsync(CancellationToken cancellationToken)
     {
         await ReadStateAsync();
-        await base.OnActivateAsync();
+        await base.OnActivateAsync(cancellationToken);
     }
 
-    public override async Task OnDeactivateAsync()
+    public override async Task OnDeactivateAsync(DeactivationReason reason, CancellationToken token)
     {
         await WriteStateAsync();
-        await base.OnDeactivateAsync();
+        await base.OnDeactivateAsync(reason, token);
     }
 
     public async Task<GrainResultDto<ContractInvokeGrainDto>> CreateAsync(ContractInvokeGrainDto input)

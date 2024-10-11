@@ -30,7 +30,7 @@ public class ClusterFixture : IDisposable, ISingletonDependency
     {
         var builder = new TestClusterBuilder();
         builder.AddSiloBuilderConfigurator<TestSiloConfigurations>();
-        builder.AddClientBuilderConfigurator<TestClientBuilderConfigurator>();
+        //builder.AddClientBuilderConfigurator<TestClientBuilderConfigurator>();
         Cluster = builder.Build();
         Cluster.Deploy();
     }
@@ -646,9 +646,9 @@ public class ClusterFixture : IDisposable, ISingletonDependency
         }
     }
 
-    private class TestClientBuilderConfigurator : IClientBuilderConfigurator
-    {
-        public void Configure(IConfiguration configuration, IClientBuilder clientBuilder) => clientBuilder
-            .AddSimpleMessageStreamProvider("MessagePush");
-    }
+    // private class TestClientBuilderConfigurator : IClientBuilderConfigurator
+    // {
+    //     public void Configure(IConfiguration configuration, IClientBuilder clientBuilder) => clientBuilder
+    //         .AddSimpleMessageStreamProvider("MessagePush");
+    // }
 }

@@ -9,11 +9,10 @@
 
     <ItemGroup>
         <PackageReference Include="JsonNet.PrivateSettersContractResolvers" Version="1.0.0" />
-        <PackageReference Include="Microsoft.Orleans.OrleansTelemetryConsumers.Linux" Version="3.6.5" />
-        <PackageReference Include="Microsoft.Orleans.Server" Version="3.6.5" />
-        <PackageReference Include="Orleans.Providers.MongoDB" Version="3.8.0" />
-        <PackageReference Include="OrleansDashboard" Version="3.6.2" />
-        <PackageReference Include="Quartz" Version="3.8.1" />
+        <PackageReference Include="Microsoft.Orleans.OrleansTelemetryConsumers.Linux" Version="3.7.0" />
+        <PackageReference Include="Microsoft.Orleans.Server" Version="7.0.0" />
+        <PackageReference Include="Orleans.Providers.MongoDB" Version="7.0.0" />
+        <PackageReference Include="OrleansDashboard" Version="7.0.0" />
         <PackageReference Include="Serilog.AspNetCore" Version="6.0.1" />
         <PackageReference Include="Serilog.Sinks.Async" Version="1.5.0" />
         <PackageReference Include="Serilog.Sinks.RollingFile" Version="3.3.0" />

@@ -91,26 +91,26 @@ public class HamsterWoodsHttpApiHostModule : AbpModule
 
     private static void ConfigureOrleans(ServiceConfigurationContext context, IConfiguration configuration)
     {
-        context.Services.AddSingleton<IClusterClient>(o =>
-        {
-            return new ClientBuilder()
-                .ConfigureDefaults()
-                .UseMongoDBClient(configuration["Orleans:MongoDBClient"])
-                .UseMongoDBClustering(options =>
-                {
-                    options.DatabaseName = configuration["Orleans:DataBase"];
-                    options.Strategy = MongoDBMembershipStrategy.SingleDocument;
-                })
-                .Configure<ClusterOptions>(options =>
-                {
-                    options.ClusterId = configuration["Orleans:ClusterId"];
-                    options.ServiceId = configuration["Orleans:ServiceId"];
-                })
-                .ConfigureApplicationParts(parts =>
-                    parts.AddApplicationPart(typeof(HamsterWoodsGrainsModule).Assembly).WithReferences())
-                .ConfigureLogging(builder => builder.AddProvider(o.GetService<ILoggerProvider>()))
-                .Build();
-        });
+        // context.Services.AddSingleton<IClusterClient>(o =>
+        // {
+        //     return new ClientBuilder()
+        //         .ConfigureDefaults()
+        //         .UseMongoDBClient(configuration["Orleans:MongoDBClient"])
+        //         .UseMongoDBClustering(options =>
+        //         {
+        //             options.DatabaseName = configuration["Orleans:DataBase"];
+        //             options.Strategy = MongoDBMembershipStrategy.SingleDocument;
+        //         })
+        //         .Configure<ClusterOptions>(options =>
+        //         {
+        //             options.ClusterId = configuration["Orleans:ClusterId"];
+        //             options.ServiceId = configuration["Orleans:ServiceId"];
+        //         })
+        //         .ConfigureApplicationParts(parts =>
+        //             parts.AddApplicationPart(typeof(HamsterWoodsGrainsModule).Assembly).WithReferences())
+        //         .ConfigureLogging(builder => builder.AddProvider(o.GetService<ILoggerProvider>()))
+        //         .Build();
+        // });
     }
 
     private void ConfigureCache(ServiceConfigurationContext context, IConfiguration configuration)
@@ -268,13 +268,13 @@ public class HamsterWoodsHttpApiHostModule : AbpModule
 
     private static void StartOrleans(IServiceProvider serviceProvider)
     {
-        var client = serviceProvider.GetRequiredService<IClusterClient>();
-        AsyncHelper.RunSync(async () => await client.Connect());
+        // var client = serviceProvider.GetRequiredService<IClusterClient>();
+        // AsyncHelper.RunSync(async () => await client.Connect());
     }
 
     private static void StopOrleans(IServiceProvider serviceProvider)
     {
-        var client = serviceProvider.GetRequiredService<IClusterClient>();
-        AsyncHelper.RunSync(client.Close);
+        // var client = serviceProvider.GetRequiredService<IClusterClient>();
+        // AsyncHelper.RunSync(client.Close);
     }
 }
