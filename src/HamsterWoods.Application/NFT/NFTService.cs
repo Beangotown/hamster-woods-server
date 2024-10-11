@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using AElf.ExceptionHandler;
 using AElf.Types;
 using Google.Protobuf.WellKnownTypes;
 using HamsterWoods.Cache;
@@ -202,37 +203,32 @@ public class NFTService : HamsterWoodsBaseService, INFTService
         return _chainOptions.ChainInfos.Keys.First();
     }
 
+    [ExceptionHandler(typeof(Exception), TargetType = typeof(ExceptionHandlingService),
+        MethodName = nameof(ExceptionHandlingService.HandleJoinException), Message = "[Join] error")]
     private async Task JoinAsync(string address, string domain)
     {
-        try
-        {
-            _logger.LogInformation("[JoinAsync] begin, address:{address}, domain:{domain}", address, domain ?? "-");
-            var output = await _contractProvider.JoinAsync(GetDefaultChainId(), address, domain);
+        _logger.LogInformation("[JoinAsync] begin, address:{address}, domain:{domain}", address, domain ?? "-");
+        var output = await _contractProvider.JoinAsync(GetDefaultChainId(), address, domain);
 
+        await Task.Delay(3000);
+        var transactionResult =
+            await _contractProvider.GetTransactionResultAsync(GetDefaultChainId(), output.TransactionId);
+        _logger.LogInformation(
+            "[TransactionStatus] address:{address}, domain:{domain}, transactionId:{transactionId}, status:{status}",
+            address, domain ?? "-", output.TransactionId, transactionResult.Status);
+
+        var retryCount = 0;
+        while ((transactionResult.Status == ContractConstant.Pending ||
+                transactionResult.Status == ContractConstant.Notexisted) && retryCount < 10)
+        {
             await Task.Delay(3000);
-            var transactionResult =
+            ++retryCount;
+            transactionResult =
                 await _contractProvider.GetTransactionResultAsync(GetDefaultChainId(), output.TransactionId);
+
             _logger.LogInformation(
-                "[TransactionStatus] address:{address}, domain:{domain}, transactionId:{transactionId}, status:{status}",
-                address, domain ?? "-", output.TransactionId, transactionResult.Status);
-
-            var retryCount = 0;
-            while ((transactionResult.Status == ContractConstant.Pending ||
-                    transactionResult.Status == ContractConstant.Notexisted) && retryCount < 10)
-            {
-                await Task.Delay(3000);
-                ++retryCount;
-                transactionResult =
-                    await _contractProvider.GetTransactionResultAsync(GetDefaultChainId(), output.TransactionId);
-
-                _logger.LogInformation(
-                    "[TransactionStatus] address:{address}, domain:{domain}, transactionId:{transactionId}, status:{status}, retryCount:{retryCount}",
-                    address, domain ?? "-", output.TransactionId, transactionResult.Status, retryCount);
-            }
-        }
-        catch (Exception e)
-        {
-            _logger.LogError(e, "[Join] error, address:{address}, domain:{domain}", address, domain ?? "-");
+                "[TransactionStatus] address:{address}, domain:{domain}, transactionId:{transactionId}, status:{status}, retryCount:{retryCount}",
+                address, domain ?? "-", output.TransactionId, transactionResult.Status, retryCount);
         }
     }
 }
