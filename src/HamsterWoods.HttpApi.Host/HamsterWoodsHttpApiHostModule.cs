@@ -239,8 +239,9 @@ public class HamsterWoodsHttpApiHostModule : AbpModule
         app.UseRouting();
         app.UseCors();
         app.UseAuthentication();
-
         app.UseAuthorization();
+        
+        
         if (env.IsDevelopment())
         {
             app.UseSwagger();
