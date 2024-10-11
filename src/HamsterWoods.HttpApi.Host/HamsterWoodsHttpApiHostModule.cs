@@ -241,7 +241,7 @@ public class HamsterWoodsHttpApiHostModule : AbpModule
         app.UseAuthentication();
 
         app.UseAuthorization();
-        //if (env.IsDevelopment())
+        if (env.IsDevelopment())
         {
             app.UseSwagger();
             app.UseAbpSwaggerUI(options =>
