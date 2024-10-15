@@ -98,7 +98,6 @@ public class ClusterFixture : IDisposable, ISingletonDependency
                     });
                     services.AddTransient<IMapperAccessor>(provider => provider.GetRequiredService<MapperAccessor>());
                 })
-                // .AddSimpleMessageStreamProvider(IMApplicationConsts.MessageStreamName)
                 .AddMemoryGrainStorage("PubSubStore")
                 .AddMemoryGrainStorageAsDefault();
         }
