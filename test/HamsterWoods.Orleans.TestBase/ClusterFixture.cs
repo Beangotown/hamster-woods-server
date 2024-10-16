@@ -20,7 +20,7 @@ public class ClusterFixture : IDisposable, ISingletonDependency
         builder.AddSiloBuilderConfigurator<TestSiloConfigurations>();
         // builder.AddClientBuilderConfigurator<TestClientBuilderConfigurator>();
         Cluster = builder.Build();
-        Cluster.Deploy();
+        Cluster.Deploy(); 
     }
 
     public void Dispose()
