@@ -7,9 +7,9 @@ using Volo.Abp;
 namespace HamsterWoods.Controllers;
 
 [RemoteService]
-[Area("sre")]
+[Area("app")]
 [ControllerName("HealthCheck")]
-[Route("api/")]
+[Route("api/app/")]
 public class HealthCheckController : HamsterWoodsBaseController
 {
     private readonly IHealthCheckService _healthCheckService;
