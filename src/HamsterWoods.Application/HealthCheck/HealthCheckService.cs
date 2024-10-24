@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using AElf.Indexing.Elasticsearch;
 using HamsterWoods.Cache;
@@ -41,19 +42,24 @@ public class HealthCheckService : IHealthCheckService
                 });
     }
 
-    public async Task<bool> Ready()
+    public async Task<bool> ReadyAsync()
     {
-        return await CheckCache() && await CheckEs();
+        var stopWatch = new Stopwatch();
+        stopWatch.Start();
+        var result = await CheckCacheAsync() && await CheckEsAsync();
+        stopWatch.Stop();
+        _logger.LogInformation("HealthCheckService#ReadyAsync cost:{0}ms", stopWatch.ElapsedMilliseconds);
+        return result;
     }
 
-    public async Task<bool> CheckCache()
+    public async Task<bool> CheckCacheAsync()
     {
         await _cacheProvider.SetAsync(CheckRedisKey, CheckRedisKey, TimeSpan.FromSeconds(5));
         var result = await _cacheProvider.GetAsync(CheckRedisKey);
         return result is { IsNullOrEmpty: false, HasValue: true } && CheckRedisValue.Equals(result.ToString());
     }
 
-    public async Task<bool> CheckEs()
+    public async Task<bool> CheckEsAsync()
     {
         var current = TimeHelper.GetTimeStampInMilliseconds();
         await _repository.AddOrUpdateAsync(new HealthCheckIndex()

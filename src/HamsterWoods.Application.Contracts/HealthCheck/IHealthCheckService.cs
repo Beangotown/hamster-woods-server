@@ -4,9 +4,9 @@ namespace HamsterWoods.HealthCheck;
 
 public interface IHealthCheckService
 {
-    Task<bool> Ready();
+    Task<bool> ReadyAsync();
     
-    Task<bool> CheckCache();
+    Task<bool> CheckCacheAsync();
     
-    Task<bool> CheckEs();
+    Task<bool> CheckEsAsync();
 }

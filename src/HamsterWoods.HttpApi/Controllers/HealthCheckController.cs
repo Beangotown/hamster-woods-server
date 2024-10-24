@@ -31,6 +31,6 @@ public class HealthCheckController : HamsterWoodsBaseController
     [Route("startup")]
     public async Task<bool> CheckStartupStatus()
     {
-        return await _healthCheckService.Ready();
+        return await _healthCheckService.ReadyAsync();
     }
 }
