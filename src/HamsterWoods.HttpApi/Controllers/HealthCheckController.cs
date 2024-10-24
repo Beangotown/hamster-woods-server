@@ -21,16 +21,16 @@ public class HealthCheckController : HamsterWoodsBaseController
     
     [HttpGet]
     [Route("health")]
-    public async Task<bool> CheckHealthStatus()
+    public async Task<string> CheckHealthStatus()
     {
         await Task.Delay(TimeSpan.FromMilliseconds(5));
-        return true;
+        return "200";
     }
     
     [HttpGet]
     [Route("startup")]
-    public async Task<bool> CheckStartupStatus()
+    public async Task<string> CheckStartupStatus()
     {
-        return await _healthCheckService.ReadyAsync();
+        return await _healthCheckService.ReadyAsync() ? "200" : "500";
     }
 }

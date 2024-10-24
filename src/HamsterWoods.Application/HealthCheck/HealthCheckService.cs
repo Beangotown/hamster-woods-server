@@ -14,7 +14,7 @@ using Volo.Abp.Auditing;
 namespace HamsterWoods.HealthCheck;
 
 [RemoteService(false), DisableAuditing]
-public class HealthCheckService : IHealthCheckService
+public class HealthCheckService : HamsterWoodsBaseService, IHealthCheckService
 {
     private const string CheckRedisKey = "CheckRedisKey";
     private const string CheckRedisValue = "CheckRedisValue";
@@ -38,7 +38,7 @@ public class HealthCheckService : IHealthCheckService
                 sleepDurationProvider: retryAttempt => TimeSpan.FromMilliseconds(500),
                 onRetry: (exception, timeSpan, retryCount, context) =>
                 {
-                    _logger.LogInformation($"Retry {retryCount} encountered {exception.Message}. Waiting {timeSpan} before next retry.");
+                    Console.Write($"Retry {retryCount} encountered {exception.Message}. Waiting {timeSpan} before next retry.");
                 });
     }
 
