@@ -47,7 +47,7 @@ public class HealthCheckService : HamsterWoodsBaseService, IHealthCheckService
     {
         var stopWatch = new Stopwatch();
         stopWatch.Start();
-        var result = await CheckCacheAsync();// && await CheckEsAsync();
+        var result = await CheckCacheAsync() && await CheckEsAsync();
         stopWatch.Stop();
         _logger.LogInformation("HealthCheckService#ReadyAsync cost:{0}ms", stopWatch.ElapsedMilliseconds);
         return result;
@@ -63,14 +63,15 @@ public class HealthCheckService : HamsterWoodsBaseService, IHealthCheckService
 
     public async Task<bool> CheckEsAsync()
     {
-        // var current = TimeHelper.GetTimeStampInMilliseconds();
-        // await _repository.AddOrUpdateAsync(new HealthCheckIndex()
-        // {
-        //     Id = CheckEsIndexId,
-        //     Timestamp = current
-        // });
+        var current = TimeHelper.GetTimeStampInMilliseconds();
+        await _repository.AddOrUpdateAsync(new HealthCheckIndex()
+        {
+            Id = CheckEsIndexId,
+            Timestamp = current
+        });
+        var index = await _repository.GetAsync(CheckEsIndexId);
+        return index != null && current == index.Timestamp;
         // return current == await GetIndexTimestamp();
-        return true;
     }
 
     private async Task<long> GetIndexTimestamp()
