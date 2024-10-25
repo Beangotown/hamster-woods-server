@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using HamsterWoods.Commons;
 using HamsterWoods.HealthCheck;
 using Microsoft.AspNetCore.Mvc;
 using Volo.Abp;
@@ -24,13 +25,18 @@ public class HealthCheckController : HamsterWoodsBaseController
     public async Task<string> CheckHealthStatus()
     {
         await Task.Delay(TimeSpan.FromMilliseconds(5));
-        return "200";
+        return CommonResult.SuccessCode;
     }
     
     [HttpGet]
     [Route("startup")]
     public async Task<string> CheckStartupStatus()
     {
-        return await _healthCheckService.ReadyAsync() ? "200" : "500";
+        if (await _healthCheckService.ReadyAsync())
+        {
+            return CommonResult.SuccessCode;
+        }
+
+        throw new UserFriendlyException("Server is not ready!");
     }
 }

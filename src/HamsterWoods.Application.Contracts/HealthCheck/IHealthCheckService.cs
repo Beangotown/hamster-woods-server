@@ -9,4 +9,6 @@ public interface IHealthCheckService
     Task<bool> CheckCacheAsync();
     
     Task<bool> CheckEsAsync();
+
+    Task<bool> CheckGrainAsync();
 }

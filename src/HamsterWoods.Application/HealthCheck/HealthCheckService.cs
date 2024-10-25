@@ -4,9 +4,11 @@ using System.Threading.Tasks;
 using AElf.Indexing.Elasticsearch;
 using HamsterWoods.Cache;
 using HamsterWoods.Common;
+using HamsterWoods.Grains.Grain.HealthCheck;
 using HamsterWoods.Health;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Orleans;
 using Polly;
 using Polly.Retry;
 using Volo.Abp;
@@ -20,14 +22,17 @@ public class HealthCheckService : HamsterWoodsBaseService, IHealthCheckService
     private const string CheckRedisKey = "CheckRedisKey";
     private const string CheckRedisValue = "CheckRedisValue";
     private const string CheckEsIndexId = "CheckEsIndexId";
+    private const string DefaultGrainId = "Grain-HealthCheck";
     private readonly ICacheProvider _cacheProvider;
     private readonly INESTRepository<HealthCheckIndex, string> _repository;
     private readonly AsyncRetryPolicy _retryPolicy;
     private readonly ILogger<HealthCheckService> _logger;
+    private readonly IClusterClient _clusterClient;
 
     public HealthCheckService(ICacheProvider cacheProvider,
         INESTRepository<HealthCheckIndex, string> repository,
-        ILogger<HealthCheckService> logger)
+        ILogger<HealthCheckService> logger,
+        IClusterClient clusterClient)
     {
         _cacheProvider = cacheProvider;
         _repository = repository;
@@ -41,13 +46,14 @@ public class HealthCheckService : HamsterWoodsBaseService, IHealthCheckService
                 {
                     Console.Write($"Retry {retryCount} encountered {exception.Message}. Waiting {timeSpan} before next retry.");
                 });
+        _clusterClient = clusterClient;
     }
 
     public async Task<bool> ReadyAsync()
     {
         var stopWatch = new Stopwatch();
         stopWatch.Start();
-        var result = await CheckCacheAsync() && await CheckEsAsync();
+        var result = await CheckCacheAsync() && await CheckEsAsync() && await CheckGrainAsync();
         stopWatch.Stop();
         _logger.LogInformation("HealthCheckService#ReadyAsync cost:{0}ms", stopWatch.ElapsedMilliseconds);
         return result;
@@ -111,5 +117,25 @@ public class HealthCheckService : HamsterWoodsBaseService, IHealthCheckService
             _logger.LogError(e, "query health check index failed");
         }
         return -1;
+    }
+
+    public async Task<bool> CheckGrainAsync()
+    {
+        var grain = _clusterClient.GetGrain<IHealthCheckGrain>(DefaultGrainId);
+        var current = TimeHelper.GetTimeStampInMilliseconds();
+        var result = await grain.CreateOrUpdateHealthCheckData(new HealthCheckGrainDto()
+        {
+            Id = DefaultGrainId,
+            Timestamp = current
+        });
+        _logger.LogInformation("CheckGrainAsync#CreateOrUpdateHealthCheckData {0}", JsonConvert.SerializeObject(result));
+        if (!result.Success)
+        {
+            return false;
+        }
+
+        var getResult = await grain.GetHealthCheckData();
+        _logger.LogInformation("CheckGrainAsync#GetHealthCheckData {0}", JsonConvert.SerializeObject(getResult));
+        return getResult.Success && getResult.Data.Timestamp.Equals(current);
     }
 }
