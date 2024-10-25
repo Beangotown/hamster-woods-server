@@ -77,24 +77,6 @@ public class HealthCheckService : HamsterWoodsBaseService, IHealthCheckService
         });
         var index = await _repository.GetAsync(CheckEsIndexId);
         _logger.LogInformation("HealthCheckIndex: {0}", JsonConvert.SerializeObject(index));
-        // if (index != null)
-        // {
-        //     return current == index.Timestamp;
-        // }
-        // for (var i = 0; i < 3; i++)
-        // {
-        //     await Task.Delay(TimeSpan.FromMilliseconds(500));
-        //     index = await _repository.GetAsync(CheckEsIndexId);
-        //     if (index != null)
-        //     {
-        //         break;
-        //     }
-        // }
-        // if (index == null)
-        // {
-        //     throw new UserFriendlyException("query es error");
-        // }
-        // return index != null && current == index.Timestamp;
         return current == await GetIndexTimestamp();
     }
 
