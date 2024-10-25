@@ -82,23 +82,15 @@ public class HealthCheckService : HamsterWoodsBaseService, IHealthCheckService
 
     private async Task<long> GetIndexTimestamp()
     {
-        try
+        return await _retryPolicy.ExecuteAsync(async () =>
         {
-            return await _retryPolicy.ExecuteAsync(async () =>
+            var index = await _repository.GetAsync(CheckEsIndexId);
+            if (index == null)
             {
-                var index = await _repository.GetAsync(CheckEsIndexId);
-                if (index == null)
-                {
-                    throw new UserFriendlyException("query health check index failed, retrying...");
-                }
-                return index.Timestamp;
-            });
-        }
-        catch (Exception e)
-        {
-            _logger.LogError(e, "query health check index failed");
-        }
-        return -1;
+                throw new UserFriendlyException("query health check index failed, retrying...");
+            }
+            return index.Timestamp;
+        });
     }
 
     public async Task<bool> CheckGrainAsync()
