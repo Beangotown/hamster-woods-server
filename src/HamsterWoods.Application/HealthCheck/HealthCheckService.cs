@@ -71,46 +71,45 @@ public class HealthCheckService : HamsterWoodsBaseService, IHealthCheckService
         });
         var index = await _repository.GetAsync(CheckEsIndexId);
         _logger.LogInformation("HealthCheckIndex: {0}", JsonConvert.SerializeObject(index));
-        if (index != null)
-        {
-            return current == index.Timestamp;
-        }
-        for (var i = 0; i < 3; i++)
-        {
-            await Task.Delay(TimeSpan.FromMilliseconds(500));
-            index = await _repository.GetAsync(CheckEsIndexId);
-            if (index != null)
-            {
-                break;
-            }
-        }
-        if (index == null)
-        {
-            throw new UserFriendlyException("");
-        }
-        return index != null && current == index.Timestamp;
-        // return current == await GetIndexTimestamp();
+        // if (index != null)
+        // {
+        //     return current == index.Timestamp;
+        // }
+        // for (var i = 0; i < 3; i++)
+        // {
+        //     await Task.Delay(TimeSpan.FromMilliseconds(500));
+        //     index = await _repository.GetAsync(CheckEsIndexId);
+        //     if (index != null)
+        //     {
+        //         break;
+        //     }
+        // }
+        // if (index == null)
+        // {
+        //     throw new UserFriendlyException("query es error");
+        // }
+        // return index != null && current == index.Timestamp;
+        return current == await GetIndexTimestamp();
     }
 
     private async Task<long> GetIndexTimestamp()
     {
-        // try
-        // {
-        //     return await _retryPolicy.ExecuteAsync(async () =>
-        //     {
-        //         var index = await _repository.GetAsync(CheckEsIndexId);
-        //         if (index == null)
-        //         {
-        //             throw new UserFriendlyException("query health check index failed, retrying...");
-        //         }
-        //         return index.Timestamp;
-        //     });
-        // }
-        // catch (Exception e)
-        // {
-        //     _logger.LogError(e, "query health check index failed");
-        // }
-        // return -1;
-        return 0;
+        try
+        {
+            return await _retryPolicy.ExecuteAsync(async () =>
+            {
+                var index = await _repository.GetAsync(CheckEsIndexId);
+                if (index == null)
+                {
+                    throw new UserFriendlyException("query health check index failed, retrying...");
+                }
+                return index.Timestamp;
+            });
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "query health check index failed");
+        }
+        return -1;
     }
 }
