@@ -16,31 +16,31 @@ namespace HamsterWoods.HealthCheck;
 [RemoteService(false), DisableAuditing]
 public class HealthCheckService : HamsterWoodsBaseService, IHealthCheckService
 {
-    // private const string CheckRedisKey = "CheckRedisKey";
-    // private const string CheckRedisValue = "CheckRedisValue";
-    // private const string CheckEsIndexId = "CheckEsIndexId";
-    // private readonly ICacheProvider _cacheProvider;
-    // private readonly INESTRepository<HealthCheckIndex, string> _repository;
-    // private readonly AsyncRetryPolicy _retryPolicy;
-    // private readonly ILogger<HealthCheckService> _logger;
+    private const string CheckRedisKey = "CheckRedisKey";
+    private const string CheckRedisValue = "CheckRedisValue";
+    private const string CheckEsIndexId = "CheckEsIndexId";
+    private readonly ICacheProvider _cacheProvider;
+    private readonly INESTRepository<HealthCheckIndex, string> _repository;
+    private readonly AsyncRetryPolicy _retryPolicy;
+    private readonly ILogger<HealthCheckService> _logger;
 
-    // public HealthCheckService(ICacheProvider cacheProvider,
-    //     INESTRepository<HealthCheckIndex, string> repository,
-    //     ILogger<HealthCheckService> logger)
-    // {
-    //     _cacheProvider = cacheProvider;
-    //     _repository = repository;
-    //     _logger = logger;
-    //     _retryPolicy = Policy
-    //         .Handle<Exception>()
-    //         .WaitAndRetryAsync(
-    //             retryCount: 4, 
-    //             sleepDurationProvider: retryAttempt => TimeSpan.FromMilliseconds(500),
-    //             onRetry: (exception, timeSpan, retryCount, context) =>
-    //             {
-    //                 Console.Write($"Retry {retryCount} encountered {exception.Message}. Waiting {timeSpan} before next retry.");
-    //             });
-    // }
+    public HealthCheckService(ICacheProvider cacheProvider,
+        INESTRepository<HealthCheckIndex, string> repository,
+        ILogger<HealthCheckService> logger)
+    {
+        _cacheProvider = cacheProvider;
+        _repository = repository;
+        _logger = logger;
+        _retryPolicy = Policy
+            .Handle<Exception>()
+            .WaitAndRetryAsync(
+                retryCount: 4, 
+                sleepDurationProvider: retryAttempt => TimeSpan.FromMilliseconds(500),
+                onRetry: (exception, timeSpan, retryCount, context) =>
+                {
+                    Console.Write($"Retry {retryCount} encountered {exception.Message}. Waiting {timeSpan} before next retry.");
+                });
+    }
 
     public async Task<bool> ReadyAsync()
     {
