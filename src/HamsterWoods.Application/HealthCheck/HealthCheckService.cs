@@ -44,21 +44,19 @@ public class HealthCheckService : HamsterWoodsBaseService, IHealthCheckService
 
     public async Task<bool> ReadyAsync()
     {
-        // var stopWatch = new Stopwatch();
-        // stopWatch.Start();
-        // var result = await CheckCacheAsync() && await CheckEsAsync();
-        // stopWatch.Stop();
-        // _logger.LogInformation("HealthCheckService#ReadyAsync cost:{0}ms", stopWatch.ElapsedMilliseconds);
-        // return result;
-        return true;
+        var stopWatch = new Stopwatch();
+        stopWatch.Start();
+        var result = await CheckCacheAsync();// && await CheckEsAsync();
+        stopWatch.Stop();
+        _logger.LogInformation("HealthCheckService#ReadyAsync cost:{0}ms", stopWatch.ElapsedMilliseconds);
+        return result;
     }
 
     public async Task<bool> CheckCacheAsync()
     {
-        // await _cacheProvider.SetAsync(CheckRedisKey, CheckRedisKey, TimeSpan.FromSeconds(5));
-        // var result = await _cacheProvider.GetAsync(CheckRedisKey);
-        // return result is { IsNullOrEmpty: false, HasValue: true } && CheckRedisValue.Equals(result.ToString());
-        return true;
+        await _cacheProvider.SetAsync(CheckRedisKey, CheckRedisKey, TimeSpan.FromSeconds(5));
+        var result = await _cacheProvider.GetAsync(CheckRedisKey);
+        return result is { IsNullOrEmpty: false, HasValue: true } && CheckRedisValue.Equals(result.ToString());
     }
 
     public async Task<bool> CheckEsAsync()
