@@ -6,6 +6,7 @@ using HamsterWoods.Cache;
 using HamsterWoods.Common;
 using HamsterWoods.Health;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using Polly;
 using Polly.Retry;
 using Volo.Abp;
@@ -54,8 +55,9 @@ public class HealthCheckService : HamsterWoodsBaseService, IHealthCheckService
 
     public async Task<bool> CheckCacheAsync()
     {
-        await _cacheProvider.SetAsync(CheckRedisKey, CheckRedisKey, TimeSpan.FromSeconds(5));
+        await _cacheProvider.SetAsync(CheckRedisKey, CheckRedisKey, TimeSpan.FromSeconds(10));
         var result = await _cacheProvider.GetAsync(CheckRedisKey);
+        _logger.LogInformation("CheckCacheAsync GetAsync result {0}", JsonConvert.SerializeObject(result));
         return result is { IsNullOrEmpty: false, HasValue: true } && CheckRedisValue.Equals(result.ToString());
     }
 
