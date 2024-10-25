@@ -55,7 +55,7 @@ public class HealthCheckService : HamsterWoodsBaseService, IHealthCheckService
 
     public async Task<bool> CheckCacheAsync()
     {
-        await _cacheProvider.SetAsync(CheckRedisKey, CheckRedisKey, TimeSpan.FromSeconds(10));
+        await _cacheProvider.SetAsync(CheckRedisKey, CheckRedisValue, TimeSpan.FromSeconds(10));
         var result = await _cacheProvider.GetAsync(CheckRedisKey);
         _logger.LogInformation("CheckCacheAsync GetAsync result {0}", JsonConvert.SerializeObject(result));
         return result is { IsNullOrEmpty: false, HasValue: true } && CheckRedisValue.Equals(result.ToString());
