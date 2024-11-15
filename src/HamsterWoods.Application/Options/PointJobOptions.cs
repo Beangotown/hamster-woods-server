@@ -8,4 +8,5 @@ public class PointJobOptions
     public int ContractInvokePeriod { get; set; } = 10;
     public int CreateSettleLimit { get; set; } = 1000;
     public int SettleCount { get; set; } = 1000;
+    public int ContractReExecutePeriod { get; set; } = 600;
 }
