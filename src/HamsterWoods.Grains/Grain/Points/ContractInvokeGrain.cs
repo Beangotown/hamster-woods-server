@@ -25,7 +25,7 @@ public class ContractInvokeGrain : Grain<ContractInvokeState>, IContractInvokeGr
     private readonly PointsOptions _pointsOptions;
 
     public ContractInvokeGrain(IObjectMapper objectMapper, ILogger<ContractInvokeGrain> logger,
-        IBlockchainClientFactory<AElfClient> blockchainClientFactory, 
+        IBlockchainClientFactory<AElfClient> blockchainClientFactory,
         IOptionsSnapshot<ChainOptions> options,
         IOptionsSnapshot<PointsOptions> pointsOptions)
     {
@@ -112,6 +112,26 @@ public class ContractInvokeGrain : Grain<ContractInvokeState>, IContractInvokeGr
         }
     }
 
+    public async Task<GrainResultDto<ContractInvokeGrainDto>> ReExecuteAsync()
+    {
+        if (State.Id.IsNullOrEmpty())
+        {
+            return OfContractInvokeGrainResultDto(false, "Contract not exist.");
+        }
+
+        if (State.Status != ContractInvokeStatus.FinalFailed.ToString())
+        {
+            return OfContractInvokeGrainResultDto(false,
+                $"Contract status is not FinalFailed, status:{State.Status ?? "-"}");
+        }
+
+        State.Status = ContractInvokeStatus.ToBeCreated.ToString();
+        State.UpdateTime = DateTime.UtcNow;
+
+        await WriteStateAsync();
+        return OfContractInvokeGrainResultDto(true);
+    }
+
     private async Task HandleCreatedAsync()
     {
         //To Generate RawTransaction and Send Transaction
@@ -136,8 +156,8 @@ public class ContractInvokeGrain : Grain<ContractInvokeState>, IContractInvokeGr
         await SendTransactionAsync(State.ChainId, signedTransaction);
 
         _logger.LogInformation(
-            "HandleCreatedAsync Contract bizId {bizId} txHash:{txHash} invoke status {oriStatus} to {status}",
-            State.BizId, State.TransactionId, oriStatus, State.Status);
+            "HandleCreatedAsync Contract bizId {bizId} methodName:{methodName} txHash:{txHash} invoke status {oriStatus} to {status}",
+            State.BizId, State.ContractMethod, State.TransactionId, oriStatus, State.Status);
 
         await WriteStateAsync();
     }
@@ -190,8 +210,8 @@ public class ContractInvokeGrain : Grain<ContractInvokeState>, IContractInvokeGr
         }
 
         _logger.LogInformation(
-            "HandleFailedAsync Contract bizId {bizId} txHash:{txHash} invoke status to {status}, retryCount:{retryCount}",
-            State.BizId, State.TransactionId, State.Status, State.RetryCount);
+            "HandleFailedAsync Contract bizId {bizId} methodName:{methodName} txHash:{txHash} invoke status to {status}, retryCount:{retryCount}",
+            State.BizId, State.ContractMethod, State.TransactionId, State.Status, State.RetryCount);
         await WriteStateAsync();
     }
 
@@ -202,8 +222,8 @@ public class ContractInvokeGrain : Grain<ContractInvokeState>, IContractInvokeGr
         State.BlockHeight = txResult.BlockNumber;
         State.Status = ContractInvokeStatus.Success.ToString();
         _logger.LogInformation(
-            "HandlePendingAsync Contract bizId {bizId} txHash:{txHash} invoke status {oriStatus} to {status}",
-            State.BizId, State.TransactionId, oriStatus, State.Status);
+            "HandlePendingAsync Contract bizId {bizId} methodName:{methodName} txHash:{txHash} invoke status {oriStatus} to {status}",
+            State.BizId, State.ContractMethod, State.TransactionId, oriStatus, State.Status);
         await WriteStateAsync();
     }
 
@@ -215,8 +235,8 @@ public class ContractInvokeGrain : Grain<ContractInvokeState>, IContractInvokeGr
         // When Transaction status is not mined or pending, Transaction is judged to be failed.
         State.Message = $"Transaction failed, status: {State.Status}. error: {txResult.Error}";
         _logger.LogWarning(
-            "TransactionFailedAsync Contract bizId {bizId} txHash:{txHash} invoke status {oriStatus} to {status}",
-            State.BizId, State.TransactionId, oriStatus, State.Status);
+            "TransactionFailedAsync Contract bizId {bizId} methodName:{methodName} txHash:{txHash} invoke status {oriStatus} to {status}",
+            State.BizId, State.ContractMethod, State.TransactionId, oriStatus, State.Status);
 
         await WriteStateAsync();
     }
