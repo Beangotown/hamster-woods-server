@@ -1,0 +1,114 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net7.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <PackageId>HamsterWoods.Grains</PackageId>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.Extensions.Http" Version="7.0.0" />
+        <PackageReference Include="Microsoft.Orleans.CodeGenerator.MSBuild" Version="3.6.5">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="Microsoft.Orleans.Core.Abstractions" Version="3.6.5" />
+        <PackageReference Include="MongoDB.Bson" Version="2.17.1" />
+        <PackageReference Include="AElf.Client" Version="1.1.0" />
+        <PackageReference Include="AElf.Core" Version="1.2.3" />
+        <PackageReference Include="AElf.CSharp.Core" Version="1.2.3" />
+        <PackageReference Include="AElf.Kernel.Types" Version="1.2.3" />
+        <PackageReference Include="AElf.Types" Version="1.2.3" />
+        <PackageReference Include="Quartz" Version="3.8.1" />
+        <PackageReference Include="Volo.Abp.Autofac" Version="7.0.0" />
+        <PackageReference Include="Volo.Abp.BackgroundJobs.Domain" Version="7.0.0" />
+        <PackageReference Include="Volo.Abp.Caching" Version="7.0.0" />
+        <PackageReference Include="GraphQL.Client.Serializer.Newtonsoft" Version="5.1.0" />
+        <PackageReference Include="GraphQL.Client" Version="5.1.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\HamsterWoods.Application.Contracts\HamsterWoods.Application.Contracts.csproj" />
+        <ProjectReference Include="..\HamsterWoods.Domain\HamsterWoods.Domain.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Update="appsettings.json">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Orleans_CodeGenInputs Remove="Grain\Activity\ActivityGrain.cs" />
+      <Orleans_CodeGenInputs Remove="Grain\Activity\GraphQLClient.cs" />
+      <Orleans_CodeGenInputs Remove="Grain\Activity\IActivityGrain.cs" />
+      <Orleans_CodeGenInputs Remove="State\UserExtraInfo\UserExtraInfoState.cs" />
+      <Orleans_CodeGenInputs Remove="State\QrCode\QrCodeState.cs" />
+      <Orleans_CodeGenInputs Remove="State\Notify\NotifyRulesState.cs" />
+      <Orleans_CodeGenInputs Remove="State\Notify\NotifyState.cs" />
+      <Orleans_CodeGenInputs Remove="State\Device\DeviceState.cs" />
+      <Orleans_CodeGenInputs Remove="State\Contacts\ContactNameState.cs" />
+      <Orleans_CodeGenInputs Remove="State\Contacts\ContactState.cs" />
+      <Orleans_CodeGenInputs Remove="State\Bookmark\BookmarkMetaState.cs" />
+      <Orleans_CodeGenInputs Remove="State\Bookmark\BookmarkState.cs" />
+      <Orleans_CodeGenInputs Remove="Grain\UserExtraInfo\IUserExtraInfoGrain.cs" />
+      <Orleans_CodeGenInputs Remove="Grain\UserExtraInfo\UserExtraInfoGrain.cs" />
+      <Orleans_CodeGenInputs Remove="Grain\UserExtraInfo\UserExtraInfoGrainDto.cs" />
+      <Orleans_CodeGenInputs Remove="Grain\ThirdPart\IOrderGrain.cs" />
+      <Orleans_CodeGenInputs Remove="Grain\ThirdPart\IOrderStatusInfoGrain.cs" />
+      <Orleans_CodeGenInputs Remove="Grain\ThirdPart\OrderGrain.cs" />
+      <Orleans_CodeGenInputs Remove="Grain\ThirdPart\OrderGrainDto.cs" />
+      <Orleans_CodeGenInputs Remove="Grain\ThirdPart\OrderStatusInfoGrain.cs" />
+      <Orleans_CodeGenInputs Remove="Grain\ThirdPart\OrderStatusInfoGrainDto.cs" />
+      <Orleans_CodeGenInputs Remove="Grain\ThirdPart\OrderStatusInfoGrainResultDto.cs" />
+      <Orleans_CodeGenInputs Remove="Grain\Notify\INotifyGrain.cs" />
+      <Orleans_CodeGenInputs Remove="Grain\Notify\INotifyRulesGrain.cs" />
+      <Orleans_CodeGenInputs Remove="Grain\Notify\NotifyGrain.cs" />
+      <Orleans_CodeGenInputs Remove="Grain\Notify\NotifyGrainDto.cs" />
+      <Orleans_CodeGenInputs Remove="Grain\Notify\NotifyGrainResultDto.cs" />
+      <Orleans_CodeGenInputs Remove="Grain\Notify\NotifyMessage.cs" />
+      <Orleans_CodeGenInputs Remove="Grain\Notify\NotifyRulesGrain.cs" />
+      <Orleans_CodeGenInputs Remove="Grain\Notify\NotifyRulesGrainDto.cs" />
+      <Orleans_CodeGenInputs Remove="Grain\Device\DeviceGrain.cs" />
+      <Orleans_CodeGenInputs Remove="Grain\Device\DeviceGrainConstants.cs" />
+      <Orleans_CodeGenInputs Remove="Grain\Device\IDeviceGrain.cs" />
+      <Orleans_CodeGenInputs Remove="Grain\Contacts\CAHolderGrain.cs" />
+      <Orleans_CodeGenInputs Remove="Grain\Contacts\CAHolderGrainDto.cs" />
+      <Orleans_CodeGenInputs Remove="Grain\Contacts\CAHolderMessage.cs" />
+      <Orleans_CodeGenInputs Remove="Grain\Contacts\ContactAddress.cs" />
+      <Orleans_CodeGenInputs Remove="Grain\Contacts\ContactGrain.cs" />
+      <Orleans_CodeGenInputs Remove="Grain\Contacts\ContactGrainDto.cs" />
+      <Orleans_CodeGenInputs Remove="Grain\Contacts\ContactMessage.cs" />
+      <Orleans_CodeGenInputs Remove="Grain\Contacts\ContactNameGrain.cs" />
+      <Orleans_CodeGenInputs Remove="Grain\Contacts\ICAHolderGrain.cs" />
+      <Orleans_CodeGenInputs Remove="Grain\Contacts\IContactGrain.cs" />
+      <Orleans_CodeGenInputs Remove="Grain\Contacts\IContactNameGrain.cs" />
+      <Orleans_CodeGenInputs Remove="Grain\Bookmark\BookmarkGrain.cs" />
+      <Orleans_CodeGenInputs Remove="Grain\Bookmark\BookmarkMetaGrain.cs" />
+      <Orleans_CodeGenInputs Remove="Grain\Bookmark\Dtos\BookmarkGrainDto.cs" />
+      <Orleans_CodeGenInputs Remove="Grain\Bookmark\Dtos\BookmarkGrainResultDto.cs" />
+      <Orleans_CodeGenInputs Remove="Grain\Bookmark\IBookmarkGrain.cs" />
+      <Orleans_CodeGenInputs Remove="Grain\Bookmark\IBookmarkMetaGrain.cs" />
+      <Orleans_CodeGenInputs Remove="Grain\Account\CAAccountOption.cs" />
+      <Orleans_CodeGenInputs Remove="Grain\Account\CreateHolderResultGrainDto.cs" />
+      <Orleans_CodeGenInputs Remove="Grain\Account\IRecoveryGrain.cs" />
+      <Orleans_CodeGenInputs Remove="Grain\Account\IRegisterGrain.cs" />
+      <Orleans_CodeGenInputs Remove="Grain\Account\RecoveryGrain.cs" />
+      <Orleans_CodeGenInputs Remove="Grain\Account\RecoveryGrainDto.cs" />
+      <Orleans_CodeGenInputs Remove="Grain\Account\RecoveryMessage.cs" />
+      <Orleans_CodeGenInputs Remove="Grain\Account\RegisterGrain.cs" />
+      <Orleans_CodeGenInputs Remove="Grain\Account\RegisterGrainDto.cs" />
+      <Orleans_CodeGenInputs Remove="Grain\Account\RegisterMessage.cs" />
+      <Orleans_CodeGenInputs Remove="Grain\Account\SocialRecoveryResultGrainDto.cs" />
+      <Orleans_CodeGenInputs Remove="State\Chat\ChatMetaState.cs" />
+      <Orleans_CodeGenInputs Remove="State\User\UserState.cs" />
+      <Orleans_CodeGenInputs Remove="Grain\Feed\FeedInfoGrain.cs" />
+      <Orleans_CodeGenInputs Remove="Grain\Feed\FeedMetaGrain.cs" />
+      <Orleans_CodeGenInputs Remove="Grain\Feed\IFeedInfoGrain.cs" />
+      <Orleans_CodeGenInputs Remove="Grain\Feed\IFeedMetaGrain.cs" />
+      <Orleans_CodeGenInputs Remove="Grain\Chat\ChatMetaGrain.cs" />
+      <Orleans_CodeGenInputs Remove="Grain\Chat\ChatMetaGrainDto.cs" />
+      <Orleans_CodeGenInputs Remove="Grain\Chat\IChatMetaGrain.cs" />
+    </ItemGroup>
+
+</Project>
