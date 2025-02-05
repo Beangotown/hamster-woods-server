@@ -86,7 +86,6 @@ public class RewardProvider : IRewardProvider, ISingletonDependency
         {
             weekNum = currentNum - 1;
         }
-
         return weekNum;
     }
 
